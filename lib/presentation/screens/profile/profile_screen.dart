@@ -48,41 +48,44 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           'HUNTER PROFILE',
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            fontFamily: 'Orbitron',
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              ?.copyWith(
+                                fontFamily: 'Orbitron',
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Profile Card
                     _buildProfileCard(context, user, userProvider),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Stats Overview
                     _buildStatsOverview(context, user),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Shadow Army
                     _buildShadowArmySection(context, user),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Achievements Summary
                     _buildAchievementsSummary(context, userProvider),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Guides Section
                     _buildGuidesSection(context),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Settings
                     _buildSettingsSection(context),
                   ],
@@ -95,7 +98,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileCard(BuildContext context, UserProfile user, UserProvider userProvider) {
+  Widget _buildProfileCard(
+      BuildContext context, UserProfile user, UserProvider userProvider) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -144,15 +148,16 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  _getClassIcon(user.hunterClass),
-                  color: Colors.white,
-                  size: 40,
+                child: ClipOval(
+                  child: Image.asset(
+                    _getClassImagePath(user.hunterClass),
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              
               const SizedBox(width: 16),
-              
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,19 +165,20 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       user.name,
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     Text(
                       user.title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.electricBlue,
-                        fontStyle: FontStyle.italic,
-                      ),
+                            color: AppTheme.electricBlue,
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: userProvider.getRankColor().withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -192,9 +198,9 @@ class ProfileScreen extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Level and XP
           Row(
             children: [
@@ -216,9 +222,9 @@ class ProfileScreen extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
               Expanded(
@@ -242,12 +248,13 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     )
-    .animate()
-    .fadeIn(duration: 500.ms)
-    .slideY(begin: 0.2, duration: 300.ms, curve: Curves.easeOut);
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slideY(begin: 0.2, duration: 300.ms, curve: Curves.easeOut);
   }
 
-  Widget _buildInfoItem(String label, String value, IconData icon, Color color) {
+  Widget _buildInfoItem(
+      String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -290,12 +297,11 @@ class ProfileScreen extends StatelessWidget {
           Text(
             'STATS OVERVIEW',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
-          
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
@@ -364,9 +370,9 @@ class ProfileScreen extends StatelessWidget {
               Text(
                 'SHADOW ARMY',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppTheme.primaryPurple,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppTheme.primaryPurple,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               Container(
@@ -387,47 +393,52 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          
           if (user.unlockedShadows.isEmpty)
             Text(
               'No shadows unlocked yet. Reach Level 11 to unlock your first shadow soldier.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
+                    color: AppTheme.textSecondary,
+                  ),
             )
           else
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: user.unlockedShadows.map((shadow) => 
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryPurple.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.primaryPurple.withOpacity(0.5)),
-                  ),
-                  child: Text(
-                    shadow,
-                    style: TextStyle(
-                      color: AppTheme.primaryPurple,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+              children: user.unlockedShadows
+                  .map(
+                    (shadow) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryPurple.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: AppTheme.primaryPurple.withOpacity(0.5)),
+                      ),
+                      child: Text(
+                        shadow,
+                        style: TextStyle(
+                          color: AppTheme.primaryPurple,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ).toList(),
+                  )
+                  .toList(),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildAchievementsSummary(BuildContext context, UserProvider userProvider) {
-    final unlockedCount = userProvider.achievements.where((a) => a.isUnlocked).length;
+  Widget _buildAchievementsSummary(
+      BuildContext context, UserProvider userProvider) {
+    final unlockedCount =
+        userProvider.achievements.where((a) => a.isUnlocked).length;
     final totalCount = userProvider.achievements.length;
     final completionRate = totalCount > 0 ? unlockedCount / totalCount : 0.0;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: AppTheme.glowingContainer,
@@ -437,12 +448,11 @@ class ProfileScreen extends StatelessWidget {
           Text(
             'ACHIEVEMENTS',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
-          
           Row(
             children: [
               Expanded(
@@ -452,8 +462,8 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Unlocked: $unlockedCount/$totalCount',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     LinearProgressIndicator(
@@ -470,11 +480,13 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.amberGold.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.amberGold.withOpacity(0.5)),
+                  border:
+                      Border.all(color: AppTheme.amberGold.withOpacity(0.5)),
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.emoji_events, color: AppTheme.amberGold, size: 20),
+                    Icon(Icons.emoji_events,
+                        color: AppTheme.amberGold, size: 20),
                     const SizedBox(height: 4),
                     Text(
                       '${(completionRate * 100).toInt()}%',
@@ -512,14 +524,13 @@ class ProfileScreen extends StatelessWidget {
               Text(
                 'GUIDES',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppTheme.electricBlue,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppTheme.electricBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          
           _buildGuideItem(
             context,
             'Buffs & Debuffs Guide',
@@ -600,33 +611,29 @@ class ProfileScreen extends StatelessWidget {
           Text(
             'SETTINGS',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
-          
           _buildSettingsItem(
             'Notifications',
             'Manage quest reminders and alerts',
             Icons.notifications,
             () => _showNotificationSettings(context),
           ),
-          
           _buildSettingsItem(
             'Data Export',
             'Export your progress data',
             Icons.download,
             () => _showDataExport(context),
           ),
-          
           _buildSettingsItem(
             'Reset Progress',
             'Start your journey over',
             Icons.refresh,
             () => _showResetConfirmation(context),
           ),
-          
           _buildSettingsItem(
             'About',
             'App version and information',
@@ -638,7 +645,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsItem(String title, String subtitle, IconData icon, VoidCallback onTap) {
+  Widget _buildSettingsItem(
+      String title, String subtitle, IconData icon, VoidCallback onTap) {
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
@@ -670,14 +678,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  IconData _getClassIcon(HunterClass hunterClass) {
+  String _getClassImagePath(HunterClass hunterClass) {
     switch (hunterClass) {
       case HunterClass.warrior:
-        return Icons.fitness_center;
+        return 'assets/images/warrior_avatar.png';
       case HunterClass.mage:
-        return Icons.auto_stories;
+        return 'assets/images/mage_avatar.png';
       case HunterClass.assassin:
-        return Icons.flash_on;
+        return 'assets/images/assassin_avatar.png';
     }
   }
 
@@ -716,7 +724,8 @@ class ProfileScreen extends StatelessWidget {
           'Data Export',
           style: TextStyle(color: AppTheme.primaryPurple),
         ),
-        content: const Text('Data export functionality will be implemented here.'),
+        content:
+            const Text('Data export functionality will be implemented here.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -750,7 +759,8 @@ class ProfileScreen extends StatelessWidget {
               Navigator.of(context).pop();
               // TODO: Implement reset functionality
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
             child: const Text('RESET'),
           ),
         ],

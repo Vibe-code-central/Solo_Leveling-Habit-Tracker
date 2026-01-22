@@ -64,10 +64,13 @@ class HunterProfileCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  _getClassIcon(),
-                  color: Colors.white,
-                  size: 30,
+                child: ClipOval(
+                  child: Image.asset(
+                    _getClassImagePath(),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -77,21 +80,23 @@ class HunterProfileCard extends StatelessWidget {
                   children: [
                     Text(
                       userProfile.name,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     Text(
                       userProfile.title,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.electricBlue,
-                      ),
+                            color: AppTheme.electricBlue,
+                          ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: _getRankColor().withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -103,42 +108,42 @@ class HunterProfileCard extends StatelessWidget {
                 child: Text(
                   _getRankDisplayName(),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: _getRankColor(),
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: _getRankColor(),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Level and XP Progress
           Row(
             children: [
               Text(
                 'Level ${userProfile.level}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               Text(
                 '${userProfile.currentXP} / ${userProfile.xpForNextLevel} XP',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
+                      color: AppTheme.textSecondary,
+                    ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           // XP Progress Bar
           _buildXPProgressBar(),
-          
+
           const SizedBox(height: 20),
-          
+
           // HP and MP Bars
           Row(
             children: [
@@ -163,9 +168,9 @@ class HunterProfileCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Primary Stats
           _buildStatsGrid(),
         ],
@@ -179,23 +184,25 @@ class HunterProfileCard extends StatelessWidget {
     final currentProgress = userProfile.xpProgress;
     final totalXP = userProfile.totalXP;
     final xpForNextLevel = userProfile.xpForNextLevel;
-    
+
     // Calculate effective progress: if totalXP is negative, show negative progress
     // Clamp negative progress to reasonable bounds (max -1.0 to extend one full bar width to the left)
-    final effectiveProgress = totalXP < 0 
-      ? (totalXP / xpForNextLevel).clamp(-1.0, 0.0)  // Negative progress clamped to -1.0 max
-      : currentProgress;
-    
+    final effectiveProgress = totalXP < 0
+        ? (totalXP / xpForNextLevel)
+            .clamp(-1.0, 0.0) // Negative progress clamped to -1.0 max
+        : currentProgress;
+
     final isNegative = effectiveProgress < 0;
     final absProgress = effectiveProgress.abs();
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final barWidth = constraints.maxWidth;
-        final progressWidth = isNegative 
-          ? (absProgress * barWidth).clamp(0.0, barWidth * 2.0) // Can extend up to 2x width to the left
-          : (effectiveProgress.clamp(0.0, 1.0) * barWidth);
-        
+        final progressWidth = isNegative
+            ? (absProgress * barWidth).clamp(
+                0.0, barWidth * 2.0) // Can extend up to 2x width to the left
+            : (effectiveProgress.clamp(0.0, 1.0) * barWidth);
+
         return Container(
           height: 8,
           decoration: BoxDecoration(
@@ -214,17 +221,21 @@ class HunterProfileCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: isNegative ? Alignment.centerRight : Alignment.centerLeft,
-                      end: isNegative ? Alignment.centerLeft : Alignment.centerRight,
+                      begin: isNegative
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      end: isNegative
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
                       colors: isNegative
-                        ? [
-                            AppTheme.crimsonRed.withOpacity(0.7),
-                            AppTheme.crimsonRed,
-                          ]
-                        : [
-                            AppTheme.primaryPurple,
-                            AppTheme.electricBlue,
-                          ],
+                          ? [
+                              AppTheme.crimsonRed.withOpacity(0.7),
+                              AppTheme.crimsonRed,
+                            ]
+                          : [
+                              AppTheme.primaryPurple,
+                              AppTheme.electricBlue,
+                            ],
                     ),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -242,9 +253,8 @@ class HunterProfileCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                )
-                .animate(onPlay: (controller) => controller.repeat())
-                .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.3)),
+                ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                    duration: 2000.ms, color: Colors.white.withOpacity(0.3)),
             ],
           ),
         );
@@ -252,9 +262,10 @@ class HunterProfileCard extends StatelessWidget {
     );
   }
 
-  Widget _buildResourceBar(String label, int current, int max, Color color, IconData icon) {
+  Widget _buildResourceBar(
+      String label, int current, int max, Color color, IconData icon) {
     final percentage = current / max;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -304,7 +315,7 @@ class HunterProfileCard extends StatelessWidget {
 
   Widget _buildStatsGrid() {
     final stats = userProfile.stats;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -329,17 +340,26 @@ class HunterProfileCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _buildStatItem('STR', stats.strength, Icons.fitness_center)),
-              Expanded(child: _buildStatItem('AGI', stats.agility, Icons.flash_on)),
-              Expanded(child: _buildStatItem('VIT', stats.vitality, Icons.favorite)),
+              Expanded(
+                  child: _buildStatItem(
+                      'STR', stats.strength, Icons.fitness_center)),
+              Expanded(
+                  child: _buildStatItem('AGI', stats.agility, Icons.flash_on)),
+              Expanded(
+                  child: _buildStatItem('VIT', stats.vitality, Icons.favorite)),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _buildStatItem('INT', stats.intelligence, Icons.psychology)),
-              Expanded(child: _buildStatItem('SEN', stats.sense, Icons.visibility)),
-              Expanded(child: _buildStatItem('WIL', stats.willpower, Icons.psychology_alt)),
+              Expanded(
+                  child: _buildStatItem(
+                      'INT', stats.intelligence, Icons.psychology)),
+              Expanded(
+                  child: _buildStatItem('SEN', stats.sense, Icons.visibility)),
+              Expanded(
+                  child: _buildStatItem(
+                      'WIL', stats.willpower, Icons.psychology_alt)),
             ],
           ),
         ],
@@ -413,14 +433,14 @@ class HunterProfileCard extends StatelessWidget {
     }
   }
 
-  IconData _getClassIcon() {
+  String _getClassImagePath() {
     switch (userProfile.hunterClass) {
       case HunterClass.warrior:
-        return Icons.fitness_center;
+        return 'assets/images/warrior_avatar.png';
       case HunterClass.mage:
-        return Icons.auto_stories;
+        return 'assets/images/mage_avatar.png';
       case HunterClass.assassin:
-        return Icons.flash_on;
+        return 'assets/images/assassin_avatar.png';
     }
   }
 }

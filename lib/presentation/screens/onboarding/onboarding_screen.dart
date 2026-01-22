@@ -82,17 +82,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'SOLO LEVELING',
             style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              fontSize: 36,
-              letterSpacing: 4,
-            ),
+                  fontSize: 36,
+                  letterSpacing: 4,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             'Shadow Monarch Transformation System',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.electricBlue,
-            ),
+                  color: AppTheme.electricBlue,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 60),
@@ -155,7 +155,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.electricBlue, width: 2),
+                      borderSide:
+                          BorderSide(color: AppTheme.electricBlue, width: 2),
                     ),
                     filled: true,
                     fillColor: AppTheme.darkBg.withOpacity(0.5),
@@ -172,14 +173,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPressed: () => _previousPage(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
                 child: const Text('BACK'),
               ),
               ElevatedButton(
-                onPressed: _nameController.text.trim().isNotEmpty ? () => _nextPage() : null,
+                onPressed: _nameController.text.trim().isNotEmpty
+                    ? () => _nextPage()
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
                 child: const Text('CONTINUE'),
               ),
@@ -209,7 +214,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   HunterClass.warrior,
                   'WARRIOR',
                   'Masters of physical strength and endurance',
-                  Icons.fitness_center,
+                  'assets/images/warrior_avatar.png',
                   AppTheme.crimsonRed,
                 ),
                 const SizedBox(height: 16),
@@ -217,7 +222,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   HunterClass.mage,
                   'MAGE',
                   'Wielders of knowledge and magical power',
-                  Icons.auto_stories,
+                  'assets/images/mage_avatar.png',
                   AppTheme.electricBlue,
                 ),
                 const SizedBox(height: 16),
@@ -225,7 +230,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   HunterClass.assassin,
                   'ASSASSIN',
                   'Swift and precise, masters of agility',
-                  Icons.flash_on,
+                  'assets/images/assassin_avatar.png',
                   AppTheme.amberGold,
                 ),
               ],
@@ -239,14 +244,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPressed: () => _previousPage(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
                 child: const Text('BACK'),
               ),
               ElevatedButton(
                 onPressed: () => _nextPage(),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
                 child: const Text('CONTINUE'),
               ),
@@ -257,9 +264,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildClassCard(HunterClass hunterClass, String name, String description, IconData icon, Color color) {
+  Widget _buildClassCard(HunterClass hunterClass, String name,
+      String description, String imagePath, Color color) {
     final isSelected = _selectedClass == hunterClass;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _selectedClass = hunterClass),
       child: Container(
@@ -271,24 +279,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             color: isSelected ? color : AppTheme.primaryPurple.withOpacity(0.3),
             width: isSelected ? 3 : 1,
           ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 20,
-              spreadRadius: 2,
-            ),
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: color.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: color.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
               ),
-              child: Icon(icon, color: color, size: 30),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -298,9 +322,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     name,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: isSelected ? color : null,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: isSelected ? color : null,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -310,8 +334,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
-            if (isSelected)
-              Icon(Icons.check_circle, color: color, size: 30),
+            if (isSelected) Icon(Icons.check_circle, color: color, size: 30),
           ],
         ),
       ),
@@ -359,8 +382,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             _nameController.text,
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              color: AppTheme.electricBlue,
-            ),
+                  color: AppTheme.electricBlue,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 40),
@@ -378,8 +401,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Text(
                   'Complete daily quests, level up your stats, and unlock the power of the Shadow Monarch.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
+                        color: AppTheme.textSecondary,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -436,7 +459,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _completeOnboarding() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.createUserProfile(_nameController.text, _selectedClass);
-    
+
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
