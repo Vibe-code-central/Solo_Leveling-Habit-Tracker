@@ -202,7 +202,7 @@
         <item name="android:windowBackground">@drawable/launch_background</item>
     </style><style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
-    </style></file><file path="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/res/values/styles.xml" qualifiers=""><style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+    </style></file><file path="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/res/values/colors.xml" qualifiers=""><color name="ic_launcher_background">#0F0F1E</color></file><file path="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/res/values/styles.xml" qualifiers=""><style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         
         <item name="android:windowBackground">@drawable/launch_background</item>
     </style><style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
