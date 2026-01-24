@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _glowAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -89,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Consumer2<UserProvider, HabitProvider>(
         builder: (context, userProvider, habitProvider, child) {
           final user = userProvider.userProfile;
-          if (user == null) return const Center(child: CircularProgressIndicator());
+          if (user == null)
+            return const Center(child: CircularProgressIndicator());
 
           return CustomScrollView(
             slivers: [
@@ -102,9 +103,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   title: Text(
                     'HUNTER SYSTEM',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontFamily: 'Orbitron',
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontFamily: 'Orbitron',
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   centerTitle: true,
                 ),
@@ -126,21 +127,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     if (user.activeDebuffs.isNotEmpty)
                       const SizedBox(height: 16),
-                    
+
                     // Hunter Profile Card
                     HunterProfileCard(
                       userProfile: user,
                       glowAnimation: _glowAnimationController,
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Shadow Army Display
                     ShadowArmyDisplay(
                       unlockedShadows: user.unlockedShadows,
                       animationController: _shadowAnimationController,
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // System Message
                     SystemMessageCard(
                       completionRate: habitProvider.getTodayCompletionRate(),
@@ -148,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       xpLost: habitProvider.getTodayXPLost(),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Habit Performance Section
                     _buildSectionHeader('HABIT PERFORMANCE', Icons.trending_up),
                     const SizedBox(height: 12),
@@ -157,8 +158,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       decoration: AppTheme.glowingContainer,
                       child: Column(
                         children: habitProvider.goodHabits.take(5).map((habit) {
-                          final completionRate = habit.completedDates.length > 0 
-                              ? (habit.currentStreak / (habit.completedDates.length + habit.failedDates.length) * 100).clamp(0, 100)
+                          final completionRate = habit.completedDates.length > 0
+                              ? (habit.currentStreak /
+                                      (habit.completedDates.length +
+                                          habit.failedDates.length) *
+                                      100)
+                                  .clamp(0, 100)
                               : 0.0;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
@@ -167,15 +172,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 Expanded(
                                   child: Text(
                                     habit.name,
-                                    style: Theme.of(context).textTheme.bodyMedium,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ),
                                 Text(
                                   '${completionRate.toInt()}%',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: completionRate > 50 ? AppTheme.emeraldGreen : AppTheme.crimsonRed,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: completionRate > 50
+                                            ? AppTheme.emeraldGreen
+                                            : AppTheme.crimsonRed,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ],
                             ),
@@ -184,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Weekly Summary
                     _buildSectionHeader('WEEKLY SUMMARY', Icons.calendar_today),
                     const SizedBox(height: 12),
@@ -202,14 +213,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             child: Column(
                               children: [
-                                Icon(Icons.check_circle, color: AppTheme.emeraldGreen, size: 32),
+                                Icon(Icons.check_circle,
+                                    color: AppTheme.emeraldGreen, size: 32),
                                 const SizedBox(height: 8),
                                 Text(
                                   '${habitProvider.getWeeklyStats()['completions']}',
-                                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                    color: AppTheme.emeraldGreen,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge
+                                      ?.copyWith(
+                                        color: AppTheme.emeraldGreen,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                                 Text(
                                   'Completions',
@@ -232,14 +247,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             child: Column(
                               children: [
-                                Icon(Icons.cancel, color: AppTheme.crimsonRed, size: 32),
+                                Icon(Icons.cancel,
+                                    color: AppTheme.crimsonRed, size: 32),
                                 const SizedBox(height: 8),
                                 Text(
                                   '${habitProvider.getWeeklyStats()['failures']}',
-                                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                    color: AppTheme.crimsonRed,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge
+                                      ?.copyWith(
+                                        color: AppTheme.crimsonRed,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                                 Text(
                                   'Failures',
@@ -252,39 +271,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Daily Quests Section
                     _buildSectionHeader('DAILY QUESTS', Icons.assignment),
                     const SizedBox(height: 12),
-                    
+
                     // Good Habits (Daily Quests)
                     ...habitProvider.goodHabits.map((habit) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: DailyQuestCard(
-                        habit: habit,
-                        onComplete: () => _completeHabit(habit.id, habitProvider, userProvider),
-                        onUndo: () => _uncompleteHabit(habit.id, habitProvider, userProvider),
-                      ),
-                    )),
-                    
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: DailyQuestCard(
+                            habit: habit,
+                            onComplete: () => _completeHabit(
+                                habit.id, habitProvider, userProvider),
+                            onUndo: () => _uncompleteHabit(
+                                habit.id, habitProvider, userProvider),
+                          ),
+                        )),
+
                     const SizedBox(height: 20),
-                    
+
                     // Demon Traps Section
-                    _buildSectionHeader('DEMON TRAPS', Icons.warning, color: AppTheme.crimsonRed),
+                    _buildSectionHeader('DEMON TRAPS', Icons.warning,
+                        color: AppTheme.crimsonRed),
                     const SizedBox(height: 12),
-                    
+
                     // Bad Habits (Demon Traps)
                     ...habitProvider.badHabits.map((habit) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: DailyQuestCard(
-                        habit: habit,
-                        onComplete: () => _failHabit(habit.id, habitProvider, userProvider),
-                        onUndo: () => _unfailHabit(habit.id, habitProvider, userProvider),
-                        isDemonTrap: true,
-                      ),
-                    )),
-                    
-                    const SizedBox(height: 100), // Bottom padding for navigation
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: DailyQuestCard(
+                            habit: habit,
+                            onComplete: () => _failHabit(
+                                habit.id, habitProvider, userProvider),
+                            onUndo: () => _unfailHabit(
+                                habit.id, habitProvider, userProvider),
+                            isDemonTrap: true,
+                          ),
+                        )),
+
+                    const SizedBox(
+                        height: 100), // Bottom padding for navigation
                   ]),
                 ),
               ),
@@ -314,9 +339,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Text(
           title,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: color ?? AppTheme.primaryPurple,
-            fontWeight: FontWeight.bold,
-          ),
+                color: color ?? AppTheme.primaryPurple,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );
@@ -381,51 +406,58 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _completeHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _completeHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     final habit = habitProvider.habits.firstWhere((h) => h.id == habitId);
     final xpGained = habit.getTotalXPReward();
     final oldLevel = userProvider.userProfile!.level;
-    
+
     await habitProvider.completeHabit(habitId, userProvider);
-    
+
     final newLevel = userProvider.userProfile!.level;
     final leveledUp = newLevel > oldLevel;
-    
+
     if (mounted) {
       // Show XP gain notification
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Quest Completed!',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    Text('+$xpGained XP gained'),
-                    if (leveledUp)
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Text(
-                        '🎉 LEVEL UP! Now Level $newLevel',
-                        style: TextStyle(color: AppTheme.amberGold, fontWeight: FontWeight.bold),
+                        'Quest Completed!',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                  ],
+                      Text('+$xpGained XP gained'),
+                      if (leveledUp)
+                        Text(
+                          '🎉 LEVEL UP! Now Level $newLevel',
+                          style: TextStyle(
+                              color: AppTheme.amberGold,
+                              fontWeight: FontWeight.bold),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            backgroundColor: AppTheme.emeraldGreen,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: Duration(seconds: leveledUp ? 2 : 1),
           ),
-          backgroundColor: AppTheme.emeraldGreen,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: Duration(seconds: leveledUp ? 4 : 2),
-        ),
-      );
-      
+        );
+
       // Show level up dialog if leveled up
       if (leveledUp) {
         _showLevelUpDialog(newLevel);
@@ -433,7 +465,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _failHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _failHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     // Show confirmation dialog for demon traps
     final confirmed = await showDialog<bool>(
       context: context,
@@ -443,8 +476,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         title: Text(
           'DEMON TRAP TRIGGERED',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppTheme.crimsonRed,
-          ),
+                color: AppTheme.crimsonRed,
+              ),
         ),
         content: Text(
           'You have fallen into a demon trap. This will result in penalties. Are you sure?',
@@ -457,7 +490,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
             child: const Text('CONFIRM'),
           ),
         ],
@@ -466,47 +500,61 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     if (confirmed == true) {
       await habitProvider.failHabit(habitId, userProvider);
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Demon trap triggered! Penalties applied.'),
-            backgroundColor: AppTheme.crimsonRed,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: const Text('Demon trap triggered! Penalties applied.'),
+              backgroundColor: AppTheme.crimsonRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              duration: const Duration(seconds: 1),
+            ),
+          );
       }
     }
   }
-  
-  Future<void> _uncompleteHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+
+  Future<void> _uncompleteHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     await habitProvider.uncompleteHabit(habitId, userProvider);
-    
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Quest undone. Rewards reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('Quest undone. Rewards reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
-  
-  Future<void> _unfailHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+
+  Future<void> _unfailHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     await habitProvider.unfailHabit(habitId, userProvider);
-    
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Trap undone. Penalties reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('Trap undone. Penalties reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
@@ -540,8 +588,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Text(
                 '「SYSTEM NOTIFICATIONS」',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppTheme.primaryPurple,
-                ),
+                      color: AppTheme.primaryPurple,
+                    ),
               ),
               const SizedBox(height: 20),
               _buildSystemMessage(
@@ -567,7 +615,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-  
+
   void _showLevelUpDialog(int newLevel) {
     showDialog(
       context: context,
@@ -632,9 +680,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: AppTheme.primaryPurple,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
-                child: Text('CONTINUE', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('CONTINUE',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -660,9 +710,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Text(
             title,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 4),
           Text(

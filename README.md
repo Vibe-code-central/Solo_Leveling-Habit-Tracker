@@ -1,37 +1,28 @@
 # Solo Leveling: Habit Tracker
 
-A Flutter mobile application that gamifies personal development through the Solo Leveling universe. Transform daily habits into an immersive RPG experience with character progression and Solo Leveling lore.
+A Flutter mobile app that gamifies personal development through the Solo Leveling universe.
 
-## Prerequisites
+## Quick Start
 
-- Flutter SDK (3.10.0 or higher)
-- Dart SDK (3.0.0 or higher)
-- Android Studio / VS Code with Flutter extensions
+### Prerequisites
+- Flutter SDK (3.10.0+)
+- Dart SDK (3.0.0+)
 
-## Setup & Installation
+### Setup
 
-1. **Navigate to project directory**
-   ```bash
-   cd Solo_Leveling-Habit-Tracker
-   ```
-
-2. **Install dependencies**
+1. **Install dependencies**
    ```bash
    flutter pub get
    ```
 
-3. **Generate Hive adapters**
+2. **Generate Hive adapters**
    ```bash
    flutter packages pub run build_runner build
    ```
 
-4. **Run the app**
+3. **Run the app**
    ```bash
-   # For mobile (Android/iOS)
    flutter run
-   
-   # For web
-   flutter run -d chrome
    ```
 
 ## Troubleshooting
@@ -39,6 +30,15 @@ A Flutter mobile application that gamifies personal development through the Solo
 - **Build errors**: `flutter clean && flutter pub get`
 - **Hive errors**: `flutter packages pub run build_runner build --delete-conflicting-outputs`
 - **Platform issues**: `flutter doctor`
+
+## Features
+
+- **Habit Tracking** - Daily quests (good habits) and demon traps (bad habits)
+- **XP & Leveling** - Level up by completing habits
+- **Achievement System** - Unlock achievements for milestones
+- **Shadow Army** - Unlock shadow soldiers as you progress
+- **Custom Habits** - Create and delete your own custom habits
+- **Dark Theme UI** - Immersive Solo Leveling aesthetic
 
 ## Tech Stack
 
@@ -49,4 +49,4 @@ A Flutter mobile application that gamifies personal development through the Solo
 
 ---
 
-**Complete your daily quests and unlock the power of the Shadow Monarch! 👑⚔️**
+**Transform your daily habits into an RPG adventure! 👑⚔️**

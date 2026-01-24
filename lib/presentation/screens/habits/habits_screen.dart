@@ -13,7 +13,8 @@ class HabitsScreen extends StatefulWidget {
   State<HabitsScreen> createState() => _HabitsScreenState();
 }
 
-class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMixin {
+class _HabitsScreenState extends State<HabitsScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -60,14 +61,14 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
                     Text(
                       'QUEST MANAGEMENT',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Tab Bar
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -98,7 +99,7 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
                   ],
                 ),
               ),
-              
+
               // Tab Content
               Expanded(
                 child: TabBarView(
@@ -126,7 +127,7 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
     return Consumer2<HabitProvider, UserProvider>(
       builder: (context, habitProvider, userProvider, child) {
         final goodHabits = habitProvider.goodHabits;
-        
+
         if (goodHabits.isEmpty) {
           return _buildEmptyState(
             'No Daily Quests',
@@ -144,8 +145,10 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
               padding: const EdgeInsets.only(bottom: 12),
               child: DailyQuestCard(
                 habit: habit,
-                onComplete: () => _completeHabit(habit.id, habitProvider, userProvider),
-                onUndo: () => _uncompleteHabit(habit.id, habitProvider, userProvider),
+                onComplete: () =>
+                    _completeHabit(habit.id, habitProvider, userProvider),
+                onUndo: () =>
+                    _uncompleteHabit(habit.id, habitProvider, userProvider),
               ),
             );
           },
@@ -158,7 +161,7 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
     return Consumer2<HabitProvider, UserProvider>(
       builder: (context, habitProvider, userProvider, child) {
         final badHabits = habitProvider.badHabits;
-        
+
         if (badHabits.isEmpty) {
           return _buildEmptyState(
             'No Demon Traps',
@@ -176,8 +179,10 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
               padding: const EdgeInsets.only(bottom: 12),
               child: DailyQuestCard(
                 habit: habit,
-                onComplete: () => _failHabit(habit.id, habitProvider, userProvider),
-                onUndo: () => _unfailHabit(habit.id, habitProvider, userProvider),
+                onComplete: () =>
+                    _failHabit(habit.id, habitProvider, userProvider),
+                onUndo: () =>
+                    _unfailHabit(habit.id, habitProvider, userProvider),
                 isDemonTrap: true,
               ),
             );
@@ -190,8 +195,9 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
   Widget _buildCustomHabitsTab() {
     return Consumer2<HabitProvider, UserProvider>(
       builder: (context, habitProvider, userProvider, child) {
-        final customHabits = habitProvider.habits.where((h) => h.isCustom).toList();
-        
+        final customHabits =
+            habitProvider.habits.where((h) => h.isCustom).toList();
+
         if (customHabits.isEmpty) {
           return _buildEmptyState(
             'No Custom Habits',
@@ -215,6 +221,7 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
                 onUndo: () => habit.type == HabitType.good
                     ? _uncompleteHabit(habit.id, habitProvider, userProvider)
                     : _unfailHabit(habit.id, habitProvider, userProvider),
+                onDelete: () => _deleteCustomHabit(habit.id, habitProvider),
                 isDemonTrap: habit.type == HabitType.bad,
               ),
             );
@@ -252,17 +259,17 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
             Text(
               title,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AppTheme.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
+                    color: AppTheme.textSecondary,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -271,7 +278,8 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
               icon: const Icon(Icons.add),
               label: const Text('ADD HABIT'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -280,52 +288,68 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
     );
   }
 
-  Future<void> _completeHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _completeHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     await habitProvider.completeHabit(habitId, userProvider);
-    
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Quest completed! XP gained.'),
-          backgroundColor: AppTheme.emeraldGreen,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Quest completed! XP gained.'),
+            backgroundColor: AppTheme.emeraldGreen,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
-  Future<void> _uncompleteHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _uncompleteHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     await habitProvider.uncompleteHabit(habitId, userProvider);
-    
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Quest undone. Rewards reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Quest undone. Rewards reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
-  Future<void> _unfailHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _unfailHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     await habitProvider.unfailHabit(habitId, userProvider);
-    
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Demon trap undone. Penalties reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Demon trap undone. Penalties reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
-  Future<void> _failHabit(String habitId, HabitProvider habitProvider, UserProvider userProvider) async {
+  Future<void> _failHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     // Show confirmation dialog for demon traps
     final confirmed = await showDialog<bool>(
       context: context,
@@ -335,8 +359,8 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
         title: Text(
           'DEMON TRAP TRIGGERED',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppTheme.crimsonRed,
-          ),
+                color: AppTheme.crimsonRed,
+              ),
         ),
         content: Text(
           'You have fallen into a demon trap. This will result in penalties. Are you sure?',
@@ -349,7 +373,8 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
             child: const Text('CONFIRM'),
           ),
         ],
@@ -358,17 +383,40 @@ class _HabitsScreenState extends State<HabitsScreen> with TickerProviderStateMix
 
     if (confirmed == true) {
       await habitProvider.failHabit(habitId, userProvider);
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: const Text('Demon trap triggered! Penalties applied.'),
+              backgroundColor: AppTheme.crimsonRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+      }
+    }
+  }
+
+  void _deleteCustomHabit(String habitId, HabitProvider habitProvider) {
+    habitProvider.deleteHabit(habitId);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
           SnackBar(
-            content: const Text('Demon trap triggered! Penalties applied.'),
-            backgroundColor: AppTheme.crimsonRed,
+            content: const Text('Custom habit deleted successfully.'),
+            backgroundColor: AppTheme.amberGold,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
           ),
         );
-      }
     }
   }
 
@@ -402,9 +450,9 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       title: Text(
         'CREATE CUSTOM HABIT',
         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-          color: AppTheme.primaryPurple,
-          fontWeight: FontWeight.bold,
-        ),
+              color: AppTheme.primaryPurple,
+              fontWeight: FontWeight.bold,
+            ),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -424,13 +472,14 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppTheme.electricBlue, width: 2),
+                  borderSide:
+                      BorderSide(color: AppTheme.electricBlue, width: 2),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Description
             TextField(
               controller: _descriptionController,
@@ -445,19 +494,20 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppTheme.electricBlue, width: 2),
+                  borderSide:
+                      BorderSide(color: AppTheme.electricBlue, width: 2),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Habit Type
             Text(
               'Habit Type',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -467,7 +517,8 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                     title: const Text('Good Habit'),
                     value: HabitType.good,
                     groupValue: _selectedType,
-                    onChanged: (value) => setState(() => _selectedType = value!),
+                    onChanged: (value) =>
+                        setState(() => _selectedType = value!),
                     activeColor: AppTheme.emeraldGreen,
                   ),
                 ),
@@ -476,21 +527,22 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                     title: const Text('Bad Habit'),
                     value: HabitType.bad,
                     groupValue: _selectedType,
-                    onChanged: (value) => setState(() => _selectedType = value!),
+                    onChanged: (value) =>
+                        setState(() => _selectedType = value!),
                     activeColor: AppTheme.crimsonRed,
                   ),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Tier Selection
             Text(
               'Tier',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<HabitTier>(
@@ -501,25 +553,29 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                 ),
               ),
               items: [
-                DropdownMenuItem(value: HabitTier.c, child: Text('C-Tier (Easy)')),
-                DropdownMenuItem(value: HabitTier.b, child: Text('B-Tier (Medium)')),
-                DropdownMenuItem(value: HabitTier.a, child: Text('A-Tier (Hard)')),
-                DropdownMenuItem(value: HabitTier.s, child: Text('S-Tier (Extreme)')),
+                DropdownMenuItem(
+                    value: HabitTier.c, child: Text('C-Tier (Easy)')),
+                DropdownMenuItem(
+                    value: HabitTier.b, child: Text('B-Tier (Medium)')),
+                DropdownMenuItem(
+                    value: HabitTier.a, child: Text('A-Tier (Hard)')),
+                DropdownMenuItem(
+                    value: HabitTier.s, child: Text('S-Tier (Extreme)')),
               ],
               onChanged: (value) => setState(() {
                 _selectedTier = value!;
                 _updateXPReward();
               }),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // XP Reward
             Text(
               'XP Reward/Penalty: $_xpReward',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             Slider(
               value: _xpReward.toDouble(),
@@ -566,7 +622,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
 
   void _createHabit() {
     final habitProvider = Provider.of<HabitProvider>(context, listen: false);
-    
+
     final habit = Habit(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: _nameController.text,
@@ -578,18 +634,21 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       createdAt: DateTime.now(),
       isCustom: true,
     );
-    
+
     habitProvider.addCustomHabit(habit);
     Navigator.of(context).pop();
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Custom habit "${habit.name}" created!'),
-        backgroundColor: AppTheme.emeraldGreen,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Custom habit "${habit.name}" created!'),
+          backgroundColor: AppTheme.emeraldGreen,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
   }
 
   @override
