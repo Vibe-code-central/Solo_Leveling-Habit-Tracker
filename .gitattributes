@@ -1,0 +1,15 @@
+# Exclude generated and platform-specific files from GitHub language statistics
+# This tells GitHub to treat these as vendored/generated code
+
+# Android generated files
+android/gradlew linguist-vendored
+android/gradlew.bat linguist-vendored
+android/gradle/** linguist-vendored
+
+# iOS generated files
+ios/Flutter/Generated.xcconfig linguist-vendored
+ios/Flutter/flutter_export_environment.sh linguist-vendored
+
+# Build artifacts (if accidentally committed)
+build/** linguist-generated
+.dart_tool/** linguist-generated

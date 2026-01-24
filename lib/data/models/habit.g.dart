@@ -24,12 +24,12 @@ class HabitAdapter extends TypeAdapter<Habit> {
       tier: fields[4] as HabitTier,
       xpReward: fields[5] as int,
       xpPenalty: fields[6] as int,
-      statRewards: (fields[7] as Map).cast<String, int>(),
-      statPenalties: (fields[8] as Map).cast<String, int>(),
+      statRewards: (fields[7] as Map?)?.cast<String, int>(),
+      statPenalties: (fields[8] as Map?)?.cast<String, int>(),
       hpDamage: fields[9] as int,
       mpDrain: fields[10] as int,
-      completedDates: (fields[11] as List).cast<DateTime>(),
-      failedDates: (fields[12] as List).cast<DateTime>(),
+      completedDates: (fields[11] as List?)?.cast<DateTime>(),
+      failedDates: (fields[12] as List?)?.cast<DateTime>(),
       currentStreak: fields[13] as int,
       longestStreak: fields[14] as int,
       isActive: fields[15] as bool,
@@ -156,7 +156,7 @@ class HabitTierAdapter extends TypeAdapter<HabitTier> {
       case 5:
         return HabitTier.catastrophic;
       default:
-        return HabitTier.c;
+        return HabitTier.s;
     }
   }
 

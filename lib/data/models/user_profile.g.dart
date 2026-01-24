@@ -28,9 +28,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       maxHP: fields[8] as int,
       currentMP: fields[9] as int,
       maxMP: fields[10] as int,
-      unlockedShadows: (fields[11] as List).cast<String>(),
-      activeBuffs: (fields[12] as List).cast<ActiveBuff>(),
-      activeDebuffs: (fields[13] as List).cast<ActiveDebuff>(),
+      unlockedShadows: (fields[11] as List?)?.cast<String>(),
+      activeBuffs: (fields[12] as List?)?.cast<ActiveBuff>(),
+      activeDebuffs: (fields[13] as List?)?.cast<ActiveDebuff>(),
       createdAt: fields[14] as DateTime,
       lastActive: fields[15] as DateTime,
       title: fields[16] as String,
@@ -143,6 +143,95 @@ class PlayerStatsAdapter extends TypeAdapter<PlayerStats> {
           typeId == other.typeId;
 }
 
+class ActiveBuffAdapter extends TypeAdapter<ActiveBuff> {
+  @override
+  final int typeId = 4;
+
+  @override
+  ActiveBuff read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ActiveBuff(
+      name: fields[0] as String,
+      description: fields[1] as String,
+      expiresAt: fields[2] as DateTime,
+      statModifiers: (fields[3] as Map).cast<String, double>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ActiveBuff obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.description)
+      ..writeByte(2)
+      ..write(obj.expiresAt)
+      ..writeByte(3)
+      ..write(obj.statModifiers);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ActiveBuffAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ActiveDebuffAdapter extends TypeAdapter<ActiveDebuff> {
+  @override
+  final int typeId = 5;
+
+  @override
+  ActiveDebuff read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ActiveDebuff(
+      name: fields[0] as String,
+      description: fields[1] as String,
+      expiresAt: fields[2] as DateTime,
+      statModifiers: (fields[3] as Map).cast<String, double>(),
+      stackCount: fields[4] as int,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ActiveDebuff obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.description)
+      ..writeByte(2)
+      ..write(obj.expiresAt)
+      ..writeByte(3)
+      ..write(obj.statModifiers)
+      ..writeByte(4)
+      ..write(obj.stackCount);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ActiveDebuffAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class HunterRankAdapter extends TypeAdapter<HunterRank> {
   @override
   final int typeId = 2;
@@ -247,95 +336,6 @@ class HunterClassAdapter extends TypeAdapter<HunterClass> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is HunterClassAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ActiveBuffAdapter extends TypeAdapter<ActiveBuff> {
-  @override
-  final int typeId = 4;
-
-  @override
-  ActiveBuff read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ActiveBuff(
-      name: fields[0] as String,
-      description: fields[1] as String,
-      expiresAt: fields[2] as DateTime,
-      statModifiers: (fields[3] as Map).cast<String, double>(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ActiveBuff obj) {
-    writer
-      ..writeByte(4)
-      ..writeByte(0)
-      ..write(obj.name)
-      ..writeByte(1)
-      ..write(obj.description)
-      ..writeByte(2)
-      ..write(obj.expiresAt)
-      ..writeByte(3)
-      ..write(obj.statModifiers);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ActiveBuffAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ActiveDebuffAdapter extends TypeAdapter<ActiveDebuff> {
-  @override
-  final int typeId = 5;
-
-  @override
-  ActiveDebuff read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ActiveDebuff(
-      name: fields[0] as String,
-      description: fields[1] as String,
-      expiresAt: fields[2] as DateTime,
-      statModifiers: (fields[3] as Map).cast<String, double>(),
-      stackCount: fields[4] as int,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ActiveDebuff obj) {
-    writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.name)
-      ..writeByte(1)
-      ..write(obj.description)
-      ..writeByte(2)
-      ..write(obj.expiresAt)
-      ..writeByte(3)
-      ..write(obj.statModifiers)
-      ..writeByte(4)
-      ..write(obj.stackCount);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ActiveDebuffAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
