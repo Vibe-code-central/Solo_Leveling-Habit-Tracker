@@ -293,15 +293,18 @@ class _HabitsScreenState extends State<HabitsScreen>
     await habitProvider.completeHabit(habitId, userProvider);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Quest completed! XP gained.'),
-          backgroundColor: AppTheme.emeraldGreen,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Quest completed! XP gained.'),
+            backgroundColor: AppTheme.emeraldGreen,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
@@ -310,15 +313,18 @@ class _HabitsScreenState extends State<HabitsScreen>
     await habitProvider.uncompleteHabit(habitId, userProvider);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Quest undone. Rewards reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Quest undone. Rewards reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
@@ -327,15 +333,18 @@ class _HabitsScreenState extends State<HabitsScreen>
     await habitProvider.unfailHabit(habitId, userProvider);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Demon trap undone. Penalties reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Demon trap undone. Penalties reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
@@ -376,15 +385,18 @@ class _HabitsScreenState extends State<HabitsScreen>
       await habitProvider.failHabit(habitId, userProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Demon trap triggered! Penalties applied.'),
-            backgroundColor: AppTheme.crimsonRed,
-            behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: const Text('Demon trap triggered! Penalties applied.'),
+              backgroundColor: AppTheme.crimsonRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              duration: const Duration(seconds: 1),
+            ),
+          );
       }
     }
   }
@@ -393,15 +405,18 @@ class _HabitsScreenState extends State<HabitsScreen>
     habitProvider.deleteHabit(habitId);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Custom habit deleted successfully.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Custom habit deleted successfully.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 1),
+          ),
+        );
     }
   }
 
@@ -623,14 +638,17 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
     habitProvider.addCustomHabit(habit);
     Navigator.of(context).pop();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Custom habit "${habit.name}" created!'),
-        backgroundColor: AppTheme.emeraldGreen,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Custom habit "${habit.name}" created!'),
+          backgroundColor: AppTheme.emeraldGreen,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
   }
 
   @override
