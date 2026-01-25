@@ -1,4 +1,4 @@
-# The proguard configuration file for the following section is /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/default_proguard_files/global/proguard-android.txt-8.1.4
+# The proguard configuration file for the following section is /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/default_proguard_files/global/proguard-android.txt-8.1.4
 # This is a configuration file for ProGuard.
 # http://proguard.sourceforge.net/index.html#manual/usage.html
 #
@@ -116,7 +116,7 @@
 # These classes are duplicated between android.jar and core-lambda-stubs.jar.
 -dontnote java.lang.invoke.**
 
-# End of content from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/default_proguard_files/global/proguard-android.txt-8.1.4
+# End of content from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/default_proguard_files/global/proguard-android.txt-8.1.4
 # The proguard configuration file for the following section is /Users/jotiradityahazra/Downloads/flutter/packages/flutter_tools/gradle/flutter_proguard_rules.pro
 # Build the ephemeral app in a module project.
 # Prevents: Warning: library class <plugin-package> depends on program class io.flutter.plugin.**
@@ -127,14 +127,14 @@
 -dontwarn android.**
 
 # End of content from /Users/jotiradityahazra/Downloads/flutter/packages/flutter_tools/gradle/flutter_proguard_rules.pro
-# The proguard configuration file for the following section is /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/aapt_proguard_file/release/aapt_rules.txt
+# The proguard configuration file for the following section is /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/aapt_proguard_file/release/aapt_rules.txt
 -keep class android.app.Application { <init>(); }
 -keep class androidx.core.app.CoreComponentFactory { <init>(); }
 -keep class androidx.profileinstaller.ProfileInstallReceiver { <init>(); }
 -keep class androidx.startup.InitializationProvider { <init>(); }
 -keep class com.example.solo_leveling.MainActivity { <init>(); }
 
-# End of content from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/aapt_proguard_file/release/aapt_rules.txt
+# End of content from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/aapt_proguard_file/release/aapt_rules.txt
 # The proguard configuration file for the following section is /Users/jotiradityahazra/.gradle/caches/transforms-3/3e0258c8944c2d871e5c5ddf1c508322/transformed/fragment-1.7.1/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
 #

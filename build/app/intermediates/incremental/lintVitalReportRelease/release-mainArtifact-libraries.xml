@@ -1,13 +1,13 @@
 <libraries>
   <library
-      name="__local_aars__:/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/flutter/release/libs.jar:unspecified@jar"
-      jars="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/flutter/release/libs.jar"
-      resolved="__local_aars__:/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/flutter/release/libs.jar:unspecified"/>
+      name="__local_aars__:/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/flutter/release/libs.jar:unspecified@jar"
+      jars="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/flutter/release/libs.jar"
+      resolved="__local_aars__:/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/flutter/release/libs.jar:unspecified"/>
   <library
-      name="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android@@:path_provider_android::release"
-      jars="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/.transforms/ca6398a8e18e93eba03f9387f9ccf539/transformed/out/jars/classes.jar:/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/.transforms/ca6398a8e18e93eba03f9387f9ccf539/transformed/out/jars/libs/R.jar"
+      name="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android@@:path_provider_android::release"
+      jars="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/.transforms/3683b27fc04fbf05f4900b0b92f22c29/transformed/out/jars/classes.jar:/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/.transforms/3683b27fc04fbf05f4900b0b92f22c29/transformed/out/jars/libs/R.jar"
       resolved="io.flutter.plugins.pathprovider:path_provider_android:unspecified"
-      folder="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/.transforms/ca6398a8e18e93eba03f9387f9ccf539/transformed/out"
+      folder="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/.transforms/3683b27fc04fbf05f4900b0b92f22c29/transformed/out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"

@@ -1,11 +1,11 @@
 <lint-module
     format="1"
-    dir="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app"
+    dir="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app"
     name=":app"
     type="APP"
     maven="android:app:"
     agpVersion="8.1.4"
-    buildFolder="/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app"
+    buildFolder="/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app"
     bootClassPath="/Users/jotiradityahazra/Library/Android/sdk/platforms/android-34/android.jar:/Users/jotiradityahazra/Library/Android/sdk/build-tools/33.0.1/core-lambda-stubs.jar"
     javaSourceLevel="1.8"
     compileTarget="android-34">

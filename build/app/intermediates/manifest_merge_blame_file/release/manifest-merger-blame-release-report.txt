@@ -15,16 +15,16 @@
 15         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
 16    -->
 17    <queries>
-17-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:39:5-44:15
+17-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:39:5-44:15
 18        <intent>
-18-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:40:9-43:18
+18-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:40:9-43:18
 19            <action android:name="android.intent.action.PROCESS_TEXT" />
-19-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:41:13-72
-19-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:41:21-70
+19-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:41:13-72
+19-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:41:21-70
 20
 21            <data android:mimeType="text/plain" />
-21-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:42:13-50
-21-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:42:19-48
+21-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:42:13-50
+21-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:42:19-48
 22        </intent>
 23    </queries>
 24
@@ -41,32 +41,32 @@
 30
 31    <application
 32        android:name="android.app.Application"
-32-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:4:9-42
+32-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:4:9-42
 33        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 33-->[androidx.core:core:1.13.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/f4eea223513d182b73d4258d2e250b95/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 34        android:extractNativeLibs="true"
 35        android:icon="@mipmap/ic_launcher"
-35-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:5:9-43
+35-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:5:9-43
 36        android:label="solo_leveling" >
-36-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:3:9-38
+36-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:3:9-38
 37        <activity
-37-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:6:9-27:20
+37-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:6:9-27:20
 38            android:name="com.example.solo_leveling.MainActivity"
-38-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:7:13-41
+38-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:7:13-41
 39            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-39-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:12:13-163
+39-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:12:13-163
 40            android:exported="true"
-40-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:8:13-36
+40-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:8:13-36
 41            android:hardwareAccelerated="true"
-41-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:13:13-47
+41-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:13:13-47
 42            android:launchMode="singleTop"
-42-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:9:13-43
+42-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:9:13-43
 43            android:taskAffinity=""
-43-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:10:13-36
+43-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:10:13-36
 44            android:theme="@style/LaunchTheme"
-44-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:11:13-47
+44-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:11:13-47
 45            android:windowSoftInputMode="adjustResize" >
-45-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:14:13-55
+45-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:14:13-55
 46
 47            <!--
 48                 Specifies an Android theme to apply to this Activity as soon as
@@ -75,21 +75,21 @@
 51                 to determine the Window background behind the Flutter UI.
 52            -->
 53            <meta-data
-53-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:19:13-22:17
+53-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:19:13-22:17
 54                android:name="io.flutter.embedding.android.NormalTheme"
-54-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:20:15-70
+54-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:20:15-70
 55                android:resource="@style/NormalTheme" />
-55-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:21:15-52
+55-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:21:15-52
 56
 57            <intent-filter>
-57-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:23:13-26:29
+57-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:23:13-26:29
 58                <action android:name="android.intent.action.MAIN" />
-58-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:24:17-68
-58-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:24:25-66
+58-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:24:17-68
+58-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:24:25-66
 59
 60                <category android:name="android.intent.category.LAUNCHER" />
-60-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:25:17-76
-60-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:25:27-74
+60-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:25:17-76
+60-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:25:27-74
 61            </intent-filter>
 62        </activity>
 63        <!--
@@ -97,11 +97,11 @@
 65             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
 66        -->
 67        <meta-data
-67-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:30:9-32:33
+67-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:30:9-32:33
 68            android:name="flutterEmbedding"
-68-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:31:13-44
+68-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:31:13-44
 69            android:value="2" />
-69-->/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:32:13-30
+69-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:32:13-30
 70
 71        <uses-library
 71-->[androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40

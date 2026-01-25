@@ -1257,6 +1257,7 @@ Marking id:tag_window_insets_animation_callback:2131165266 used because it match
 @color/androidx_core_secondary_text_default_material_light : reachable=true
 @color/call_notification_answer_color : reachable=false
 @color/call_notification_decline_color : reachable=false
+@color/ic_launcher_background : reachable=false
 @color/notification_action_color_filter : reachable=false
     @color/androidx_core_secondary_text_default_material_light
 @color/notification_icon_bg_color : reachable=false
@@ -1544,8 +1545,9 @@ Unused resources are:
  animator:fragment_open_exit:2130837509
  color:call_notification_answer_color:2130968578
  color:call_notification_decline_color:2130968579
- color:notification_action_color_filter:2130968580
- color:notification_icon_bg_color:2130968581
+ color:ic_launcher_background:2130968580
+ color:notification_action_color_filter:2130968581
+ color:notification_icon_bg_color:2130968582
  dimen:compat_button_inset_horizontal_material:2131034112
  dimen:compat_button_inset_vertical_material:2131034113
  dimen:compat_button_padding_horizontal_material:2131034114

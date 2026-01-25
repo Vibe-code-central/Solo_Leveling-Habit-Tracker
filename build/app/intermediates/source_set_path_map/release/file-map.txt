@@ -18,12 +18,12 @@ com.example.solo_leveling.app-lifecycle-livedata-core-2.7.0-16 /Users/jotiradity
 com.example.solo_leveling.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-17 /Users/jotiradityahazra/.gradle/caches/transforms-3/dad98fc44065adf1f8c67c2598f39ffd/transformed/jetified-lifecycle-viewmodel-savedstate-2.7.0/res
 com.example.solo_leveling.app-jetified-core-ktx-1.13.1-18 /Users/jotiradityahazra/.gradle/caches/transforms-3/dd4ff890527889188909761e6eac5b8a/transformed/jetified-core-ktx-1.13.1/res
 com.example.solo_leveling.app-core-1.13.1-19 /Users/jotiradityahazra/.gradle/caches/transforms-3/f4eea223513d182b73d4258d2e250b95/transformed/core-1.13.1/res
-com.example.solo_leveling.app-main-20 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/res
-com.example.solo_leveling.app-release-21 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/release/res
-com.example.solo_leveling.app-pngs-22 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/generated/res/pngs/release
-com.example.solo_leveling.app-resValues-23 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/generated/res/resValues/release
-com.example.solo_leveling.app-mergeReleaseResources-24 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/incremental/release/mergeReleaseResources/merged.dir
-com.example.solo_leveling.app-mergeReleaseResources-25 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/incremental/release/mergeReleaseResources/stripped.dir
-com.example.solo_leveling.app-merged-not-compiled-resources-26 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/merged-not-compiled-resources/release
-com.example.solo_leveling.app-merged_res-27 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/merged_res/release
-com.example.solo_leveling.app-packaged_res-28 /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/intermediates/packaged_res/release
+com.example.solo_leveling.app-main-20 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/res
+com.example.solo_leveling.app-release-21 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/release/res
+com.example.solo_leveling.app-pngs-22 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/generated/res/pngs/release
+com.example.solo_leveling.app-resValues-23 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/generated/res/resValues/release
+com.example.solo_leveling.app-mergeReleaseResources-24 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/incremental/release/mergeReleaseResources/merged.dir
+com.example.solo_leveling.app-mergeReleaseResources-25 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+com.example.solo_leveling.app-merged-not-compiled-resources-26 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/merged-not-compiled-resources/release
+com.example.solo_leveling.app-merged_res-27 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/app/intermediates/merged_res/release
+com.example.solo_leveling.app-packaged_res-28 /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/intermediates/packaged_res/release

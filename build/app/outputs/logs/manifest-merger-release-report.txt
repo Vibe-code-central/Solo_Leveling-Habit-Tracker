@@ -1,7 +1,7 @@
 -- Merging decision tree log ---
 application
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:2:5-33:19
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:2:5-33:19
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:2:5-33:19
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:2:5-33:19
 MERGED from [androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:22:5-29:19
 MERGED from [androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:22:5-29:19
 MERGED from [androidx.core:core:1.13.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/f4eea223513d182b73d4258d2e250b95/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
@@ -15,22 +15,22 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/jotiradityahazra/.gr
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/8b6c607d0af7c6310b741102df52b333/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/8b6c607d0af7c6310b741102df52b333/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 	android:extractNativeLibs
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/f4eea223513d182b73d4258d2e250b95/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:label
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:3:9-38
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:3:9-38
 	android:icon
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:5:9-43
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:5:9-43
 	android:name
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:4:9-42
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:4:9-42
 manifest
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:1:1-45:12
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:1:1-45:12
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:1:1-45:12
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:1:1-45:12
-MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:2:1-7:12
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:1:1-45:12
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:1:1-45:12
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:1:1-45:12
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:1:1-45:12
+MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.fragment:fragment:1.7.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/3e0258c8944c2d871e5c5ddf1c508322/transformed/fragment-1.7.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:17:1-31:12
 MERGED from [androidx.window:window-java:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/28755e4692c344d02954c212e8acbff7/transformed/jetified-window-java-1.2.0/AndroidManifest.xml:17:1-21:12
@@ -57,71 +57,71 @@ MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/jotiradityahazra/.
 MERGED from [androidx.window.extensions.core:core:1.0.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/af2910bac9a6a0b0ec55360e010141ce/transformed/jetified-core-1.0.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/34a7cfc5ed7884ec4ad292b82a8d020a/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
 	package
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 	android:versionCode
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:1:11-69
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:1:11-69
 queries
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:39:5-44:15
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:39:5-44:15
 intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:40:9-43:18
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:40:9-43:18
 action#android.intent.action.PROCESS_TEXT
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:41:13-72
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:41:13-72
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:41:21-70
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:41:21-70
 data
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:42:13-50
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:42:13-50
 	android:mimeType
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:42:19-48
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:42:19-48
 activity#com.example.solo_leveling.MainActivity
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:6:9-27:20
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:6:9-27:20
 	android:launchMode
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:9:13-43
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:9:13-43
 	android:hardwareAccelerated
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:13:13-47
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:13:13-47
 	android:windowSoftInputMode
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:14:13-55
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:14:13-55
 	android:exported
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:8:13-36
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:8:13-36
 	android:configChanges
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:12:13-163
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:12:13-163
 	android:theme
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:11:13-47
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:11:13-47
 	android:taskAffinity
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:10:13-36
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:10:13-36
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:7:13-41
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:7:13-41
 meta-data#io.flutter.embedding.android.NormalTheme
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:19:13-22:17
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:19:13-22:17
 	android:resource
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:21:15-52
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:21:15-52
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:20:15-70
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:20:15-70
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:23:13-26:29
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:23:13-26:29
 action#android.intent.action.MAIN
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:24:17-68
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:24:17-68
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:24:25-66
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:24:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:25:17-76
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:25:17-76
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:25:27-74
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:25:27-74
 meta-data#flutterEmbedding
-ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:30:9-32:33
+ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:30:9-32:33
 	android:value
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:32:13-30
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:32:13-30
 	android:name
-		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml:31:13-44
+		ADDED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:31:13-44
 uses-sdk
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
-INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
-MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:5:5-44
-MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:5:5-44
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
+INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
+MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:5:5-44
+MERGED from [:path_provider_android] /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/build/path_provider_android/intermediates/merged_manifest/release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.7.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/3e0258c8944c2d871e5c5ddf1c508322/transformed/fragment-1.7.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.7.1] /Users/jotiradityahazra/.gradle/caches/transforms-3/3e0258c8944c2d871e5c5ddf1c508322/transformed/fragment-1.7.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:20:5-44
@@ -173,9 +173,9 @@ MERGED from [androidx.window.extensions.core:core:1.0.0] /Users/jotiradityahazra
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/34a7cfc5ed7884ec4ad292b82a8d020a/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/34a7cfc5ed7884ec4ad292b82a8d020a/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
 	android:targetSdkVersion
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/android/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml
 uses-library#androidx.window.extensions
 ADDED from [androidx.window:window:1.2.0] /Users/jotiradityahazra/.gradle/caches/transforms-3/47c1467c9e4798408684e3b371f086e3/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40
 	android:required
