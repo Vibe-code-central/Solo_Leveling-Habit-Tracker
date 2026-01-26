@@ -85,27 +85,25 @@ class Habit extends HiveObject {
     this.debuffName,
     this.streakBonus = 0,
     this.isCustom = false,
-  }) : statRewards = statRewards ?? {},
-       statPenalties = statPenalties ?? {},
-       completedDates = completedDates ?? [],
-       failedDates = failedDates ?? [];
+  })  : statRewards = statRewards ?? {},
+        statPenalties = statPenalties ?? {},
+        completedDates = completedDates ?? [],
+        failedDates = failedDates ?? [];
 
   bool get isCompletedToday {
     final today = DateTime.now();
-    return completedDates.any((date) => 
-      date.year == today.year && 
-      date.month == today.month && 
-      date.day == today.day
-    );
+    return completedDates.any((date) =>
+        date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day);
   }
 
   bool get isFailedToday {
     final today = DateTime.now();
-    return failedDates.any((date) => 
-      date.year == today.year && 
-      date.month == today.month && 
-      date.day == today.day
-    );
+    return failedDates.any((date) =>
+        date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day);
   }
 
   double get completionRate {
@@ -123,14 +121,13 @@ class Habit extends HiveObject {
       }
     }
   }
-  
+
   void unmarkCompleted() {
     final today = DateTime.now();
-    completedDates.removeWhere((date) => 
-      date.year == today.year && 
-      date.month == today.month && 
-      date.day == today.day
-    );
+    completedDates.removeWhere((date) =>
+        date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day);
     if (currentStreak > 0) currentStreak--;
   }
 
@@ -140,14 +137,13 @@ class Habit extends HiveObject {
       currentStreak = 0;
     }
   }
-  
+
   void unmarkFailed() {
     final today = DateTime.now();
-    failedDates.removeWhere((date) => 
-      date.year == today.year && 
-      date.month == today.month && 
-      date.day == today.day
-    );
+    failedDates.removeWhere((date) =>
+        date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day);
   }
 
   int getTotalXPReward() {
@@ -164,223 +160,156 @@ class Habit extends HiveObject {
   int _getRecentConsecutiveFailures() {
     int count = 0;
     final now = DateTime.now();
-    
+
     for (int i = 0; i < 5; i++) {
       final checkDate = now.subtract(Duration(days: i));
-      final hasFailure = failedDates.any((date) => 
-        date.year == checkDate.year && 
-        date.month == checkDate.month && 
-        date.day == checkDate.day
-      );
-      
+      final hasFailure = failedDates.any((date) =>
+          date.year == checkDate.year &&
+          date.month == checkDate.month &&
+          date.day == checkDate.day);
+
       if (hasFailure) {
         count++;
       } else {
         break;
       }
     }
-    
+
     return count;
   }
 
   static List<Habit> getDefaultHabits() {
     return [
-      // TIER S - MONARCH'S PATH
+      // ═══════════════════════════════════════════════════════════
+      // MORNING ROUTINE HABITS - 5 Core Habits for 2-Week Challenge
+      // ═══════════════════════════════════════════════════════════
+
+      // HABIT 1: WAKE UP - The Keystone Habit
       Habit(
-        id: 'arise_before_dawn',
-        name: 'Arise Before Dawn',
-        description: 'Wake up between 5:00-6:00 AM',
-        type: HabitType.good,
-        tier: HabitTier.s,
-        xpReward: 100,
-        xpPenalty: 120,
-        statRewards: {'agility': 2, 'willpower': 1},
-        statPenalties: {},
-        hpDamage: 3,
-        streakBonus: 15,
-        createdAt: DateTime.now(),
-      ),
-      
-      Habit(
-        id: 'shadow_training',
-        name: 'Shadow Training',
-        description: '60+ minutes intense workout',
+        id: 'morning_wake_up',
+        name: '⏰ Wake Up on Time',
+        description: '''WEEK 1 TARGET: 6:15 AM
+WEEK 2 TARGET: 5:45 AM
+
+This is your keystone habit. Everything else depends on this.
+• Set alarm ACROSS the room (not beside bed)
+• No phone alarm - use a real alarm clock
+• Getting this right enables all other habits''',
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 150,
-        xpPenalty: 150,
-        statRewards: {'strength': 3, 'vitality': 2},
-        statPenalties: {'strength': 2},
-        streakBonus: 20,
-        createdAt: DateTime.now(),
-      ),
-
-      // TIER A - HUNTER'S DISCIPLINE
-      Habit(
-        id: 'meditation_mindfulness',
-        name: 'Meditation & Mindfulness',
-        description: '20+ minutes meditation',
-        type: HabitType.good,
-        tier: HabitTier.a,
-        xpReward: 80,
-        xpPenalty: 100,
-        statRewards: {'sense': 2, 'willpower': 2},
-        mpDrain: 50,
-        streakBonus: 10,
-        createdAt: DateTime.now(),
-      ),
-
-      Habit(
-        id: 'knowledge_dungeon',
-        name: 'Knowledge Dungeon',
-        description: '30+ minutes reading/learning',
-        type: HabitType.good,
-        tier: HabitTier.a,
-        xpReward: 90,
-        xpPenalty: 80,
-        statRewards: {'intelligence': 3},
-        statPenalties: {'intelligence': 2},
-        streakBonus: 12,
-        createdAt: DateTime.now(),
-      ),
-
-      Habit(
-        id: 'side_quest_progress',
-        name: 'Side Quest Progress',
-        description: 'Work on business/side project',
-        type: HabitType.good,
-        tier: HabitTier.a,
-        xpReward: 120,
-        xpPenalty: 100,
-        statRewards: {'intelligence': 2, 'willpower': 1},
-        streakBonus: 15,
-        createdAt: DateTime.now(),
-      ),
-
-      // TIER B - ESSENTIAL TRAINING
-      Habit(
-        id: 'healthy_nutrition',
-        name: 'Healthy Nutrition',
-        description: '3 balanced meals, 2L+ water',
-        type: HabitType.good,
-        tier: HabitTier.b,
-        xpReward: 70,
-        xpPenalty: 60,
-        statRewards: {'vitality': 2},
-        statPenalties: {'vitality': 1},
+        xpPenalty: 200,
+        statRewards: {'willpower': 3, 'agility': 2},
+        statPenalties: {'willpower': 3, 'agility': 2},
         hpDamage: 100,
-        streakBonus: 8,
+        streakBonus: 20,
+        debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
 
+      // HABIT 2: GET OUT OF BED - No Snooze Protocol
       Habit(
-        id: 'social_connection',
-        name: 'Social Connection',
-        description: 'Meaningful conversation/networking',
+        id: 'morning_get_up',
+        name: '🚀 Get Out of Bed (60 sec)',
+        description: '''NO SNOOZE. NO SITTING ON BED.
+
+Protocol:
+1. Alarm rings
+2. Stand up within 60 SECONDS
+3. Walk to another room immediately
+4. Do NOT sit back on bed (you WILL fall asleep)
+
+The snooze button is your enemy. Destroy it.''',
         type: HabitType.good,
-        tier: HabitTier.b,
-        xpReward: 60,
-        xpPenalty: 50,
-        statRewards: {'sense': 1, 'intelligence': 1},
-        streakBonus: 8,
+        tier: HabitTier.s,
+        xpReward: 120,
+        xpPenalty: 180,
+        statRewards: {'willpower': 3, 'agility': 1},
+        statPenalties: {'willpower': 2, 'agility': 1},
+        hpDamage: 80,
+        streakBonus: 15,
+        debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
 
+      // HABIT 3: 20 PUSHUPS - Wake Up Your Body
       Habit(
-        id: 'daily_quest_log',
-        name: 'Daily Quest Log',
-        description: 'Journaling/planning',
+        id: 'morning_pushups',
+        name: '💪 20 Pushups',
+        description: '''IMMEDIATELY after getting out of bed.
+
+Why pushups?
+• Spikes cortisol (wake-up hormone)
+• Gets blood flowing to brain
+• Builds discipline before brain is awake
+• Takes less than 60 seconds
+
+Can't do 20? Start with 10. Or 5. Just DO THEM.
+No thinking. Just drop and push.''',
         type: HabitType.good,
-        tier: HabitTier.b,
-        xpReward: 50,
-        xpPenalty: 40,
-        statRewards: {'sense': 1, 'willpower': 1},
-        streakBonus: 5,
+        tier: HabitTier.a,
+        xpReward: 100,
+        xpPenalty: 120,
+        statRewards: {'strength': 2, 'willpower': 2},
+        statPenalties: {'strength': 1, 'willpower': 1},
+        hpDamage: 50,
+        streakBonus: 12,
+        debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
       ),
 
+      // HABIT 4: COLD WATER FACE - Mental Clarity
       Habit(
-        id: 'rest_recovery',
-        name: 'Rest & Recovery',
-        description: '7-8 hours quality sleep',
+        id: 'morning_cold_water',
+        name: '💧 Cold Water on Face',
+        description: '''Go to bathroom. Splash COLD water on face.
+
+Benefits:
+• Activates vagus nerve
+• Sharpens mental clarity instantly
+• Reduces morning grogginess
+• Prepares you for the cold shower
+
+This takes 10 seconds. No excuses.''',
         type: HabitType.good,
-        tier: HabitTier.b,
+        tier: HabitTier.a,
         xpReward: 80,
         xpPenalty: 100,
-        statRewards: {'vitality': 2, 'willpower': 1},
-        statPenalties: {'vitality': 3},
-        hpDamage: 200,
-        debuffName: 'Fatigue',
+        statRewards: {'sense': 2, 'vitality': 1},
+        statPenalties: {'sense': 1, 'vitality': 1},
+        hpDamage: 30,
         streakBonus: 10,
+        debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
       ),
 
-      // BAD HABITS - DEMON TRAPS
+      // HABIT 5: SHOWER - Self-Respect Foundation
       Habit(
-        id: 'midnight_scrolling',
-        name: 'Midnight Scrolling',
-        description: 'Social media after 10 PM',
-        type: HabitType.bad,
-        tier: HabitTier.catastrophic,
-        xpReward: 0,
-        xpPenalty: 150,
-        statPenalties: {'willpower': 3, 'vitality': 2},
-        hpDamage: 200,
-        debuffName: "Demon's Grip",
-        createdAt: DateTime.now(),
-      ),
+        id: 'morning_shower',
+        name: '🚿 Morning Shower',
+        description: '''SHOWER EVERY SINGLE MORNING.
 
-      Habit(
-        id: 'gaming_abyss',
-        name: 'Gaming Abyss',
-        description: '2+ hours gaming on weekdays',
-        type: HabitType.bad,
-        tier: HabitTier.catastrophic,
-        xpReward: 0,
-        xpPenalty: 180,
-        statPenalties: {'agility': 2, 'willpower': 3},
-        mpDrain: 300,
-        debuffName: 'Time Void',
-        createdAt: DateTime.now(),
-      ),
+Protocol:
+1. Regular shower (5-7 minutes)
+2. COLD FINISH: 30 seconds cold water
+3. Get dressed immediately after
 
-      Habit(
-        id: 'junk_food_consumption',
-        name: 'Junk Food Consumption',
-        description: 'Fast food, processed snacks',
-        type: HabitType.bad,
-        tier: HabitTier.severe,
-        xpReward: 0,
-        xpPenalty: 120,
-        statPenalties: {'vitality': 3},
-        hpDamage: 150,
-        debuffName: 'Weakened State',
-        createdAt: DateTime.now(),
-      ),
+Why this matters:
+• Self-respect (you're worth basic care)
+• Confidence boost for the day
+• Cold finish = energy spike
+• Signals to brain: "Day has started"
 
-      Habit(
-        id: 'snooze_defeat',
-        name: 'Snooze Defeat',
-        description: 'Hitting snooze button',
-        type: HabitType.bad,
-        tier: HabitTier.severe,
-        xpReward: 0,
-        xpPenalty: 100,
-        statPenalties: {'agility': 2, 'willpower': 2},
-        debuffName: 'Sluggish Start',
-        createdAt: DateTime.now(),
-      ),
-
-      Habit(
-        id: 'procrastination_beast',
-        name: 'Procrastination Beast',
-        description: 'Avoiding important tasks',
-        type: HabitType.bad,
-        tier: HabitTier.severe,
-        xpReward: 0,
-        xpPenalty: 130,
-        statPenalties: {'intelligence': 2, 'willpower': 2},
-        debuffName: 'Mounting Dread',
+No more showering once a week. That stops TODAY.''',
+        type: HabitType.good,
+        tier: HabitTier.s,
+        xpReward: 130,
+        xpPenalty: 160,
+        statRewards: {'vitality': 2, 'sense': 2},
+        statPenalties: {'vitality': 2, 'sense': 1},
+        hpDamage: 80,
+        streakBonus: 18,
+        debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
     ];

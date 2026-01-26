@@ -9,12 +9,14 @@ import 'user_provider.dart';
 class HabitProvider extends ChangeNotifier {
   List<Habit> _habits = [];
   bool _isLoading = false;
-  
+
   late Box<Habit> _habitBox;
 
   List<Habit> get habits => _habits;
-  List<Habit> get goodHabits => _habits.where((h) => h.type == HabitType.good && h.isActive).toList();
-  List<Habit> get badHabits => _habits.where((h) => h.type == HabitType.bad && h.isActive).toList();
+  List<Habit> get goodHabits =>
+      _habits.where((h) => h.type == HabitType.good && h.isActive).toList();
+  List<Habit> get badHabits =>
+      _habits.where((h) => h.type == HabitType.bad && h.isActive).toList();
   bool get isLoading => _isLoading;
 
   Future<void> loadHabits() async {
@@ -23,7 +25,7 @@ class HabitProvider extends ChangeNotifier {
 
     try {
       _habitBox = Hive.box<Habit>('habits');
-      
+
       if (_habitBox.isEmpty) {
         await _initializeDefaultHabits();
       } else {
@@ -50,39 +52,40 @@ class HabitProvider extends ChangeNotifier {
     if (habitIndex == -1) return;
 
     final habit = _habits[habitIndex];
-    
+
     // Prevent double completion
     if (habit.isCompletedToday) return;
 
     habit.markCompleted();
-    
+
     // Apply rewards
     final totalXP = habit.getTotalXPReward();
     await userProvider.gainXP(totalXP, source: 'Habit: ${habit.name}');
-    
+
     if (habit.statRewards.isNotEmpty) {
       await userProvider.updateStats(habit.statRewards);
     }
-    
+
     // Check for streak achievements
     _checkStreakAchievements(habit, userProvider);
-    
+
     await _saveHabits();
     notifyListeners();
   }
-  
-  Future<void> uncompleteHabit(String habitId, UserProvider userProvider) async {
+
+  Future<void> uncompleteHabit(
+      String habitId, UserProvider userProvider) async {
     final habitIndex = _habits.indexWhere((h) => h.id == habitId);
     if (habitIndex == -1) return;
 
     final habit = _habits[habitIndex];
-    
+
     if (!habit.isCompletedToday) return;
 
     // Remove rewards
     final totalXP = habit.getTotalXPReward();
     await userProvider.loseXP(totalXP, source: 'Undo: ${habit.name}');
-    
+
     if (habit.statRewards.isNotEmpty) {
       final negativeRewards = <String, int>{};
       habit.statRewards.forEach((stat, reward) {
@@ -90,9 +93,9 @@ class HabitProvider extends ChangeNotifier {
       });
       await userProvider.updateStats(negativeRewards);
     }
-    
+
     habit.unmarkCompleted();
-    
+
     await _saveHabits();
     notifyListeners();
   }
@@ -102,17 +105,18 @@ class HabitProvider extends ChangeNotifier {
     if (habitIndex == -1) return;
 
     final habit = _habits[habitIndex];
-    
+
     // Prevent double failure
     if (habit.isFailedToday) return;
 
     habit.markFailed();
-    
+
     // Apply penalties
     if (habit.type == HabitType.bad) {
       final totalXPPenalty = habit.getTotalXPPenalty();
-      await userProvider.loseXP(totalXPPenalty, source: 'Failed: ${habit.name}');
-      
+      await userProvider.loseXP(totalXPPenalty,
+          source: 'Failed: ${habit.name}');
+
       if (habit.statPenalties.isNotEmpty) {
         final negativePenalties = <String, int>{};
         habit.statPenalties.forEach((stat, penalty) {
@@ -120,57 +124,58 @@ class HabitProvider extends ChangeNotifier {
         });
         await userProvider.updateStats(negativePenalties);
       }
-      
+
       if (habit.hpDamage > 0) {
         await userProvider.takeDamage(habit.hpDamage);
       }
-      
+
       if (habit.mpDrain > 0) {
         await userProvider.consumeMP(habit.mpDrain);
       }
-      
+
       // Apply debuff if specified
       if (habit.debuffName != null) {
         await _applyDebuff(habit, userProvider);
       }
-      
-      await NotificationService.showPenaltyNotification(habit.name, totalXPPenalty);
+
+      await NotificationService.showPenaltyNotification(
+          habit.name, totalXPPenalty);
     }
-    
+
     // Check for penalty zone
     await _checkPenaltyZone(userProvider);
-    
+
     await _saveHabits();
     notifyListeners();
   }
-  
+
   Future<void> unfailHabit(String habitId, UserProvider userProvider) async {
     final habitIndex = _habits.indexWhere((h) => h.id == habitId);
     if (habitIndex == -1) return;
 
     final habit = _habits[habitIndex];
-    
+
     if (!habit.isFailedToday) return;
 
     // Reverse penalties
     if (habit.type == HabitType.bad) {
       final totalXPPenalty = habit.getTotalXPPenalty();
       await userProvider.gainXP(totalXPPenalty, source: 'Undo: ${habit.name}');
-      
+
       if (habit.statPenalties.isNotEmpty) {
         await userProvider.updateStats(habit.statPenalties);
       }
-      
+
       if (habit.hpDamage > 0) {
         userProvider.userProfile!.heal(habit.hpDamage);
         await userProvider.userProfile!.save();
       }
-      
+
       if (habit.mpDrain > 0) {
         userProvider.userProfile!.restoreMP(habit.mpDrain);
         await userProvider.userProfile!.save();
       }
-      
+
       // Remove debuff when unfailing
       if (habit.debuffName != null) {
         userProvider.userProfile!.activeDebuffs.removeWhere(
@@ -179,9 +184,9 @@ class HabitProvider extends ChangeNotifier {
         await userProvider.userProfile!.save();
       }
     }
-    
+
     habit.unmarkFailed();
-    
+
     await _saveHabits();
     notifyListeners();
   }
@@ -193,7 +198,7 @@ class HabitProvider extends ChangeNotifier {
       expiresAt: DateTime.now().add(_getDebuffDuration(habit.debuffName!)),
       statModifiers: _getDebuffModifiers(habit.debuffName!),
     );
-    
+
     await userProvider.addDebuff(debuff);
   }
 
@@ -219,6 +224,13 @@ class HabitProvider extends ChangeNotifier {
         return 'Next day planning disabled (24h)';
       case 'Fatigue':
         return '-20% all stats for 30h';
+      // Morning Routine Debuffs
+      case 'Light Sluggish':
+        return 'Missed morning habit. -10% XP for 12h';
+      case 'Morning Fog':
+        return 'Missed 2 habits! -20% XP, -15% Willpower for 24h';
+      case 'Discipline Collapse':
+        return 'Missed 3+ habits! -35% XP, -25% Willpower for 48h';
       default:
         return 'Negative effect applied';
     }
@@ -227,27 +239,34 @@ class HabitProvider extends ChangeNotifier {
   Duration _getDebuffDuration(String debuffName) {
     switch (debuffName) {
       case "Demon's Grip":
-        return const Duration(hours: 36); // Medium-long duration
+        return const Duration(hours: 36);
       case 'Sluggish Start':
-        return const Duration(hours: 24); // Medium duration
+        return const Duration(hours: 24);
       case 'Fatigue':
-        return const Duration(hours: 30); // Medium duration
+        return const Duration(hours: 30);
       case 'Weakened State':
-        return const Duration(hours: 36); // Medium-long duration
+        return const Duration(hours: 36);
       case 'Entertainment Haze':
-        return const Duration(hours: 36); // Medium-long duration
+        return const Duration(hours: 36);
       case 'Mind Fog':
-        return const Duration(hours: 24); // Medium duration
+        return const Duration(hours: 24);
       case 'Disorganized':
-        return const Duration(hours: 24); // Medium duration
+        return const Duration(hours: 24);
       case 'Time Void':
-        return const Duration(hours: 30); // Medium duration
+        return const Duration(hours: 30);
       case 'Mounting Dread':
-        return const Duration(hours: 24); // Medium duration
+        return const Duration(hours: 24);
       case 'Corrupted State':
-        return const Duration(days: 7); // Long but not permanent (1 week)
+        return const Duration(days: 7);
+      // Morning Routine Debuffs - Progressive durations
+      case 'Light Sluggish':
+        return const Duration(hours: 12);
+      case 'Morning Fog':
+        return const Duration(hours: 24);
+      case 'Discipline Collapse':
+        return const Duration(hours: 48);
       default:
-        return const Duration(hours: 24); // Default medium duration
+        return const Duration(hours: 24);
     }
   }
 
@@ -272,6 +291,20 @@ class HabitProvider extends ChangeNotifier {
           'senseMultiplier': 0.8,
           'willpowerMultiplier': 0.8,
         };
+      // Morning Routine Debuffs - Progressive penalties
+      case 'Light Sluggish':
+        return {'xpMultiplier': 0.90};
+      case 'Morning Fog':
+        return {
+          'xpMultiplier': 0.80,
+          'willpowerMultiplier': 0.85,
+        };
+      case 'Discipline Collapse':
+        return {
+          'xpMultiplier': 0.65,
+          'willpowerMultiplier': 0.75,
+          'agilityMultiplier': 0.80,
+        };
       default:
         return {};
     }
@@ -279,11 +312,10 @@ class HabitProvider extends ChangeNotifier {
 
   void _checkStreakAchievements(Habit habit, UserProvider userProvider) {
     final achievements = userProvider.achievements;
-    
+
     for (final achievement in achievements) {
-      if (!achievement.isUnlocked && 
+      if (!achievement.isUnlocked &&
           achievement.category == AchievementCategory.flameKeeper) {
-        
         if (habit.currentStreak >= achievement.targetValue) {
           achievement.updateProgress(habit.currentStreak);
         }
@@ -294,34 +326,34 @@ class HabitProvider extends ChangeNotifier {
   Future<void> _checkPenaltyZone(UserProvider userProvider) async {
     final now = DateTime.now();
     int consecutiveFailureDays = 0;
-    
+
     // Check last 7 days for any completed good habits
     for (int i = 0; i < 7; i++) {
       final checkDate = now.subtract(Duration(days: i));
       bool hasAnyCompletion = false;
-      
+
       for (final habit in goodHabits) {
-        final hasCompletion = habit.completedDates.any((date) => 
-          date.year == checkDate.year && 
-          date.month == checkDate.month && 
-          date.day == checkDate.day
-        );
-        
+        final hasCompletion = habit.completedDates.any((date) =>
+            date.year == checkDate.year &&
+            date.month == checkDate.month &&
+            date.day == checkDate.day);
+
         if (hasCompletion) {
           hasAnyCompletion = true;
           break;
         }
       }
-      
+
       if (!hasAnyCompletion) {
         consecutiveFailureDays++;
       } else {
         break;
       }
     }
-    
+
     // Enter penalty zone if 7 consecutive days without any good habit completion
-    if (consecutiveFailureDays >= 7 && !userProvider.userProfile!.isInPenaltyZone) {
+    if (consecutiveFailureDays >= 7 &&
+        !userProvider.userProfile!.isInPenaltyZone) {
       await userProvider.enterPenaltyZone();
     }
   }
@@ -358,8 +390,9 @@ class HabitProvider extends ChangeNotifier {
   double getTodayCompletionRate() {
     final activeGoodHabits = goodHabits;
     if (activeGoodHabits.isEmpty) return 0.0;
-    
-    final completedToday = activeGoodHabits.where((h) => h.isCompletedToday).length;
+
+    final completedToday =
+        activeGoodHabits.where((h) => h.isCompletedToday).length;
     return completedToday / activeGoodHabits.length;
   }
 
@@ -391,28 +424,26 @@ class HabitProvider extends ChangeNotifier {
     final now = DateTime.now();
     int completions = 0;
     int failures = 0;
-    
+
     for (int i = 0; i < 7; i++) {
       final checkDate = now.subtract(Duration(days: i));
-      
+
       for (final habit in _habits) {
-        final hasCompletion = habit.completedDates.any((date) => 
-          date.year == checkDate.year && 
-          date.month == checkDate.month && 
-          date.day == checkDate.day
-        );
-        
-        final hasFailure = habit.failedDates.any((date) => 
-          date.year == checkDate.year && 
-          date.month == checkDate.month && 
-          date.day == checkDate.day
-        );
-        
+        final hasCompletion = habit.completedDates.any((date) =>
+            date.year == checkDate.year &&
+            date.month == checkDate.month &&
+            date.day == checkDate.day);
+
+        final hasFailure = habit.failedDates.any((date) =>
+            date.year == checkDate.year &&
+            date.month == checkDate.month &&
+            date.day == checkDate.day);
+
         if (hasCompletion) completions++;
         if (hasFailure) failures++;
       }
     }
-    
+
     return {
       'completions': completions,
       'failures': failures,
