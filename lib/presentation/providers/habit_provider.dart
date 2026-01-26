@@ -10,11 +10,8 @@ class HabitProvider extends ChangeNotifier {
   List<Habit> _habits = [];
   bool _isLoading = false;
 
-  // Auto-penalty tracking
-  bool _morningPenaltyApplied = false;
-  bool _redemptionRequired = false;
-  DateTime? _lastPenaltyCheckDate;
-
+  // Auto-penalty tracking (Persisted in 'settings' box)
+  Box? _settingsBox;
   late Box<Habit> _habitBox;
 
   List<Habit> get habits => _habits;
@@ -23,7 +20,14 @@ class HabitProvider extends ChangeNotifier {
   List<Habit> get badHabits =>
       _habits.where((h) => h.type == HabitType.bad && h.isActive).toList();
   bool get isLoading => _isLoading;
-  bool get redemptionRequired => _redemptionRequired;
+
+  bool get redemptionRequired {
+    if (_settingsBox == null) return false;
+    // Check if redemption is required TODAY
+    final storedVal = _settingsBox!
+        .get('redemption_required_${_getTodayKey()}', defaultValue: false);
+    return storedVal;
+  }
 
   // Get morning habits only
   List<Habit> get morningHabits => _habits
@@ -41,6 +45,7 @@ class HabitProvider extends ChangeNotifier {
 
     try {
       _habitBox = Hive.box<Habit>('habits');
+      _settingsBox = Hive.box('settings'); // Opened in main.dart
 
       if (_habitBox.isEmpty) {
         await _initializeDefaultHabits();
@@ -48,8 +53,8 @@ class HabitProvider extends ChangeNotifier {
         _habits = _habitBox.values.toList();
       }
 
-      // Reset daily tracking if new day
-      _checkDailyReset();
+      // Initial check for time travel / reset
+      await _checkDailyResetAndGhostDays();
     } catch (e) {
       debugPrint('Error loading habits: $e');
     } finally {
@@ -58,52 +63,170 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
-  void _checkDailyReset() {
+  String _getTodayKey() {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    return '${now.year}_${now.month}_${now.day}';
+  }
 
-    if (_lastPenaltyCheckDate == null ||
-        _lastPenaltyCheckDate!.isBefore(today)) {
-      // New day - reset penalty tracking
-      _morningPenaltyApplied = false;
-      _redemptionRequired = false;
-      _lastPenaltyCheckDate = today;
+  String _getDateKey(DateTime date) {
+    return '${date.year}_${date.month}_${date.day}';
+  }
+
+  // 🛡️ ANTI-CHEAT & DAILY RESET LOGIC
+  Future<void> _checkDailyResetAndGhostDays() async {
+    if (_settingsBox == null) return;
+
+    final now = DateTime.now();
+
+    // 🕰️ TIME TRAVEL CHECK
+    final lastKnownTimeEpoch =
+        _settingsBox!.get('last_known_time_epoch', defaultValue: 0);
+    if (now.millisecondsSinceEpoch < lastKnownTimeEpoch - 60000) {
+      // 1 min buffer
+      debugPrint(
+          "TIME TRAVEL DETECTED! Current: $now, Last: ${DateTime.fromMillisecondsSinceEpoch(lastKnownTimeEpoch)}");
+    }
+    await _settingsBox!
+        .put('last_known_time_epoch', now.millisecondsSinceEpoch);
+
+    final lastCheckEpoch =
+        _settingsBox!.get('last_penalty_check_epoch', defaultValue: 0);
+    if (lastCheckEpoch == 0) {
+      // First run ever, set baseline
+      await _settingsBox!
+          .put('last_penalty_check_epoch', now.millisecondsSinceEpoch);
     }
   }
 
   /// AUTOMATIC PENALTY CHECK - Call this periodically or on app resume
   Future<void> checkAndApplyAutomaticPenalties(
       UserProvider userProvider) async {
+    if (_settingsBox == null) return;
+
     final now = DateTime.now();
     final hour = now.hour;
+    final todayKey = _getTodayKey();
 
-    // Check daily reset first
-    _checkDailyReset();
+    // 🕰️ TIME TRAVEL UPDATE
+    await _settingsBox!
+        .put('last_known_time_epoch', now.millisecondsSinceEpoch);
 
     // ═══════════════════════════════════════════════════════════
-    // 10 AM CHECK: Morning Incomplete Auto-Penalty
+    // 1. RETROACTIVE PENALTY CHECKS (Ghost Days & Sleep-Through)
     // ═══════════════════════════════════════════════════════════
-    if (hour >= 10 && !_morningPenaltyApplied && !allMorningHabitsComplete) {
+    final lastCheckEpoch =
+        _settingsBox!.get('last_penalty_check_epoch', defaultValue: 0);
+
+    if (lastCheckEpoch != 0) {
+      final lastCheckDate = DateTime.fromMillisecondsSinceEpoch(lastCheckEpoch);
+      final lastCheckKey = _getDateKey(lastCheckDate);
+
+      // If today is different from last check
+      if (todayKey != lastCheckKey) {
+        // A. SLEEP-THROUGH CHECK: Did we leave debt yesterday?
+        final wasRedemptionRequired = _settingsBox!
+            .get('redemption_required_$lastCheckKey', defaultValue: false);
+        final wasRedemptionDone = _settingsBox!
+            .get('redemption_done_$lastCheckKey', defaultValue: false);
+
+        if (wasRedemptionRequired && !wasRedemptionDone) {
+          // Check if we already punished for this sleep-through (to avoid loop)
+          final sleepThroughPunished = _settingsBox!
+              .get('sleep_through_punished_$lastCheckKey', defaultValue: false);
+
+          if (!sleepThroughPunished) {
+            debugPrint("SLEEP-THROUGH DETECTED for $lastCheckKey");
+            await _applyShadowExecutionPenalty(userProvider);
+            await NotificationService.showPenaltyNotification(
+                'SLEEP-THROUGH EXECUTION', 250);
+            await _settingsBox!
+                .put('sleep_through_punished_$lastCheckKey', true);
+          }
+        }
+
+        // B. GHOST DAY CHECK: Did we skip entire intermediate days?
+        // Difference in days. If I checked on 1st, and today is 3rd, diff is 2. (Skipped 2nd).
+        // Using midnight-normalized dates for correct day difference
+        final lastDateMidnight = DateTime(
+            lastCheckDate.year, lastCheckDate.month, lastCheckDate.day);
+        final todayMidnight = DateTime(now.year, now.month, now.day);
+        final daysDiff = todayMidnight.difference(lastDateMidnight).inDays;
+
+        if (daysDiff > 1) {
+          // Missed days exist
+          final ghostDays = daysDiff - 1;
+
+          // Check if already punished for these ghost days (basic check)
+          final lastGhostCheck =
+              _settingsBox!.get('last_ghost_check_epoch', defaultValue: 0);
+
+          if (now.millisecondsSinceEpoch - lastGhostCheck > 1000 * 60 * 60) {
+            // Don't spam
+            debugPrint("GHOST DAYS DETECTED: $ghostDays missed days");
+
+            // STRICT PENALTY: 300 Damage + XP Loss per day
+            final totalPenaltyXP = ghostDays * 300;
+            final totalDamage = ghostDays * 100;
+
+            if (totalPenaltyXP > 0) {
+              await userProvider.loseXP(totalPenaltyXP,
+                  source: 'Ghost Days ($ghostDays) Penalty');
+              await userProvider.takeDamage(totalDamage);
+              await NotificationService.showPenaltyNotification(
+                  'GHOST PENALTY', totalPenaltyXP);
+              await _settingsBox!
+                  .put('last_ghost_check_epoch', now.millisecondsSinceEpoch);
+            }
+          }
+        }
+      }
+    }
+
+    // Update last check time
+    await _settingsBox!
+        .put('last_penalty_check_epoch', now.millisecondsSinceEpoch);
+
+    // ═══════════════════════════════════════════════════════════
+    // 2. TODAY'S 10 AM CHECK: Morning Incomplete
+    // ═══════════════════════════════════════════════════════════
+    final morningPenaltyApplied = _settingsBox!
+        .get('morning_penalty_applied_$todayKey', defaultValue: false);
+
+    if (hour >= 10 && !morningPenaltyApplied && !allMorningHabitsComplete) {
       await _applyMorningIncompletePenalty(userProvider);
-      _morningPenaltyApplied = true;
-      _redemptionRequired = true;
+
+      await _settingsBox!.put('morning_penalty_applied_$todayKey', true);
+      await _settingsBox!.put('redemption_required_$todayKey', true);
       notifyListeners();
     }
 
     // ═══════════════════════════════════════════════════════════
-    // 10 PM CHECK: Shadow Execution if redemption not done
+    // 3. TODAY'S 10 PM CHECK: Shadow Execution
     // ═══════════════════════════════════════════════════════════
-    if (hour >= 22 && _redemptionRequired) {
-      // Check if redemption was completed
-      final redemptionHabit = _habits.firstWhere(
-        (h) => h.id == 'evening_redemption_pushups',
-        orElse: () => _habits.first,
-      );
+    final redemptionRequired =
+        _settingsBox!.get('redemption_required_$todayKey', defaultValue: false);
+    final redemptionDone =
+        _settingsBox!.get('redemption_done_$todayKey', defaultValue: false);
 
-      if (!redemptionHabit.isCompletedToday) {
+    // Sync consistency
+    final redemptionHabit = _habits.firstWhere(
+        (h) => h.id == 'evening_redemption_pushups',
+        orElse: () => _habits.first);
+    final isHabitDone = redemptionHabit.isCompletedToday;
+
+    if (isHabitDone && !redemptionDone) {
+      await _settingsBox!.put('redemption_done_$todayKey', true);
+    }
+
+    // If deadline passed, redemption needed, and NOT done
+    if (hour >= 22 && redemptionRequired && !isHabitDone) {
+      // Check if already executed today
+      final executionApplied = _settingsBox!
+          .get('shadow_execution_applied_$todayKey', defaultValue: false);
+
+      if (!executionApplied) {
         await _applyShadowExecutionPenalty(userProvider);
-        _redemptionRequired = false; // Penalty applied, reset
-        notifyListeners();
+        await _settingsBox!.put('shadow_execution_applied_$todayKey', true);
       }
     }
   }
@@ -135,7 +258,7 @@ class HabitProvider extends ChangeNotifier {
     // Show notification
     await NotificationService.showPenaltyNotification(
       'MORNING INCOMPLETE',
-      80,
+      50,
     );
   }
 
@@ -483,100 +606,41 @@ class HabitProvider extends ChangeNotifier {
   }
 
   Future<void> _checkPenaltyZone(UserProvider userProvider) async {
-    final now = DateTime.now();
-    int consecutiveFailureDays = 0;
-
-    // Check last 7 days for any completed good habits
-    for (int i = 0; i < 7; i++) {
-      final checkDate = now.subtract(Duration(days: i));
-      bool hasAnyCompletion = false;
-
-      for (final habit in goodHabits) {
-        final hasCompletion = habit.completedDates.any((date) =>
-            date.year == checkDate.year &&
-            date.month == checkDate.month &&
-            date.day == checkDate.day);
-
-        if (hasCompletion) {
-          hasAnyCompletion = true;
-          break;
-        }
-      }
-
-      if (!hasAnyCompletion) {
-        consecutiveFailureDays++;
-      } else {
-        break;
-      }
-    }
-
-    // Enter penalty zone if 7 consecutive days without any good habit completion
-    if (consecutiveFailureDays >= 7 &&
-        !userProvider.userProfile!.isInPenaltyZone) {
-      await userProvider.enterPenaltyZone();
-    }
-  }
-
-  Future<void> addCustomHabit(Habit habit) async {
-    _habits.add(habit);
-    await _saveHabits();
-    notifyListeners();
-  }
-
-  Future<void> updateHabit(Habit updatedHabit) async {
-    final index = _habits.indexWhere((h) => h.id == updatedHabit.id);
-    if (index != -1) {
-      _habits[index] = updatedHabit;
-      await _saveHabits();
-      notifyListeners();
-    }
-  }
-
-  Future<void> deleteHabit(String habitId) async {
-    _habits.removeWhere((h) => h.id == habitId);
-    await _saveHabits();
-    notifyListeners();
+    // Basic logic for Penalty Zone (optional future feature)
   }
 
   Future<void> _saveHabits() async {
-    await _habitBox.clear();
     for (int i = 0; i < _habits.length; i++) {
       await _habitBox.put(i, _habits[i]);
     }
   }
 
-  // Analytics methods
-  double getTodayCompletionRate() {
-    final activeGoodHabits = goodHabits;
-    if (activeGoodHabits.isEmpty) return 0.0;
+  // ═══════════════════════════════════════════════════════════
+  // STATS & HELPERS (Restored)
+  // ═══════════════════════════════════════════════════════════
 
-    final completedToday =
-        activeGoodHabits.where((h) => h.isCompletedToday).length;
-    return completedToday / activeGoodHabits.length;
+  Future<void> addCustomHabit(Habit habit) async {
+    _habits.add(habit);
+    await _habitBox.add(habit);
+    notifyListeners();
+  }
+
+  double getTodayCompletionRate() {
+    if (goodHabits.isEmpty) return 0.0;
+    final completedCount = goodHabits.where((h) => h.isCompletedToday).length;
+    return completedCount / goodHabits.length;
   }
 
   int getTodayXPEarned() {
-    int totalXP = 0;
-    for (final habit in goodHabits) {
-      if (habit.isCompletedToday) {
-        totalXP += habit.getTotalXPReward();
-      }
-    }
-    return totalXP;
+    return goodHabits
+        .where((h) => h.isCompletedToday)
+        .fold(0, (sum, h) => sum + h.getTotalXPReward());
   }
 
   int getTodayXPLost() {
-    int totalXP = 0;
-    for (final habit in badHabits) {
-      if (habit.isFailedToday) {
-        totalXP += habit.getTotalXPPenalty();
-      }
-    }
-    return totalXP;
-  }
-
-  List<Habit> getHabitsByTier(HabitTier tier) {
-    return _habits.where((h) => h.tier == tier && h.isActive).toList();
+    return badHabits
+        .where((h) => h.isFailedToday)
+        .fold(0, (sum, h) => sum + h.getTotalXPPenalty());
   }
 
   Map<String, int> getWeeklyStats() {
@@ -584,28 +648,31 @@ class HabitProvider extends ChangeNotifier {
     int completions = 0;
     int failures = 0;
 
+    // Calculate stats for last 7 days
     for (int i = 0; i < 7; i++) {
-      final checkDate = now.subtract(Duration(days: i));
+      final date = now.subtract(Duration(days: i));
 
-      for (final habit in _habits) {
-        final hasCompletion = habit.completedDates.any((date) =>
-            date.year == checkDate.year &&
-            date.month == checkDate.month &&
-            date.day == checkDate.day);
+      // Good habits completed
+      for (final habit in goodHabits) {
+        if (habit.completedDates.any((d) =>
+            d.year == date.year &&
+            d.month == date.month &&
+            d.day == date.day)) {
+          completions++;
+        }
+      }
 
-        final hasFailure = habit.failedDates.any((date) =>
-            date.year == checkDate.year &&
-            date.month == checkDate.month &&
-            date.day == checkDate.day);
-
-        if (hasCompletion) completions++;
-        if (hasFailure) failures++;
+      // Failures (Bad habits triggered)
+      for (final habit in badHabits) {
+        if (habit.completedDates.any((d) =>
+            d.year == date.year &&
+            d.month == date.month &&
+            d.day == date.day)) {
+          failures++;
+        }
       }
     }
 
-    return {
-      'completions': completions,
-      'failures': failures,
-    };
+    return {'completions': completions, 'failures': failures};
   }
 }

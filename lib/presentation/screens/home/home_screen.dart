@@ -21,7 +21,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   int _selectedIndex = 0;
   late AnimationController _shadowAnimationController;
   late AnimationController _glowAnimationController;
@@ -30,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Listen to lifecycle changes
+
     _shadowAnimationController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
@@ -46,6 +49,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _tabController.dispose();
+    _scrollController.dispose();
+    _shadowAnimationController.dispose();
+    _glowAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Re-check penalties when app comes to foreground
+      _checkAutomaticPenalties();
+    }
+  }
+
   /// Check and apply automatic penalties based on time
   Future<void> _checkAutomaticPenalties() async {
     if (_penaltyCheckDone) return;
@@ -55,13 +76,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     await habitProvider.checkAndApplyAutomaticPenalties(userProvider);
-  }
-
-  @override
-  void dispose() {
-    _shadowAnimationController.dispose();
-    _glowAnimationController.dispose();
-    super.dispose();
   }
 
   @override
