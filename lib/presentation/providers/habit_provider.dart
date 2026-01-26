@@ -10,6 +10,11 @@ class HabitProvider extends ChangeNotifier {
   List<Habit> _habits = [];
   bool _isLoading = false;
 
+  // Auto-penalty tracking
+  bool _morningPenaltyApplied = false;
+  bool _redemptionRequired = false;
+  DateTime? _lastPenaltyCheckDate;
+
   late Box<Habit> _habitBox;
 
   List<Habit> get habits => _habits;
@@ -18,6 +23,17 @@ class HabitProvider extends ChangeNotifier {
   List<Habit> get badHabits =>
       _habits.where((h) => h.type == HabitType.bad && h.isActive).toList();
   bool get isLoading => _isLoading;
+  bool get redemptionRequired => _redemptionRequired;
+
+  // Get morning habits only
+  List<Habit> get morningHabits => _habits
+      .where((h) => h.id.startsWith('morning_') && h.type == HabitType.good)
+      .toList();
+
+  // Check if all morning habits are complete
+  bool get allMorningHabitsComplete =>
+      morningHabits.isNotEmpty &&
+      morningHabits.every((h) => h.isCompletedToday);
 
   Future<void> loadHabits() async {
     _isLoading = true;
@@ -31,12 +47,138 @@ class HabitProvider extends ChangeNotifier {
       } else {
         _habits = _habitBox.values.toList();
       }
+
+      // Reset daily tracking if new day
+      _checkDailyReset();
     } catch (e) {
       debugPrint('Error loading habits: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void _checkDailyReset() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (_lastPenaltyCheckDate == null ||
+        _lastPenaltyCheckDate!.isBefore(today)) {
+      // New day - reset penalty tracking
+      _morningPenaltyApplied = false;
+      _redemptionRequired = false;
+      _lastPenaltyCheckDate = today;
+    }
+  }
+
+  /// AUTOMATIC PENALTY CHECK - Call this periodically or on app resume
+  Future<void> checkAndApplyAutomaticPenalties(
+      UserProvider userProvider) async {
+    final now = DateTime.now();
+    final hour = now.hour;
+
+    // Check daily reset first
+    _checkDailyReset();
+
+    // ═══════════════════════════════════════════════════════════
+    // 10 AM CHECK: Morning Incomplete Auto-Penalty
+    // ═══════════════════════════════════════════════════════════
+    if (hour >= 10 && !_morningPenaltyApplied && !allMorningHabitsComplete) {
+      await _applyMorningIncompletePenalty(userProvider);
+      _morningPenaltyApplied = true;
+      _redemptionRequired = true;
+      notifyListeners();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // 10 PM CHECK: Shadow Execution if redemption not done
+    // ═══════════════════════════════════════════════════════════
+    if (hour >= 22 && _redemptionRequired) {
+      // Check if redemption was completed
+      final redemptionHabit = _habits.firstWhere(
+        (h) => h.id == 'evening_redemption_pushups',
+        orElse: () => _habits.first,
+      );
+
+      if (!redemptionHabit.isCompletedToday) {
+        await _applyShadowExecutionPenalty(userProvider);
+        _redemptionRequired = false; // Penalty applied, reset
+        notifyListeners();
+      }
+    }
+  }
+
+  /// Apply Morning Incomplete penalty automatically
+  Future<void> _applyMorningIncompletePenalty(UserProvider userProvider) async {
+    // XP Penalty
+    await userProvider.loseXP(80, source: 'Morning Incomplete - Auto Penalty');
+
+    // Stat Penalties
+    await userProvider.updateStats({'willpower': -2, 'agility': -1});
+
+    // HP Damage
+    await userProvider.takeDamage(50);
+
+    // Apply debuff
+    final debuff = ActiveDebuff(
+      name: 'Morning Fog',
+      description:
+          'AUTO-APPLIED: Missed 10 AM deadline. -20% XP, -15% Willpower for 24h',
+      expiresAt: DateTime.now().add(const Duration(hours: 24)),
+      statModifiers: {
+        'xpMultiplier': 0.80,
+        'willpowerMultiplier': 0.85,
+      },
+    );
+    await userProvider.addDebuff(debuff);
+
+    // Show notification
+    await NotificationService.showPenaltyNotification(
+      'MORNING INCOMPLETE',
+      80,
+    );
+  }
+
+  /// Apply Shadow Execution penalty automatically - DEVASTATING
+  Future<void> _applyShadowExecutionPenalty(UserProvider userProvider) async {
+    // Massive XP Penalty
+    await userProvider.loseXP(500, source: 'SHADOW EXECUTION - Auto Penalty');
+
+    // Stat Penalties
+    await userProvider.updateStats({
+      'willpower': -5,
+      'strength': -3,
+      'agility': -2,
+      'vitality': -2,
+    });
+
+    // HP & MP Damage
+    await userProvider.takeDamage(300);
+    await userProvider.consumeMP(200);
+
+    // Apply devastating debuff
+    final debuff = ActiveDebuff(
+      name: "Failure's Mark",
+      description:
+          '💀 SHADOW EXECUTED. -50% XP, -30% all stats for 72h. No escape.',
+      expiresAt: DateTime.now().add(const Duration(hours: 72)),
+      statModifiers: {
+        'xpMultiplier': 0.50,
+        'strengthMultiplier': 0.70,
+        'agilityMultiplier': 0.70,
+        'vitalityMultiplier': 0.70,
+        'intelligenceMultiplier': 0.70,
+        'senseMultiplier': 0.70,
+        'willpowerMultiplier': 0.70,
+      },
+    );
+    await userProvider.addDebuff(debuff);
+
+    // Show notification
+    await NotificationService.showPenaltyNotification(
+      'SHADOW EXECUTION',
+      500,
+    );
   }
 
   Future<void> _initializeDefaultHabits() async {

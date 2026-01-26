@@ -414,67 +414,40 @@ Your body is your tool. Don't sabotage it.''',
       ),
 
       // ═══════════════════════════════════════════════════════════
-      // REDEMPTION SYSTEM - Missed Morning → Evening Task → Or DEATH
+      // AUTOMATIC PENALTY SYSTEM
+      // ═══════════════════════════════════════════════════════════
+      // Morning Incomplete penalty → AUTO-APPLIED at 10 AM if habits incomplete
+      // Shadow Execution penalty → AUTO-APPLIED at 10 PM if redemption not done
       // ═══════════════════════════════════════════════════════════
 
-      // REDEMPTION TASK: If you missed morning, do this in evening
+      // REDEMPTION TASK - Complete this to avoid Shadow Execution
       Habit(
         id: 'evening_redemption_pushups',
         name: '🔥 Evening Redemption (10 Pushups)',
-        description: '''YOU MISSED YOUR MORNING. THIS IS YOUR CHANCE.
+        description: '''⚠️ AUTOMATIC PENALTY SYSTEM ⚠️
 
-DO 10 PUSHUPS RIGHT NOW.
-Not later. Not tomorrow. NOW.
+If you MISSED your morning routine by 10 AM:
+→ Penalty was AUTO-APPLIED (-80 XP, debuff)
+→ You now OWE a debt
 
-This is your redemption for the failed morning.
-• Complete this = reduced penalty
-• Skip this = SHADOW EXECUTION
+TO CLEAR YOUR DEBT:
+→ DO 10 PUSHUPS RIGHT NOW
+→ COMPLETE this habit BEFORE 10 PM
 
-You owe a debt to yourself. PAY IT.''',
+If you DON'T complete this by 10 PM:
+→ SHADOW EXECUTION auto-triggers
+→ -500 XP, -300 HP, 72h debuff
+
+If your morning was SUCCESSFUL:
+→ You don't need this. Skip it.''',
         type: HabitType.good,
         tier: HabitTier.a,
-        xpReward: 30, // Small reward - this is damage control, not progress
-        xpPenalty: 0, // No penalty here - penalty comes from the FAILURE habit
+        xpReward: 30, // Small reward - damage control
+        xpPenalty: 0,
         statRewards: {'strength': 1, 'willpower': 1},
         statPenalties: {},
         hpDamage: 0,
-        streakBonus: 0, // No streak bonus - you're just recovering
-        createdAt: DateTime.now(),
-      ),
-
-      // THE NUCLEAR OPTION: Skipped both morning AND redemption
-      Habit(
-        id: 'shadow_execution',
-        name: '💀 SHADOW EXECUTION',
-        description: '''YOU FAILED YOUR MORNING.
-YOU SKIPPED YOUR REDEMPTION.
-THERE ARE CONSEQUENCES.
-
-A shadow soldier has been EXECUTED for your weakness.
-
-• XP WIPED: Lose 500 XP
-• LEVEL RISK: May lose a level
-• HP CRITICAL: Massive damage
-• STATS CRUSHED: Multiple stat penalties
-• DEBUFF: Failure's Mark (72 hours)
-
-This is what happens when you break promises to yourself.
-TWICE.
-
-Mark this if you missed morning AND skipped evening pushups.''',
-        type: HabitType.bad,
-        tier: HabitTier.catastrophic,
-        xpReward: 0,
-        xpPenalty: 500, // DEVASTATING
-        statPenalties: {
-          'willpower': 5,
-          'strength': 3,
-          'agility': 2,
-          'vitality': 2,
-        },
-        hpDamage: 300, // Nearly 1/3 of starting HP
-        mpDrain: 200,
-        debuffName: "Failure's Mark",
+        streakBonus: 0,
         createdAt: DateTime.now(),
       ),
     ];

@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   late AnimationController _shadowAnimationController;
   late AnimationController _glowAnimationController;
+  bool _penaltyCheckDone = false;
 
   @override
   void initState() {
@@ -38,6 +39,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
+
+    // Schedule penalty check after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAutomaticPenalties();
+    });
+  }
+
+  /// Check and apply automatic penalties based on time
+  Future<void> _checkAutomaticPenalties() async {
+    if (_penaltyCheckDone) return;
+    _penaltyCheckDone = true;
+
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    await habitProvider.checkAndApplyAutomaticPenalties(userProvider);
   }
 
   @override
