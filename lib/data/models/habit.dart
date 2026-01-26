@@ -312,6 +312,171 @@ No more showering once a week. That stops TODAY.''',
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
+
+      // ═══════════════════════════════════════════════════════════
+      // DEMON TRAPS - Bad Habits to Avoid
+      // ═══════════════════════════════════════════════════════════
+
+      // DEMON TRAP 1: Midnight Scrolling
+      Habit(
+        id: 'midnight_scrolling',
+        name: '📵 Screen After 10 PM',
+        description: '''THE BIGGEST ENEMY OF YOUR MORNING.
+
+If you scroll at night:
+• Blue light destroys melatonin
+• You'll sleep 1-2 hours later
+• Wake up groggy, hit snooze
+• Morning routine fails
+
+RULE: Phone on charger in ANOTHER ROOM by 10 PM.
+No exceptions. No "just checking one thing."''',
+        type: HabitType.bad,
+        tier: HabitTier.catastrophic,
+        xpReward: 0,
+        xpPenalty: 200,
+        statPenalties: {'willpower': 4, 'vitality': 2},
+        hpDamage: 150,
+        mpDrain: 100,
+        debuffName: "Demon's Grip",
+        createdAt: DateTime.now(),
+      ),
+
+      // DEMON TRAP 2: Snooze Defeat
+      Habit(
+        id: 'snooze_defeat',
+        name: '😴 Snooze Button',
+        description: '''YOU HIT SNOOZE. YOU ALREADY LOST.
+
+Every snooze:
+• Fragments your sleep cycles
+• Makes you MORE tired, not less
+• Weakens willpower for the day
+• Creates a habit of giving up
+
+This is the first test of your day.
+WIN IT.''',
+        type: HabitType.bad,
+        tier: HabitTier.severe,
+        xpReward: 0,
+        xpPenalty: 150,
+        statPenalties: {'willpower': 3, 'agility': 2},
+        hpDamage: 100,
+        debuffName: 'Sluggish Start',
+        createdAt: DateTime.now(),
+      ),
+
+      // DEMON TRAP 3: Gaming Abyss
+      Habit(
+        id: 'gaming_abyss',
+        name: '🎮 Gaming (2+ hrs weekday)',
+        description: '''THE TIME VOID.
+
+2+ hours gaming on a weekday = day wasted.
+
+• No workout today
+• No reading today
+• No progress today
+• Sleep will be late
+
+Weekend gaming is fine. Weekdays are for building.''',
+        type: HabitType.bad,
+        tier: HabitTier.severe,
+        xpReward: 0,
+        xpPenalty: 180,
+        statPenalties: {'willpower': 3, 'intelligence': 2},
+        mpDrain: 200,
+        debuffName: 'Time Void',
+        createdAt: DateTime.now(),
+      ),
+
+      // DEMON TRAP 4: Junk Food
+      Habit(
+        id: 'junk_food',
+        name: '🍔 Junk Food',
+        description: '''POISON FOR YOUR BODY AND MIND.
+
+What happens after junk food:
+• Energy crash in 2 hours
+• Brain fog all day
+• Sleep quality tanks
+• The cravings get worse
+
+Your body is your tool. Don't sabotage it.''',
+        type: HabitType.bad,
+        tier: HabitTier.severe,
+        xpReward: 0,
+        xpPenalty: 120,
+        statPenalties: {'vitality': 3, 'strength': 1},
+        hpDamage: 120,
+        debuffName: 'Weakened State',
+        createdAt: DateTime.now(),
+      ),
+
+      // ═══════════════════════════════════════════════════════════
+      // REDEMPTION SYSTEM - Missed Morning → Evening Task → Or DEATH
+      // ═══════════════════════════════════════════════════════════
+
+      // REDEMPTION TASK: If you missed morning, do this in evening
+      Habit(
+        id: 'evening_redemption_pushups',
+        name: '🔥 Evening Redemption (10 Pushups)',
+        description: '''YOU MISSED YOUR MORNING. THIS IS YOUR CHANCE.
+
+DO 10 PUSHUPS RIGHT NOW.
+Not later. Not tomorrow. NOW.
+
+This is your redemption for the failed morning.
+• Complete this = reduced penalty
+• Skip this = SHADOW EXECUTION
+
+You owe a debt to yourself. PAY IT.''',
+        type: HabitType.good,
+        tier: HabitTier.a,
+        xpReward: 30, // Small reward - this is damage control, not progress
+        xpPenalty: 0, // No penalty here - penalty comes from the FAILURE habit
+        statRewards: {'strength': 1, 'willpower': 1},
+        statPenalties: {},
+        hpDamage: 0,
+        streakBonus: 0, // No streak bonus - you're just recovering
+        createdAt: DateTime.now(),
+      ),
+
+      // THE NUCLEAR OPTION: Skipped both morning AND redemption
+      Habit(
+        id: 'shadow_execution',
+        name: '💀 SHADOW EXECUTION',
+        description: '''YOU FAILED YOUR MORNING.
+YOU SKIPPED YOUR REDEMPTION.
+THERE ARE CONSEQUENCES.
+
+A shadow soldier has been EXECUTED for your weakness.
+
+• XP WIPED: Lose 500 XP
+• LEVEL RISK: May lose a level
+• HP CRITICAL: Massive damage
+• STATS CRUSHED: Multiple stat penalties
+• DEBUFF: Failure's Mark (72 hours)
+
+This is what happens when you break promises to yourself.
+TWICE.
+
+Mark this if you missed morning AND skipped evening pushups.''',
+        type: HabitType.bad,
+        tier: HabitTier.catastrophic,
+        xpReward: 0,
+        xpPenalty: 500, // DEVASTATING
+        statPenalties: {
+          'willpower': 5,
+          'strength': 3,
+          'agility': 2,
+          'vitality': 2,
+        },
+        hpDamage: 300, // Nearly 1/3 of starting HP
+        mpDrain: 200,
+        debuffName: "Failure's Mark",
+        createdAt: DateTime.now(),
+      ),
     ];
   }
 }

@@ -231,6 +231,9 @@ class HabitProvider extends ChangeNotifier {
         return 'Missed 2 habits! -20% XP, -15% Willpower for 24h';
       case 'Discipline Collapse':
         return 'Missed 3+ habits! -35% XP, -25% Willpower for 48h';
+      // NUCLEAR OPTION
+      case "Failure's Mark":
+        return '💀 SHADOW EXECUTED. -50% all gains, -30% all stats for 72h';
       default:
         return 'Negative effect applied';
     }
@@ -265,6 +268,9 @@ class HabitProvider extends ChangeNotifier {
         return const Duration(hours: 24);
       case 'Discipline Collapse':
         return const Duration(hours: 48);
+      // NUCLEAR OPTION - 3 full days
+      case "Failure's Mark":
+        return const Duration(hours: 72);
       default:
         return const Duration(hours: 24);
     }
@@ -304,6 +310,17 @@ class HabitProvider extends ChangeNotifier {
           'xpMultiplier': 0.65,
           'willpowerMultiplier': 0.75,
           'agilityMultiplier': 0.80,
+        };
+      // NUCLEAR OPTION - Devastating penalties for 3 days
+      case "Failure's Mark":
+        return {
+          'xpMultiplier': 0.50, // HALF XP gains
+          'strengthMultiplier': 0.70,
+          'agilityMultiplier': 0.70,
+          'vitalityMultiplier': 0.70,
+          'intelligenceMultiplier': 0.70,
+          'senseMultiplier': 0.70,
+          'willpowerMultiplier': 0.70,
         };
       default:
         return {};
