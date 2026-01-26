@@ -299,16 +299,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 12),
 
                     // Good Habits (Daily Quests)
-                    ...habitProvider.goodHabits.map((habit) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: DailyQuestCard(
-                            habit: habit,
-                            onComplete: () => _completeHabit(
-                                habit.id, habitProvider, userProvider),
-                            onUndo: () => _uncompleteHabit(
-                                habit.id, habitProvider, userProvider),
-                          ),
-                        )),
+                    ...habitProvider.goodHabits.map((habit) {
+                      // Check if deadline passed for morning habits (10 AM)
+                      final now = DateTime.now();
+                      final isMorningHabit = habit.id.startsWith('morning_');
+                      final isPast10AM = now.hour >= 10;
+                      final isDeadlinePassed = isMorningHabit &&
+                          isPast10AM &&
+                          !habit.isCompletedToday;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: DailyQuestCard(
+                          habit: habit,
+                          onComplete: () => _completeHabit(
+                              habit.id, habitProvider, userProvider),
+                          onUndo: () => _uncompleteHabit(
+                              habit.id, habitProvider, userProvider),
+                          isDeadlinePassed: isDeadlinePassed,
+                        ),
+                      );
+                    }),
 
                     const SizedBox(height: 20),
 
