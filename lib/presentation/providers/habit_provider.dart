@@ -29,6 +29,20 @@ class HabitProvider extends ChangeNotifier {
     return storedVal;
   }
 
+  // Check if today is the "Setup Day" (First day of use)
+  bool get isSetupDay {
+    if (_settingsBox == null) return false;
+    final setupEpoch = _settingsBox!.get('setup_date_epoch', defaultValue: 0);
+    if (setupEpoch == 0) return false; // Should not happen after init
+
+    final setupDate = DateTime.fromMillisecondsSinceEpoch(setupEpoch);
+    final now = DateTime.now();
+
+    return setupDate.year == now.year &&
+        setupDate.month == now.month &&
+        setupDate.day == now.day;
+  }
+
   // Get morning habits only
   List<Habit> get morningHabits => _habits
       .where((h) => h.id.startsWith('morning_') && h.type == HabitType.good)
@@ -102,6 +116,14 @@ class HabitProvider extends ChangeNotifier {
   Future<void> checkAndApplyAutomaticPenalties(
       UserProvider userProvider) async {
     if (_settingsBox == null) return;
+
+    // 🛡️ SETUP DAY PROTECTION
+    // If this is the first day (Setup Day), DO NOT apply any penalties.
+    // Give the user time to set up their habits and get ready for tomorrow.
+    if (isSetupDay) {
+      debugPrint("SETUP DAY: Penalties are disabled for today.");
+      return;
+    }
 
     final now = DateTime.now();
     final hour = now.hour;
@@ -309,6 +331,12 @@ class HabitProvider extends ChangeNotifier {
     await _habitBox.clear();
     for (int i = 0; i < _habits.length; i++) {
       await _habitBox.put(i, _habits[i]);
+    }
+
+    // Save SETUP DATE (Today)
+    if (_settingsBox != null) {
+      await _settingsBox!
+          .put('setup_date_epoch', DateTime.now().millisecondsSinceEpoch);
     }
   }
 

@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen>
   int _selectedIndex = 0;
   late AnimationController _shadowAnimationController;
   late AnimationController _glowAnimationController;
+  final ScrollController _scrollController = ScrollController();
   bool _penaltyCheckDone = false;
 
   @override
@@ -52,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _tabController.dispose();
     _scrollController.dispose();
     _shadowAnimationController.dispose();
     _glowAnimationController.dispose();
@@ -125,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen>
             return const Center(child: CircularProgressIndicator());
 
           return CustomScrollView(
+            controller: _scrollController,
             slivers: [
               SliverAppBar(
                 expandedHeight: 120,
@@ -157,7 +158,56 @@ class _HomeScreenState extends State<HomeScreen>
                       ActiveDebuffBanner(
                         activeDebuffs: user.activeDebuffs,
                       ),
-                    if (user.activeDebuffs.isNotEmpty)
+
+                    // PREPARATION PHASE BANNER (Setup Day)
+                    if (habitProvider.isSetupDay && user.activeDebuffs.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.electricBlue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppTheme.electricBlue.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline,
+                                color: AppTheme.electricBlue, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'PREPARATION PHASE',
+                                    style: TextStyle(
+                                      color: AppTheme.electricBlue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Take today to set up. Penalties active tomorrow.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    if (user.activeDebuffs.isNotEmpty ||
+                        habitProvider.isSetupDay)
                       const SizedBox(height: 16),
 
                     // Hunter Profile Card
