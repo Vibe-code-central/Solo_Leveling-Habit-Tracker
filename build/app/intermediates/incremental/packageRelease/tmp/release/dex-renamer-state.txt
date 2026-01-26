@@ -1,4 +1,0 @@
-#Wed Jan 21 23:37:57 IST 2026
-base.0=/Users/jotiradityahazra/CODE/GIT/Flutter App/SOLO-Leveling/build/app/intermediates/dex/release/minifyReleaseWithR8/classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
