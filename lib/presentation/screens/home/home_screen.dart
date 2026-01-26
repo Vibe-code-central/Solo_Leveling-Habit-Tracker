@@ -143,6 +143,10 @@ class _HomeScreenState extends State<HomeScreen>
                   centerTitle: true,
                 ),
                 actions: [
+                  Center(
+                      child: Text("v1.0.2 ",
+                          style:
+                              TextStyle(color: Colors.white54, fontSize: 10))),
                   IconButton(
                     icon: const Icon(Icons.notifications),
                     onPressed: () => _showSystemMessages(context),

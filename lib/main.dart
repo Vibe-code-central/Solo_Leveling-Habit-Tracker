@@ -68,7 +68,7 @@ class SoloLevelingApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HabitProvider()),
       ],
       child: MaterialApp(
-        title: 'Solo Leveling: Shadow Monarch',
+        title: 'ARISE',
         theme: AppTheme.darkTheme,
         home: const AppInitializer(),
         debugShowCheckedModeBanner: false,
