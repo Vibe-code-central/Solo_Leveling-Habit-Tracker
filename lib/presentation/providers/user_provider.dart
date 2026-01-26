@@ -553,4 +553,15 @@ class UserProvider extends ChangeNotifier {
         return Colors.grey;
     }
   }
+
+  Future<void> resetProgress() async {
+    // 1. Delete User Profile
+    await _userBox.clear();
+    _userProfile = null;
+
+    // 2. Reset Achievements
+    await _initializeDefaultAchievements();
+
+    notifyListeners();
+  }
 }

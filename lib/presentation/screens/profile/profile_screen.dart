@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:solo_leveling/core/theme/app_theme.dart';
 import 'package:solo_leveling/data/models/user_profile.dart';
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
+import 'package:solo_leveling/presentation/providers/habit_provider.dart';
+import 'package:solo_leveling/presentation/screens/onboarding/onboarding_screen.dart';
 import 'buffs_debuffs_guide_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -755,9 +757,26 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('CANCEL'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              // TODO: Implement reset functionality
+
+              // 1. Reset Providers
+              final userProvider =
+                  Provider.of<UserProvider>(context, listen: false);
+              final habitProvider =
+                  Provider.of<HabitProvider>(context, listen: false);
+
+              await userProvider.resetProgress();
+              await habitProvider.resetHabits();
+
+              // 2. Navigate to Onboarding
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const OnboardingScreen()),
+                  (route) => false,
+                );
+              }
             },
             style:
                 ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),

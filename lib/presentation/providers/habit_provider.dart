@@ -703,4 +703,20 @@ class HabitProvider extends ChangeNotifier {
 
     return {'completions': completions, 'failures': failures};
   }
+
+  Future<void> resetHabits() async {
+    // 1. Clear Settings (Resets Setup Day, Time Travel checks, etc.)
+    if (_settingsBox != null) {
+      await _settingsBox!.clear();
+    }
+
+    // 2. Clear Habits
+    await _habitBox.clear();
+    _habits.clear();
+
+    // 3. Re-initialize defaults (New setup day will be set)
+    await _initializeDefaultHabits();
+
+    notifyListeners();
+  }
 }
