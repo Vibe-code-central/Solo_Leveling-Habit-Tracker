@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.example.solo_leveling"
-4    android:versionCode="1"
-5    android:versionName="1.0.0" >
+4    android:versionCode="2"
+5    android:versionName="1.0.2" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="21"
@@ -54,7 +54,7 @@
 40        android:debuggable="true"
 41        android:extractNativeLibs="true"
 42        android:icon="@mipmap/ic_launcher"
-43        android:label="solo_leveling" >
+43        android:label="ARISE" >
 44        <activity
 45            android:name="com.example.solo_leveling.MainActivity"
 46            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

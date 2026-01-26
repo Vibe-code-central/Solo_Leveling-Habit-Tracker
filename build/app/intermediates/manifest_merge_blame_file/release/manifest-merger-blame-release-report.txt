@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.example.solo_leveling"
-4    android:versionCode="1"
-5    android:versionName="1.0.0" >
+4    android:versionCode="2"
+5    android:versionName="1.0.2" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="21"
@@ -47,8 +47,8 @@
 34        android:extractNativeLibs="true"
 35        android:icon="@mipmap/ic_launcher"
 35-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:5:9-43
-36        android:label="solo_leveling" >
-36-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:3:9-38
+36        android:label="ARISE" >
+36-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:3:9-30
 37        <activity
 37-->/Users/jotiradityahazra/CODE/GIT/Flutter App/Solo Leveling app/Solo_Leveling-Habit-Tracker/android/app/src/main/AndroidManifest.xml:6:9-27:20
 38            android:name="com.example.solo_leveling.MainActivity"
