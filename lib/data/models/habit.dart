@@ -198,7 +198,7 @@ This is your keystone habit. Everything else depends on this.
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 150,
-        xpPenalty: 200,
+        xpPenalty: 100, // Reduced from 200
         statRewards: {'willpower': 3, 'agility': 2},
         statPenalties: {'willpower': 3, 'agility': 2},
         hpDamage: 100,
@@ -223,7 +223,7 @@ The snooze button is your enemy. Destroy it.''',
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 120,
-        xpPenalty: 180,
+        xpPenalty: 90, // Reduced from 180
         statRewards: {'willpower': 3, 'agility': 1},
         statPenalties: {'willpower': 2, 'agility': 1},
         hpDamage: 80,
@@ -249,7 +249,7 @@ No thinking. Just drop and push.''',
         type: HabitType.good,
         tier: HabitTier.a,
         xpReward: 100,
-        xpPenalty: 120,
+        xpPenalty: 70, // Reduced from 120
         statRewards: {'strength': 2, 'willpower': 2},
         statPenalties: {'strength': 1, 'willpower': 1},
         hpDamage: 50,
@@ -274,7 +274,7 @@ This takes 10 seconds. No excuses.''',
         type: HabitType.good,
         tier: HabitTier.a,
         xpReward: 80,
-        xpPenalty: 100,
+        xpPenalty: 50, // Reduced from 100
         statRewards: {'sense': 2, 'vitality': 1},
         statPenalties: {'sense': 1, 'vitality': 1},
         hpDamage: 30,
@@ -304,7 +304,7 @@ No more showering once a week. That stops TODAY.''',
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 130,
-        xpPenalty: 160,
+        xpPenalty: 100, // Reduced from 160
         statRewards: {'vitality': 2, 'sense': 2},
         statPenalties: {'vitality': 2, 'sense': 1},
         hpDamage: 80,
@@ -427,7 +427,7 @@ Your body is your tool. Don't sabotage it.''',
         description: '''⚠️ AUTOMATIC PENALTY SYSTEM ⚠️
 
 If you MISSED your morning routine by 10 AM:
-→ Penalty was AUTO-APPLIED (-80 XP, debuff)
+→ Penalty was AUTO-APPLIED (-50 XP, debuff)
 → You now OWE a debt
 
 TO CLEAR YOUR DEBT:
@@ -436,7 +436,7 @@ TO CLEAR YOUR DEBT:
 
 If you DON'T complete this by 10 PM:
 → SHADOW EXECUTION auto-triggers
-→ -500 XP, -300 HP, 72h debuff
+→ -250 XP, -300 HP, 72h debuff
 
 If your morning was SUCCESSFUL:
 → You don't need this. Skip it.''',

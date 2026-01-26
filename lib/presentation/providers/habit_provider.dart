@@ -111,7 +111,7 @@ class HabitProvider extends ChangeNotifier {
   /// Apply Morning Incomplete penalty automatically
   Future<void> _applyMorningIncompletePenalty(UserProvider userProvider) async {
     // XP Penalty
-    await userProvider.loseXP(80, source: 'Morning Incomplete - Auto Penalty');
+    await userProvider.loseXP(50, source: 'Morning Incomplete - Auto Penalty');
 
     // Stat Penalties
     await userProvider.updateStats({'willpower': -2, 'agility': -1});
@@ -142,7 +142,7 @@ class HabitProvider extends ChangeNotifier {
   /// Apply Shadow Execution penalty automatically - DEVASTATING
   Future<void> _applyShadowExecutionPenalty(UserProvider userProvider) async {
     // Massive XP Penalty
-    await userProvider.loseXP(500, source: 'SHADOW EXECUTION - Auto Penalty');
+    await userProvider.loseXP(250, source: 'SHADOW EXECUTION - Auto Penalty');
 
     // Stat Penalties
     await userProvider.updateStats({
@@ -177,7 +177,7 @@ class HabitProvider extends ChangeNotifier {
     // Show notification
     await NotificationService.showPenaltyNotification(
       'SHADOW EXECUTION',
-      500,
+      250,
     );
   }
 
