@@ -25,7 +25,7 @@ import 'presentation/screens/onboarding/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Hive.initFlutter();
   Hive.registerAdapter(UserProfileAdapter());
   Hive.registerAdapter(PlayerStatsAdapter());
@@ -38,22 +38,22 @@ void main() async {
   Hive.registerAdapter(AchievementCategoryAdapter());
   Hive.registerAdapter(HabitTypeAdapter());
   Hive.registerAdapter(HabitTierAdapter());
-  
+
   await Hive.openBox<UserProfile>('userProfile');
   await Hive.openBox<Habit>('habits');
   await Hive.openBox<Achievement>('achievements');
   await Hive.openBox('settings');
-  
+
   // await NotificationService.initialize();
   // await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
-  
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
     systemNavigationBarColor: Color(0xFF0F0F1E),
     systemNavigationBarIconBrightness: Brightness.light,
   ));
-  
+
   runApp(const SoloLevelingApp());
 }
 
@@ -85,6 +85,8 @@ class AppInitializer extends StatefulWidget {
 }
 
 class _AppInitializerState extends State<AppInitializer> {
+  bool _isInitializing = true;
+
   @override
   void initState() {
     super.initState();
@@ -96,27 +98,33 @@ class _AppInitializerState extends State<AppInitializer> {
   Future<void> _initializeApp() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final habitProvider = Provider.of<HabitProvider>(context, listen: false);
-    
+
     await userProvider.loadUserProfile();
     await habitProvider.loadHabits();
     // await NotificationService.scheduleDailyReminders();
+
+    if (mounted) {
+      setState(() {
+        _isInitializing = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0F0F1E),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF6B46C1)),
+        ),
+      );
+    }
+
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
-        if (userProvider.isLoading) {
-          return const Scaffold(
-            backgroundColor: Color(0xFF0F0F1E),
-            body: Center(
-              child: CircularProgressIndicator(color: Color(0xFF6B46C1)),
-            ),
-          );
-        }
-        
-        return userProvider.userProfile == null 
-            ? const OnboardingScreen() 
+        return userProvider.userProfile == null
+            ? const OnboardingScreen()
             : const HomeScreen();
       },
     );
