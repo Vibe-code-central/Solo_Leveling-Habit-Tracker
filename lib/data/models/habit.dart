@@ -184,50 +184,34 @@ class Habit extends HiveObject {
       // MORNING ROUTINE HABITS - 5 Core Habits for 2-Week Challenge
       // ═══════════════════════════════════════════════════════════
 
-      // HABIT 1: WAKE UP - The Keystone Habit
+      // HABIT 1: ARISE - The Ultimate Keystone Habit
       Habit(
-        id: 'morning_wake_up',
-        name: '⏰ Wake Up on Time',
+        id: 'morning_arise',
+        name: '⚡ ARISE',
         description: '''WEEK 1 TARGET: 6:15 AM
 WEEK 2 TARGET: 5:45 AM
 
-This is your keystone habit. Everything else depends on this.
-• Set alarm ACROSS the room (not beside bed)
-• No phone alarm - use a real alarm clock
-• Getting this right enables all other habits''',
-        type: HabitType.good,
-        tier: HabitTier.s,
-        xpReward: 150,
-        xpPenalty: 100, // Reduced from 200
-        statRewards: {'willpower': 3, 'agility': 2},
-        statPenalties: {'willpower': 3, 'agility': 2},
-        hpDamage: 100,
-        streakBonus: 20,
-        debuffName: 'Light Sluggish',
-        createdAt: DateTime.now(),
-      ),
+THE ULTIMATE KEYSTONE HABIT - Everything depends on this.
 
-      // HABIT 2: GET OUT OF BED - No Snooze Protocol
-      Habit(
-        id: 'morning_get_up',
-        name: '🚀 Get Out of Bed (60 sec)',
-        description: '''NO SNOOZE. NO SITTING ON BED.
-
-Protocol:
-1. Alarm rings
-2. Stand up within 60 SECONDS
+PROTOCOL:
+1. Alarm rings (set ACROSS the room, not beside bed)
+2. Stand up within 60 SECONDS - NO SNOOZE
 3. Walk to another room immediately
 4. Do NOT sit back on bed (you WILL fall asleep)
 
-The snooze button is your enemy. Destroy it.''',
+This is the first battle of your day. WIN IT.
+
+• No phone alarm - use a real alarm clock
+• The snooze button is your enemy. Destroy it.
+• Getting this right enables all other habits''',
         type: HabitType.good,
         tier: HabitTier.s,
-        xpReward: 120,
-        xpPenalty: 90, // Reduced from 180
-        statRewards: {'willpower': 3, 'agility': 1},
-        statPenalties: {'willpower': 2, 'agility': 1},
-        hpDamage: 80,
-        streakBonus: 15,
+        xpReward: 180,
+        xpPenalty: 150,
+        statRewards: {'willpower': 5, 'agility': 3},
+        statPenalties: {'willpower': 4, 'agility': 2},
+        hpDamage: 150,
+        streakBonus: 25,
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
@@ -310,6 +294,38 @@ No more showering once a week. That stops TODAY.''',
         hpDamage: 80,
         streakBonus: 18,
         debuffName: 'Light Sluggish',
+        createdAt: DateTime.now(),
+      ),
+
+      // HABIT 6: CHALICE OF LIFE - Hydration Quest
+      Habit(
+        id: 'daily_water',
+        name: '💧 Chalice of Life (2L Water)',
+        description: '''DAILY QUEST: Consume 2 Liters of Water
+
+Like a healing potion in the dungeon, water restores your vitality.
+
+PROTOCOL:
+• 500ml upon waking (before coffee)
+• 500ml mid-morning
+• 500ml afternoon
+• 500ml evening
+
+Benefits:
+• +Energy throughout the day
+• +Mental clarity and focus
+• +Physical performance
+• +Recovery and healing
+
+Track your intake. Your body is your weapon - keep it hydrated.''',
+        type: HabitType.good,
+        tier: HabitTier.b,
+        xpReward: 60,
+        xpPenalty: 40,
+        statRewards: {'vitality': 2, 'strength': 1},
+        statPenalties: {'vitality': 1},
+        hpDamage: 30,
+        streakBonus: 8,
         createdAt: DateTime.now(),
       ),
 

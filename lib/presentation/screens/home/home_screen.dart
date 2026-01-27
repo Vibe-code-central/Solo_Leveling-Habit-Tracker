@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solo_leveling/core/theme/app_theme.dart';
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _glowAnimationController;
   final ScrollController _scrollController = ScrollController();
   bool _penaltyCheckDone = false;
+  Timer? _penaltyCheckTimer;
 
   @override
   void initState() {
@@ -48,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkAutomaticPenalties();
     });
+
+    // 🛡️ FIX #1: Reset penalty check every 30 minutes to prevent bypass
+    _penaltyCheckTimer = Timer.periodic(const Duration(minutes: 30), (_) {
+      _penaltyCheckDone = false;
+      _checkAutomaticPenalties();
+    });
   }
 
   @override
@@ -56,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen>
     _scrollController.dispose();
     _shadowAnimationController.dispose();
     _glowAnimationController.dispose();
+    _penaltyCheckTimer?.cancel();
     super.dispose();
   }
 
@@ -616,35 +625,67 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _uncompleteHabit(String habitId, HabitProvider habitProvider,
       UserProvider userProvider) async {
-    await habitProvider.uncompleteHabit(habitId, userProvider);
+    try {
+      await habitProvider.uncompleteHabit(habitId, userProvider);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Quest undone. Rewards reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Quest undone. Rewards reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle time restriction error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: AppTheme.crimsonRed,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
     }
   }
 
   Future<void> _unfailHabit(String habitId, HabitProvider habitProvider,
       UserProvider userProvider) async {
-    await habitProvider.unfailHabit(habitId, userProvider);
+    try {
+      await habitProvider.unfailHabit(habitId, userProvider);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Trap undone. Penalties reversed.'),
-          backgroundColor: AppTheme.amberGold,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Trap undone. Penalties reversed.'),
+            backgroundColor: AppTheme.amberGold,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle time restriction error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: AppTheme.crimsonRed,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 4),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
     }
   }
 

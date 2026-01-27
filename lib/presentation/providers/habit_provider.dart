@@ -178,15 +178,15 @@ class HabitProvider extends ChangeNotifier {
           // Missed days exist
           final ghostDays = daysDiff - 1;
 
-          // Check if already punished for these ghost days (basic check)
-          final lastGhostCheck =
-              _settingsBox!.get('last_ghost_check_epoch', defaultValue: 0);
+          // 🛡️ FIX #5: Check if already punished for THIS SPECIFIC date range
+          // Use date key instead of time-based cooldown to prevent edge cases
+          final lastGhostCheckKey =
+              _settingsBox!.get('last_ghost_check_date_key', defaultValue: '');
 
-          if (now.millisecondsSinceEpoch - lastGhostCheck > 1000 * 60 * 60) {
-            // Don't spam
+          if (lastGhostCheckKey != lastCheckKey) {
             debugPrint("GHOST DAYS DETECTED: $ghostDays missed days");
 
-            // STRICT PENALTY: 300 Damage + XP Loss per day
+            // STRICT PENALTY: 300 XP + 100 HP per day
             final totalPenaltyXP = ghostDays * 300;
             final totalDamage = ghostDays * 100;
 
@@ -197,7 +197,7 @@ class HabitProvider extends ChangeNotifier {
               await NotificationService.showPenaltyNotification(
                   'GHOST PENALTY', totalPenaltyXP);
               await _settingsBox!
-                  .put('last_ghost_check_epoch', now.millisecondsSinceEpoch);
+                  .put('last_ghost_check_date_key', lastCheckKey);
             }
           }
         }
@@ -230,14 +230,26 @@ class HabitProvider extends ChangeNotifier {
     final redemptionDone =
         _settingsBox!.get('redemption_done_$todayKey', defaultValue: false);
 
-    // Sync consistency
-    final redemptionHabit = _habits.firstWhere(
-        (h) => h.id == 'evening_redemption_pushups',
-        orElse: () => _habits.first);
-    final isHabitDone = redemptionHabit.isCompletedToday;
+    // 🛡️ FIX #4: Validate redemption habit exists - fail loudly instead of fallback
+    final redemptionHabitIndex =
+        _habits.indexWhere((h) => h.id == 'evening_redemption_pushups');
 
-    if (isHabitDone && !redemptionDone) {
-      await _settingsBox!.put('redemption_done_$todayKey', true);
+    bool isHabitDone = false;
+
+    if (redemptionHabitIndex == -1) {
+      debugPrint(
+          'ERROR: Redemption habit not found! This should never happen.');
+      // If redemption habit is missing, assume redemption is NOT done
+      // This prevents users from deleting the habit to bypass Shadow Execution
+      await _settingsBox!.put('redemption_done_$todayKey', false);
+      isHabitDone = false;
+    } else {
+      final redemptionHabit = _habits[redemptionHabitIndex];
+      isHabitDone = redemptionHabit.isCompletedToday;
+
+      if (isHabitDone && !redemptionDone) {
+        await _settingsBox!.put('redemption_done_$todayKey', true);
+      }
     }
 
     // If deadline passed, redemption needed, and NOT done
@@ -375,6 +387,17 @@ class HabitProvider extends ChangeNotifier {
 
     if (!habit.isCompletedToday) return;
 
+    // 🛡️ FIX #3: Only allow uncomplete within 2 minutes to prevent timing manipulation
+    if (habit.completedDates.isNotEmpty) {
+      final lastCompleteTime = habit.completedDates.last;
+      final timeSinceComplete = DateTime.now().difference(lastCompleteTime);
+
+      if (timeSinceComplete.inMinutes > 2) {
+        throw Exception(
+            'Cannot undo habit completion after 2 minutes. This prevents timing manipulation.');
+      }
+    }
+
     // Remove rewards
     final totalXP = habit.getTotalXPReward();
     await userProvider.loseXP(totalXP, source: 'Undo: ${habit.name}');
@@ -449,6 +472,17 @@ class HabitProvider extends ChangeNotifier {
     final habit = _habits[habitIndex];
 
     if (!habit.isFailedToday) return;
+
+    // 🛡️ FIX #2: Only allow undo within 5 minutes to prevent penalty bypass
+    if (habit.failedDates.isNotEmpty) {
+      final lastFailTime = habit.failedDates.last;
+      final timeSinceFail = DateTime.now().difference(lastFailTime);
+
+      if (timeSinceFail.inMinutes > 5) {
+        throw Exception(
+            'Cannot undo bad habit failure after 5 minutes. Penalties are permanent.');
+      }
+    }
 
     // Reverse penalties
     if (habit.type == HabitType.bad) {
