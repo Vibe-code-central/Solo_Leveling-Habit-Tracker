@@ -313,11 +313,10 @@ class ProfileScreen extends StatelessWidget {
             childAspectRatio: 1.2,
             children: [
               _buildStatItem('STR', user.stats.strength, Icons.fitness_center),
-              _buildStatItem('AGI', user.stats.agility, Icons.flash_on),
-              _buildStatItem('VIT', user.stats.vitality, Icons.favorite),
-              _buildStatItem('INT', user.stats.intelligence, Icons.psychology),
-              _buildStatItem('SEN', user.stats.sense, Icons.visibility),
               _buildStatItem('WIL', user.stats.willpower, Icons.psychology_alt),
+              _buildStatItem('CHA', user.stats.charisma, Icons.star),
+              _buildStatItem('END', user.stats.endurance, Icons.favorite),
+              _buildStatItem('WIS', user.stats.wisdom, Icons.psychology),
             ],
           ),
         ],
@@ -791,7 +790,7 @@ class ProfileScreen extends StatelessWidget {
     showAboutDialog(
       context: context,
       applicationName: 'Solo Leveling: Shadow Monarch',
-      applicationVersion: '1.0.0',
+      applicationVersion: '1.0.2',
       applicationIcon: Container(
         width: 60,
         height: 60,

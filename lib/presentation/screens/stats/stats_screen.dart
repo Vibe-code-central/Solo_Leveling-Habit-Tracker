@@ -13,7 +13,8 @@ class StatsScreen extends StatefulWidget {
   State<StatsScreen> createState() => _StatsScreenState();
 }
 
-class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin {
+class _StatsScreenState extends State<StatsScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -60,14 +61,14 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                     Text(
                       'HUNTER ANALYTICS',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontFamily: 'Orbitron',
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontFamily: 'Orbitron',
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Tab Bar
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -98,7 +99,7 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                   ],
                 ),
               ),
-              
+
               // Tab Content
               Expanded(
                 child: TabBarView(
@@ -121,7 +122,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     return Consumer2<UserProvider, HabitProvider>(
       builder: (context, userProvider, habitProvider, child) {
         final user = userProvider.userProfile;
-        if (user == null) return const Center(child: CircularProgressIndicator());
+        if (user == null)
+          return const Center(child: CircularProgressIndicator());
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -130,14 +132,14 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
             children: [
               // Character Stats Radar Chart
               _buildStatsRadarChart(user),
-              
+
               const SizedBox(height: 20),
-              
+
               // Quick Stats Grid
               _buildQuickStatsGrid(user, habitProvider),
-              
+
               const SizedBox(height: 20),
-              
+
               // Active Buffs/Debuffs
               if (user.activeBuffs.isNotEmpty || user.activeDebuffs.isNotEmpty)
                 _buildActiveEffects(user),
@@ -152,7 +154,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     return Consumer<UserProvider>(
       builder: (context, userProvider, child) {
         final user = userProvider.userProfile;
-        if (user == null) return const Center(child: CircularProgressIndicator());
+        if (user == null)
+          return const Center(child: CircularProgressIndicator());
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -161,14 +164,14 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
             children: [
               // XP Progress Chart
               _buildXPProgressChart(user),
-              
+
               const SizedBox(height: 20),
-              
+
               // Level Milestones
               _buildLevelMilestones(user),
-              
+
               const SizedBox(height: 20),
-              
+
               // Rank Progress
               _buildRankProgress(user),
             ],
@@ -188,14 +191,14 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
             children: [
               // Completion Rate Chart
               _buildCompletionRateChart(habitProvider),
-              
+
               const SizedBox(height: 20),
-              
+
               // Habit Performance
               _buildHabitPerformance(habitProvider),
-              
+
               const SizedBox(height: 20),
-              
+
               // Weekly Stats
               _buildWeeklyStats(habitProvider),
             ],
@@ -216,9 +219,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'CHARACTER STATS',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 20),
           Expanded(
@@ -232,11 +235,10 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                     borderWidth: 2,
                     dataEntries: [
                       RadarEntry(value: user.stats.strength.toDouble()),
-                      RadarEntry(value: user.stats.agility.toDouble()),
-                      RadarEntry(value: user.stats.vitality.toDouble()),
-                      RadarEntry(value: user.stats.intelligence.toDouble()),
-                      RadarEntry(value: user.stats.sense.toDouble()),
                       RadarEntry(value: user.stats.willpower.toDouble()),
+                      RadarEntry(value: user.stats.charisma.toDouble()),
+                      RadarEntry(value: user.stats.endurance.toDouble()),
+                      RadarEntry(value: user.stats.wisdom.toDouble()),
                     ],
                   ),
                 ],
@@ -257,15 +259,13 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                     case 0:
                       return RadarChartTitle(text: 'STR');
                     case 1:
-                      return RadarChartTitle(text: 'AGI');
-                    case 2:
-                      return RadarChartTitle(text: 'VIT');
-                    case 3:
-                      return RadarChartTitle(text: 'INT');
-                    case 4:
-                      return RadarChartTitle(text: 'SEN');
-                    case 5:
                       return RadarChartTitle(text: 'WIL');
+                    case 2:
+                      return RadarChartTitle(text: 'CHA');
+                    case 3:
+                      return RadarChartTitle(text: 'END');
+                    case 4:
+                      return RadarChartTitle(text: 'WIS');
                     default:
                       return const RadarChartTitle(text: '');
                   }
@@ -328,7 +328,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -354,15 +355,15 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             value,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           Text(
             title,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+                  color: AppTheme.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -380,42 +381,43 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'ACTIVE EFFECTS',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
-          
+
           // Active Buffs
           if (user.activeBuffs.isNotEmpty) ...[
             ...user.activeBuffs.map((buff) => _buildEffectItem(
-              buff.name,
-              buff.description,
-              buff.expiresAt,
-              AppTheme.emeraldGreen,
-              Icons.arrow_upward,
-            )),
+                  buff.name,
+                  buff.description,
+                  buff.expiresAt,
+                  AppTheme.emeraldGreen,
+                  Icons.arrow_upward,
+                )),
           ],
-          
+
           // Active Debuffs
           if (user.activeDebuffs.isNotEmpty) ...[
             ...user.activeDebuffs.map((debuff) => _buildEffectItem(
-              debuff.name,
-              debuff.description,
-              debuff.expiresAt,
-              AppTheme.crimsonRed,
-              Icons.arrow_downward,
-            )),
+                  debuff.name,
+                  debuff.description,
+                  debuff.expiresAt,
+                  AppTheme.crimsonRed,
+                  Icons.arrow_downward,
+                )),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildEffectItem(String name, String description, DateTime expiresAt, Color color, IconData icon) {
+  Widget _buildEffectItem(String name, String description, DateTime expiresAt,
+      Color color, IconData icon) {
     final timeLeft = expiresAt.difference(DateTime.now());
     final hoursLeft = timeLeft.inHours;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -474,9 +476,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'XP PROGRESS',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -495,8 +497,10 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                 ),
                 titlesData: FlTitlesData(
                   show: true,
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -576,12 +580,12 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     // Generate mock XP progression data
     List<FlSpot> spots = [];
     double totalXP = 0;
-    
+
     for (int level = 1; level <= user.level; level++) {
       totalXP += (level * 200) + (level * level * 50);
       spots.add(FlSpot(level.toDouble(), totalXP));
     }
-    
+
     return spots;
   }
 
@@ -595,9 +599,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'LEVEL MILESTONES',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           _buildMilestoneItem(10, 'First Steps', user.level >= 10),
@@ -614,12 +618,12 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isCompleted 
+        color: isCompleted
             ? AppTheme.emeraldGreen.withOpacity(0.1)
             : AppTheme.textSecondary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isCompleted 
+          color: isCompleted
               ? AppTheme.emeraldGreen.withOpacity(0.3)
               : AppTheme.textSecondary.withOpacity(0.3),
         ),
@@ -639,7 +643,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                 Text(
                   'Level $level',
                   style: TextStyle(
-                    color: isCompleted ? AppTheme.emeraldGreen : AppTheme.textSecondary,
+                    color: isCompleted
+                        ? AppTheme.emeraldGreen
+                        : AppTheme.textSecondary,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -669,9 +675,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'RANK PROGRESSION',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -702,8 +708,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'Next Rank: Level ${_getNextRankLevel(user.rank)}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+                  color: AppTheme.textSecondary,
+                ),
           ),
         ],
       ),
@@ -721,9 +727,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'HABIT COMPLETION RATE',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -735,7 +741,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
                   PieChartSectionData(
                     color: AppTheme.emeraldGreen,
                     value: habitProvider.getTodayCompletionRate() * 100,
-                    title: '${(habitProvider.getTodayCompletionRate() * 100).toInt()}%',
+                    title:
+                        '${(habitProvider.getTodayCompletionRate() * 100).toInt()}%',
                     radius: 50,
                     titleStyle: const TextStyle(
                       fontSize: 12,
@@ -768,14 +775,13 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'HABIT PERFORMANCE',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
-          ...habitProvider.goodHabits.take(5).map((habit) => 
-            _buildHabitPerformanceItem(habit.name, habit.completionRate)
-          ),
+          ...habitProvider.goodHabits.take(5).map((habit) =>
+              _buildHabitPerformanceItem(habit.name, habit.completionRate)),
         ],
       ),
     );
@@ -811,7 +817,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           LinearProgressIndicator(
             value: completionRate,
             backgroundColor: AppTheme.darkBg,
-            valueColor: AlwaysStoppedAnimation(_getCompletionColor(completionRate)),
+            valueColor:
+                AlwaysStoppedAnimation(_getCompletionColor(completionRate)),
           ),
         ],
       ),
@@ -820,7 +827,7 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
 
   Widget _buildWeeklyStats(HabitProvider habitProvider) {
     final weeklyStats = habitProvider.getWeeklyStats();
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: AppTheme.glowingContainer,
@@ -830,9 +837,9 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
           Text(
             'WEEKLY SUMMARY',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -861,7 +868,8 @@ class _StatsScreenState extends State<StatsScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildWeeklyStatItem(String label, String value, Color color, IconData icon) {
+  Widget _buildWeeklyStatItem(
+      String label, String value, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

@@ -393,6 +393,34 @@ class _HomeScreenState extends State<HomeScreen>
                               habit.id, habitProvider, userProvider),
                           onUndo: () => _uncompleteHabit(
                               habit.id, habitProvider, userProvider),
+                          onIncrement: habit.isCounterBased
+                              ? () async {
+                                  try {
+                                    await habitProvider.incrementWaterCounter(
+                                        habit.id, userProvider);
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                        ..clearSnackBars()
+                                        ..showSnackBar(
+                                          SnackBar(
+                                            content: Text(e
+                                                .toString()
+                                                .replaceAll('Exception: ', '')),
+                                            backgroundColor: AppTheme.amberGold,
+                                            behavior: SnackBarBehavior.floating,
+                                            duration:
+                                                const Duration(seconds: 3),
+                                          ),
+                                        );
+                                    }
+                                  }
+                                }
+                              : null,
+                          onDecrement: habit.isCounterBased
+                              ? () =>
+                                  habitProvider.decrementWaterCounter(habit.id)
+                              : null,
                           isDeadlinePassed: isDeadlinePassed,
                         ),
                       );

@@ -344,22 +344,21 @@ class HunterProfileCard extends StatelessWidget {
                   child: _buildStatItem(
                       'STR', stats.strength, Icons.fitness_center)),
               Expanded(
-                  child: _buildStatItem('AGI', stats.agility, Icons.flash_on)),
+                  child: _buildStatItem(
+                      'WIL', stats.willpower, Icons.psychology_alt)),
               Expanded(
-                  child: _buildStatItem('VIT', stats.vitality, Icons.favorite)),
+                  child: _buildStatItem('CHA', stats.charisma, Icons.star)),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
-                  child: _buildStatItem(
-                      'INT', stats.intelligence, Icons.psychology)),
+                  child:
+                      _buildStatItem('END', stats.endurance, Icons.favorite)),
               Expanded(
-                  child: _buildStatItem('SEN', stats.sense, Icons.visibility)),
-              Expanded(
-                  child: _buildStatItem(
-                      'WIL', stats.willpower, Icons.psychology_alt)),
+                  child: _buildStatItem('WIS', stats.wisdom, Icons.psychology)),
+              const Expanded(child: SizedBox()), // Empty space for alignment
             ],
           ),
         ],

@@ -64,6 +64,26 @@ class Habit extends HiveObject {
   @HiveField(19)
   bool isCustom;
 
+  // Counter-based habit fields (for water tracking, etc.)
+  @HiveField(20)
+  int currentCount;
+
+  @HiveField(21)
+  int maxCount;
+
+  @HiveField(22)
+  int xpPerCount;
+
+  @HiveField(23)
+  bool isCounterBased;
+
+  // Cooldown tracking for counter-based habits
+  @HiveField(24)
+  DateTime? lastCounterIncrement;
+
+  @HiveField(25)
+  int minMinutesBetweenIncrements;
+
   Habit({
     required this.id,
     required this.name,
@@ -71,21 +91,28 @@ class Habit extends HiveObject {
     required this.type,
     required this.tier,
     required this.xpReward,
-    this.xpPenalty = 0,
+    required this.xpPenalty,
+    required this.createdAt,
     Map<String, int>? statRewards,
     Map<String, int>? statPenalties,
     this.hpDamage = 0,
     this.mpDrain = 0,
+    this.debuffName,
+    this.streakBonus = 0,
     List<DateTime>? completedDates,
     List<DateTime>? failedDates,
     this.currentStreak = 0,
     this.longestStreak = 0,
     this.isActive = true,
-    required this.createdAt,
-    this.debuffName,
-    this.streakBonus = 0,
     this.isCustom = false,
-  })  : statRewards = statRewards ?? {},
+    this.currentCount = 0,
+    this.maxCount = 0,
+    this.xpPerCount = 0,
+    this.isCounterBased = false,
+    this.lastCounterIncrement,
+    int? minMinutesBetweenIncrements, // Nullable to handle existing Hive data
+  })  : minMinutesBetweenIncrements = minMinutesBetweenIncrements ?? 0,
+        statRewards = statRewards ?? {},
         statPenalties = statPenalties ?? {},
         completedDates = completedDates ?? [],
         failedDates = failedDates ?? [];
@@ -208,8 +235,8 @@ This is the first battle of your day. WIN IT.
         tier: HabitTier.s,
         xpReward: 180,
         xpPenalty: 150,
-        statRewards: {'willpower': 5, 'agility': 3},
-        statPenalties: {'willpower': 4, 'agility': 2},
+        statRewards: {'willpower': 6, 'endurance': 2},
+        statPenalties: {'willpower': 4, 'endurance': 2},
         hpDamage: 150,
         streakBonus: 25,
         debuffName: 'Light Sluggish',
@@ -234,8 +261,8 @@ No thinking. Just drop and push.''',
         tier: HabitTier.a,
         xpReward: 100,
         xpPenalty: 70, // Reduced from 120
-        statRewards: {'strength': 2, 'willpower': 2},
-        statPenalties: {'strength': 1, 'willpower': 1},
+        statRewards: {'strength': 3, 'endurance': 2},
+        statPenalties: {'strength': 1, 'endurance': 1},
         hpDamage: 50,
         streakBonus: 12,
         debuffName: 'Morning Fog',
@@ -259,8 +286,8 @@ This takes 10 seconds. No excuses.''',
         tier: HabitTier.a,
         xpReward: 80,
         xpPenalty: 50, // Reduced from 100
-        statRewards: {'sense': 2, 'vitality': 1},
-        statPenalties: {'sense': 1, 'vitality': 1},
+        statRewards: {'wisdom': 2, 'willpower': 2},
+        statPenalties: {'wisdom': 1, 'willpower': 1},
         hpDamage: 30,
         streakBonus: 10,
         debuffName: 'Morning Fog',
@@ -289,15 +316,15 @@ No more showering once a week. That stops TODAY.''',
         tier: HabitTier.s,
         xpReward: 130,
         xpPenalty: 100, // Reduced from 160
-        statRewards: {'vitality': 2, 'sense': 2},
-        statPenalties: {'vitality': 2, 'sense': 1},
+        statRewards: {'charisma': 3, 'endurance': 2},
+        statPenalties: {'charisma': 2, 'endurance': 1},
         hpDamage: 80,
         streakBonus: 18,
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
 
-      // HABIT 6: CHALICE OF LIFE - Hydration Quest
+      // HABIT 6: CHALICE OF LIFE - Hydration Quest (COUNTER-BASED)
       Habit(
         id: 'daily_water',
         name: '💧 Chalice of Life (2L Water)',
@@ -306,10 +333,10 @@ No more showering once a week. That stops TODAY.''',
 Like a healing potion in the dungeon, water restores your vitality.
 
 PROTOCOL:
-• 500ml upon waking (before coffee)
-• 500ml mid-morning
-• 500ml afternoon
-• 500ml evening
+• Track each glass (250ml)
+• Goal: 8 glasses = 2000ml (2L)
+• Earn 25 XP per glass
+• Stats awarded at full completion
 
 Benefits:
 • +Energy throughout the day
@@ -320,13 +347,17 @@ Benefits:
 Track your intake. Your body is your weapon - keep it hydrated.''',
         type: HabitType.good,
         tier: HabitTier.b,
-        xpReward: 60,
-        xpPenalty: 40,
-        statRewards: {'vitality': 2, 'strength': 1},
-        statPenalties: {'vitality': 1},
+        xpReward: 80, // B-tier: 10 XP per glass
+        xpPenalty: 30,
+        statRewards: {'endurance': 2, 'strength': 1}, // B-tier appropriate
+        statPenalties: {'endurance': 1},
         hpDamage: 30,
         streakBonus: 8,
         createdAt: DateTime.now(),
+        isCounterBased: true,
+        maxCount: 8,
+        xpPerCount: 10, // 10 XP per glass
+        minMinutesBetweenIncrements: 15, // 15-minute cooldown
       ),
 
       // ═══════════════════════════════════════════════════════════
@@ -351,7 +382,7 @@ No exceptions. No "just checking one thing."''',
         tier: HabitTier.catastrophic,
         xpReward: 0,
         xpPenalty: 200,
-        statPenalties: {'willpower': 4, 'vitality': 2},
+        statPenalties: {'willpower': 5, 'endurance': 3},
         hpDamage: 150,
         mpDrain: 100,
         debuffName: "Demon's Grip",
@@ -376,7 +407,7 @@ WIN IT.''',
         tier: HabitTier.severe,
         xpReward: 0,
         xpPenalty: 150,
-        statPenalties: {'willpower': 3, 'agility': 2},
+        statPenalties: {'willpower': 4, 'endurance': 2},
         hpDamage: 100,
         debuffName: 'Sluggish Start',
         createdAt: DateTime.now(),
@@ -400,7 +431,7 @@ Weekend gaming is fine. Weekdays are for building.''',
         tier: HabitTier.severe,
         xpReward: 0,
         xpPenalty: 180,
-        statPenalties: {'willpower': 3, 'intelligence': 2},
+        statPenalties: {'willpower': 4, 'wisdom': 2},
         mpDrain: 200,
         debuffName: 'Time Void',
         createdAt: DateTime.now(),
@@ -423,7 +454,7 @@ Your body is your tool. Don't sabotage it.''',
         tier: HabitTier.severe,
         xpReward: 0,
         xpPenalty: 120,
-        statPenalties: {'vitality': 3, 'strength': 1},
+        statPenalties: {'endurance': 3, 'strength': 2},
         hpDamage: 120,
         debuffName: 'Weakened State',
         createdAt: DateTime.now(),
@@ -460,7 +491,7 @@ If your morning was SUCCESSFUL:
         tier: HabitTier.a,
         xpReward: 30, // Small reward - damage control
         xpPenalty: 0,
-        statRewards: {'strength': 1, 'willpower': 1},
+        statRewards: {'willpower': 2, 'strength': 1},
         statPenalties: {},
         hpDamage: 0,
         streakBonus: 0,

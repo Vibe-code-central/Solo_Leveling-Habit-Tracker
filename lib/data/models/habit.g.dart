@@ -24,26 +24,32 @@ class HabitAdapter extends TypeAdapter<Habit> {
       tier: fields[4] as HabitTier,
       xpReward: fields[5] as int,
       xpPenalty: fields[6] as int,
-      statRewards: (fields[7] as Map).cast<String, int>(),
-      statPenalties: (fields[8] as Map).cast<String, int>(),
+      createdAt: fields[16] as DateTime,
+      statRewards: (fields[7] as Map?)?.cast<String, int>(),
+      statPenalties: (fields[8] as Map?)?.cast<String, int>(),
       hpDamage: fields[9] as int,
       mpDrain: fields[10] as int,
-      completedDates: (fields[11] as List).cast<DateTime>(),
-      failedDates: (fields[12] as List).cast<DateTime>(),
+      debuffName: fields[17] as String?,
+      streakBonus: fields[18] as int,
+      completedDates: (fields[11] as List?)?.cast<DateTime>(),
+      failedDates: (fields[12] as List?)?.cast<DateTime>(),
       currentStreak: fields[13] as int,
       longestStreak: fields[14] as int,
       isActive: fields[15] as bool,
-      createdAt: fields[16] as DateTime,
-      debuffName: fields[17] as String?,
-      streakBonus: fields[18] as int,
       isCustom: fields[19] as bool,
+      currentCount: fields[20] as int,
+      maxCount: fields[21] as int,
+      xpPerCount: fields[22] as int,
+      isCounterBased: fields[23] as bool,
+      lastCounterIncrement: fields[24] as DateTime?,
+      minMinutesBetweenIncrements: fields[25] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -83,7 +89,19 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(18)
       ..write(obj.streakBonus)
       ..writeByte(19)
-      ..write(obj.isCustom);
+      ..write(obj.isCustom)
+      ..writeByte(20)
+      ..write(obj.currentCount)
+      ..writeByte(21)
+      ..write(obj.maxCount)
+      ..writeByte(22)
+      ..write(obj.xpPerCount)
+      ..writeByte(23)
+      ..write(obj.isCounterBased)
+      ..writeByte(24)
+      ..write(obj.lastCounterIncrement)
+      ..writeByte(25)
+      ..write(obj.minMinutesBetweenIncrements);
   }
 
   @override
@@ -156,7 +174,7 @@ class HabitTierAdapter extends TypeAdapter<HabitTier> {
       case 5:
         return HabitTier.catastrophic;
       default:
-        return HabitTier.c;
+        return HabitTier.s;
     }
   }
 

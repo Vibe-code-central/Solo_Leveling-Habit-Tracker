@@ -263,6 +263,22 @@ class HabitProvider extends ChangeNotifier {
         await _settingsBox!.put('shadow_execution_applied_$todayKey', true);
       }
     }
+
+    // 🔄 DAILY COUNTER RESET: Reset all counter-based habits at day change
+    if (lastCheckEpoch != 0) {
+      final lastCheckDate = DateTime.fromMillisecondsSinceEpoch(lastCheckEpoch);
+      final lastCheckKey = _getDateKey(lastCheckDate);
+
+      if (todayKey != lastCheckKey) {
+        // New day detected, reset counters
+        for (var habit in _habits) {
+          if (habit.isCounterBased) {
+            habit.currentCount = 0;
+          }
+        }
+        await _saveHabits();
+      }
+    }
   }
 
   /// Apply Morning Incomplete penalty automatically
@@ -271,7 +287,7 @@ class HabitProvider extends ChangeNotifier {
     await userProvider.loseXP(50, source: 'Morning Incomplete - Auto Penalty');
 
     // Stat Penalties
-    await userProvider.updateStats({'willpower': -2, 'agility': -1});
+    await userProvider.updateStats({'willpower': -3, 'endurance': -2});
 
     // HP Damage
     await userProvider.takeDamage(50);
@@ -303,10 +319,9 @@ class HabitProvider extends ChangeNotifier {
 
     // Stat Penalties
     await userProvider.updateStats({
-      'willpower': -5,
+      'willpower': -6,
       'strength': -3,
-      'agility': -2,
-      'vitality': -2,
+      'endurance': -4,
     });
 
     // HP & MP Damage
@@ -322,11 +337,10 @@ class HabitProvider extends ChangeNotifier {
       statModifiers: {
         'xpMultiplier': 0.50,
         'strengthMultiplier': 0.70,
-        'agilityMultiplier': 0.70,
-        'vitalityMultiplier': 0.70,
-        'intelligenceMultiplier': 0.70,
-        'senseMultiplier': 0.70,
         'willpowerMultiplier': 0.70,
+        'charismaMultiplier': 0.70,
+        'enduranceMultiplier': 0.70,
+        'wisdomMultiplier': 0.70,
       },
     );
     await userProvider.addDebuff(debuff);
@@ -411,6 +425,83 @@ class HabitProvider extends ChangeNotifier {
     }
 
     habit.unmarkCompleted();
+
+    await _saveHabits();
+    notifyListeners();
+  }
+
+  /// Increment water counter for counter-based habits
+  Future<void> incrementWaterCounter(
+    String habitId,
+    UserProvider userProvider,
+  ) async {
+    final habitIndex = _habits.indexWhere((h) => h.id == habitId);
+    if (habitIndex == -1) return;
+
+    final habit = _habits[habitIndex];
+
+    // Only for counter-based habits
+    if (!habit.isCounterBased) return;
+
+    // Check if already at max
+    if (habit.currentCount >= habit.maxCount) return;
+
+    // 🛡️ ANTI-CHEAT: Cooldown check to prevent XP farming
+    if (habit.minMinutesBetweenIncrements > 0 &&
+        habit.lastCounterIncrement != null) {
+      final timeSince = DateTime.now().difference(habit.lastCounterIncrement!);
+      final minutesRemaining =
+          habit.minMinutesBetweenIncrements - timeSince.inMinutes;
+
+      if (minutesRemaining > 0) {
+        throw Exception(
+            '⏰ Please wait $minutesRemaining more minute${minutesRemaining > 1 ? 's' : ''} before next glass.\n'
+            'This prevents XP farming and encourages realistic hydration pacing.');
+      }
+    }
+
+    // Update cooldown timestamp
+    habit.lastCounterIncrement = DateTime.now();
+    habit.currentCount++;
+
+    // Award XP per glass immediately
+    await userProvider.gainXP(habit.xpPerCount,
+        source: 'Water: Glass ${habit.currentCount}');
+
+    // Award stats only when all glasses completed
+    if (habit.currentCount == habit.maxCount) {
+      if (habit.statRewards.isNotEmpty) {
+        await userProvider.updateStats(habit.statRewards);
+      }
+
+      // Mark as completed for streak tracking
+      if (!habit.isCompletedToday) {
+        habit.markCompleted();
+        _checkStreakAchievements(habit, userProvider);
+      }
+    }
+
+    await _saveHabits();
+    notifyListeners();
+  }
+
+  /// Decrement water counter for counter-based habits
+  Future<void> decrementWaterCounter(String habitId) async {
+    final habitIndex = _habits.indexWhere((h) => h.id == habitId);
+    if (habitIndex == -1) return;
+
+    final habit = _habits[habitIndex];
+
+    // Only for counter-based habits
+    if (!habit.isCounterBased) return;
+
+    // Check if already at 0
+    if (habit.currentCount <= 0) return;
+
+    habit.currentCount--;
+
+    // Note: We don't remove XP on decrement to prevent exploitation
+    // but allow correction of mistakes
 
     await _saveHabits();
     notifyListeners();
@@ -612,17 +703,16 @@ class HabitProvider extends ChangeNotifier {
       case 'Sluggish Start':
         return {'xpMultiplier': 0.85};
       case 'Mind Fog':
-        return {'intelligenceMultiplier': 0.9};
+        return {'wisdomMultiplier': 0.9, 'willpowerMultiplier': 0.9};
       case 'Entertainment Haze':
         return {'productivityMultiplier': 0.8};
       case 'Fatigue':
         return {
           'strengthMultiplier': 0.8,
-          'agilityMultiplier': 0.8,
-          'vitalityMultiplier': 0.8,
-          'intelligenceMultiplier': 0.8,
-          'senseMultiplier': 0.8,
           'willpowerMultiplier': 0.8,
+          'charismaMultiplier': 0.8,
+          'enduranceMultiplier': 0.8,
+          'wisdomMultiplier': 0.8,
         };
       // Morning Routine Debuffs - Progressive penalties
       case 'Light Sluggish':
@@ -636,18 +726,17 @@ class HabitProvider extends ChangeNotifier {
         return {
           'xpMultiplier': 0.65,
           'willpowerMultiplier': 0.75,
-          'agilityMultiplier': 0.80,
+          'enduranceMultiplier': 0.80,
         };
       // NUCLEAR OPTION - Devastating penalties for 3 days
       case "Failure's Mark":
         return {
           'xpMultiplier': 0.50, // HALF XP gains
           'strengthMultiplier': 0.70,
-          'agilityMultiplier': 0.70,
-          'vitalityMultiplier': 0.70,
-          'intelligenceMultiplier': 0.70,
-          'senseMultiplier': 0.70,
           'willpowerMultiplier': 0.70,
+          'charismaMultiplier': 0.70,
+          'enduranceMultiplier': 0.70,
+          'wisdomMultiplier': 0.70,
         };
       default:
         return {};

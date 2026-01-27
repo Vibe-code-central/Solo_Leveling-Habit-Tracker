@@ -155,11 +155,10 @@ class UserProvider extends ChangeNotifier {
       statModifiers: {
         'xpMultiplier': 0.25, // Only 25% XP gains
         'strengthMultiplier': 0.50,
-        'agilityMultiplier': 0.50,
-        'vitalityMultiplier': 0.50,
-        'intelligenceMultiplier': 0.50,
-        'senseMultiplier': 0.50,
         'willpowerMultiplier': 0.50,
+        'charismaMultiplier': 0.50,
+        'enduranceMultiplier': 0.50,
+        'wisdomMultiplier': 0.50,
       },
     );
 
@@ -205,7 +204,7 @@ class UserProvider extends ChangeNotifier {
       expiresAt: DateTime.now().add(const Duration(hours: 24)),
       statModifiers: {
         'xpMultiplier': 0.0, // NO XP gains at all!
-        'intelligenceMultiplier': 0.70,
+        'wisdomMultiplier': 0.70,
         'willpowerMultiplier': 0.70,
       },
     );
@@ -320,31 +319,25 @@ class UserProvider extends ChangeNotifier {
           stats.strength =
               (stats.strength + (change * multiplier).round()).clamp(0, 999);
           break;
-        case 'agility':
-          multiplier = statMultipliers['agility'] ?? 1.0;
-          stats.agility =
-              (stats.agility + (change * multiplier).round()).clamp(0, 999);
-          break;
-        case 'vitality':
-          multiplier = statMultipliers['vitality'] ?? 1.0;
-          stats.vitality =
-              (stats.vitality + (change * multiplier).round()).clamp(0, 999);
-          break;
-        case 'intelligence':
-          multiplier = statMultipliers['intelligence'] ?? 1.0;
-          stats.intelligence =
-              (stats.intelligence + (change * multiplier).round())
-                  .clamp(0, 999);
-          break;
-        case 'sense':
-          multiplier = statMultipliers['sense'] ?? 1.0;
-          stats.sense =
-              (stats.sense + (change * multiplier).round()).clamp(0, 999);
-          break;
         case 'willpower':
           multiplier = statMultipliers['willpower'] ?? 1.0;
           stats.willpower =
               (stats.willpower + (change * multiplier).round()).clamp(0, 999);
+          break;
+        case 'charisma':
+          multiplier = statMultipliers['charisma'] ?? 1.0;
+          stats.charisma =
+              (stats.charisma + (change * multiplier).round()).clamp(0, 999);
+          break;
+        case 'endurance':
+          multiplier = statMultipliers['endurance'] ?? 1.0;
+          stats.endurance =
+              (stats.endurance + (change * multiplier).round()).clamp(0, 999);
+          break;
+        case 'wisdom':
+          multiplier = statMultipliers['wisdom'] ?? 1.0;
+          stats.wisdom =
+              (stats.wisdom + (change * multiplier).round()).clamp(0, 999);
           break;
       }
     });
@@ -374,11 +367,10 @@ class UserProvider extends ChangeNotifier {
   Map<String, double> _getStatMultipliers() {
     final multipliers = <String, double>{
       'strength': 1.0,
-      'agility': 1.0,
-      'vitality': 1.0,
-      'intelligence': 1.0,
-      'sense': 1.0,
       'willpower': 1.0,
+      'charisma': 1.0,
+      'endurance': 1.0,
+      'wisdom': 1.0,
     };
 
     if (_userProfile == null) return multipliers;
@@ -429,20 +421,17 @@ class UserProvider extends ChangeNotifier {
           case 'strength_adept':
             currentStatValue = stats.strength;
             break;
-          case 'agility_master':
-            currentStatValue = stats.agility;
-            break;
-          case 'vitality_guardian':
-            currentStatValue = stats.vitality;
-            break;
-          case 'intelligence_sage':
-            currentStatValue = stats.intelligence;
-            break;
-          case 'sense_mystic':
-            currentStatValue = stats.sense;
-            break;
           case 'willpower_titan':
             currentStatValue = stats.willpower;
+            break;
+          case 'charisma_master':
+            currentStatValue = stats.charisma;
+            break;
+          case 'endurance_guardian':
+            currentStatValue = stats.endurance;
+            break;
+          case 'wisdom_sage':
+            currentStatValue = stats.wisdom;
             break;
         }
 

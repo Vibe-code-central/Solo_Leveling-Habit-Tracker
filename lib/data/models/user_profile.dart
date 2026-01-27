@@ -81,22 +81,22 @@ class UserProfile extends HiveObject {
     this.title = "The Shadow's Candidate",
     this.consecutiveDays = 0,
     this.isInPenaltyZone = false,
-  }) : unlockedShadows = unlockedShadows ?? [],
-       activeBuffs = activeBuffs ?? [],
-       activeDebuffs = activeDebuffs ?? [];
+  })  : unlockedShadows = unlockedShadows ?? [],
+        activeBuffs = activeBuffs ?? [],
+        activeDebuffs = activeDebuffs ?? [];
 
   int get xpForNextLevel => (level * 200) + (level * level * 50);
-  
+
   double get xpProgress => currentXP / xpForNextLevel;
-  
+
   double get hpPercentage => currentHP / maxHP;
-  
+
   double get mpPercentage => currentMP / maxMP;
 
   void gainXP(int xp) {
     currentXP += xp;
     totalXP += xp;
-    
+
     while (currentXP >= xpForNextLevel) {
       levelUp();
     }
@@ -105,12 +105,12 @@ class UserProfile extends HiveObject {
   void loseXP(int xp) {
     currentXP -= xp;
     totalXP -= xp; // Decrease effective total XP (can go negative)
-    
+
     // Check for level down
     while (currentXP < 0 && level > 1) {
       levelDown();
     }
-    
+
     // Ensure currentXP doesn't go below 0 after level adjustments
     if (currentXP < 0) {
       currentXP = 0;
@@ -121,21 +121,20 @@ class UserProfile extends HiveObject {
     level--;
     final prevLevelXP = (level * 200) + (level * level * 50);
     currentXP += prevLevelXP;
-    
+
     // Decrease stats on level down
-    stats.strength = (stats.strength - 2).clamp(10, 999);
-    stats.agility = (stats.agility - 2).clamp(10, 999);
-    stats.vitality = (stats.vitality - 2).clamp(10, 999);
-    stats.intelligence = (stats.intelligence - 2).clamp(10, 999);
-    stats.sense = (stats.sense - 1).clamp(10, 999);
-    stats.willpower = (stats.willpower - 2).clamp(10, 999);
-    
+    stats.strength = (stats.strength - 3).clamp(10, 999);
+    stats.willpower = (stats.willpower - 3).clamp(10, 999);
+    stats.charisma = (stats.charisma - 2).clamp(10, 999);
+    stats.endurance = (stats.endurance - 3).clamp(10, 999);
+    stats.wisdom = (stats.wisdom - 2).clamp(10, 999);
+
     // Decrease HP/MP
     maxHP = (maxHP - 50).clamp(1000, 999999);
     maxMP = (maxMP - 25).clamp(500, 999999);
     currentHP = currentHP.clamp(0, maxHP);
     currentMP = currentMP.clamp(0, maxMP);
-    
+
     // Check for rank down
     _checkRankDown();
   }
@@ -168,21 +167,20 @@ class UserProfile extends HiveObject {
   void levelUp() {
     currentXP -= xpForNextLevel;
     level++;
-    
+
     // Increase stats on level up
-    stats.strength += 2;
-    stats.agility += 2;
-    stats.vitality += 2;
-    stats.intelligence += 2;
-    stats.sense += 1;
-    stats.willpower += 2;
-    
+    stats.strength += 3;
+    stats.willpower += 3;
+    stats.charisma += 2;
+    stats.endurance += 3;
+    stats.wisdom += 2;
+
     // Increase HP/MP
     maxHP += 50;
     maxMP += 25;
     currentHP = maxHP;
     currentMP = maxMP;
-    
+
     // Check for rank up
     _checkRankUp();
     _checkShadowUnlock();
@@ -214,7 +212,7 @@ class UserProfile extends HiveObject {
 
   void _checkShadowUnlock() {
     List<String> newShadows = [];
-    
+
     if (level >= 11 && !unlockedShadows.contains('Iron')) {
       newShadows.add('Iron');
     }
@@ -233,7 +231,7 @@ class UserProfile extends HiveObject {
     if (level >= 91 && !unlockedShadows.contains('Army')) {
       newShadows.add('Army');
     }
-    
+
     unlockedShadows = [...unlockedShadows, ...newShadows];
   }
 
@@ -260,27 +258,23 @@ class PlayerStats extends HiveObject {
   int strength;
 
   @HiveField(1)
-  int agility;
+  int willpower;
 
   @HiveField(2)
-  int vitality;
+  int charisma;
 
   @HiveField(3)
-  int intelligence;
+  int endurance;
 
   @HiveField(4)
-  int sense;
-
-  @HiveField(5)
-  int willpower;
+  int wisdom;
 
   PlayerStats({
     this.strength = 10,
-    this.agility = 10,
-    this.vitality = 10,
-    this.intelligence = 10,
-    this.sense = 10,
     this.willpower = 10,
+    this.charisma = 10,
+    this.endurance = 10,
+    this.wisdom = 10,
   });
 }
 
