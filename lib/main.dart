@@ -24,37 +24,54 @@ import 'presentation/screens/onboarding/onboarding_screen.dart';
 // }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  Hive.registerAdapter(UserProfileAdapter());
-  Hive.registerAdapter(PlayerStatsAdapter());
-  Hive.registerAdapter(HunterRankAdapter());
-  Hive.registerAdapter(HunterClassAdapter());
-  Hive.registerAdapter(ActiveBuffAdapter());
-  Hive.registerAdapter(ActiveDebuffAdapter());
-  Hive.registerAdapter(HabitAdapter());
-  Hive.registerAdapter(AchievementAdapter());
-  Hive.registerAdapter(AchievementCategoryAdapter());
-  Hive.registerAdapter(HabitTypeAdapter());
-  Hive.registerAdapter(HabitTierAdapter());
+    await Hive.initFlutter();
+    Hive.registerAdapter(UserProfileAdapter());
+    Hive.registerAdapter(PlayerStatsAdapter());
+    Hive.registerAdapter(HunterRankAdapter());
+    Hive.registerAdapter(HunterClassAdapter());
+    Hive.registerAdapter(ActiveBuffAdapter());
+    Hive.registerAdapter(ActiveDebuffAdapter());
+    Hive.registerAdapter(HabitAdapter());
+    Hive.registerAdapter(AchievementAdapter());
+    Hive.registerAdapter(AchievementCategoryAdapter());
+    Hive.registerAdapter(HabitTypeAdapter());
+    Hive.registerAdapter(HabitTierAdapter());
 
-  await Hive.openBox<UserProfile>('userProfile');
-  await Hive.openBox<Habit>('habits');
-  await Hive.openBox<Achievement>('achievements');
-  await Hive.openBox('settings');
+    await Hive.openBox<UserProfile>('userProfile');
+    await Hive.openBox<Habit>('habits');
+    await Hive.openBox<Achievement>('achievements');
+    await Hive.openBox('settings');
 
-  // await NotificationService.initialize();
-  // await Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+    // SystemChrome setup
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF0F0F1E),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF0F0F1E),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
-
-  runApp(const SoloLevelingApp());
+    runApp(const SoloLevelingApp());
+  } catch (e) {
+    // Fallback if initialization fails
+    runApp(MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              'Initialization Error:\n$e\n\nPlease reinstall the app.',
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
 }
 
 class SoloLevelingApp extends StatelessWidget {
