@@ -243,10 +243,10 @@ This is the first battle of your day. WIN IT.
         createdAt: DateTime.now(),
       ),
 
-      // HABIT 3: 20 PUSHUPS - Wake Up Your Body
+      // HABIT 3: 10 PUSHUPS - Wake Up Your Body
       Habit(
         id: 'morning_pushups',
-        name: '💪 20 Pushups',
+        name: '💪 10 Pushups',
         description: '''IMMEDIATELY after getting out of bed.
 
 Why pushups?
@@ -255,7 +255,7 @@ Why pushups?
 • Builds discipline before brain is awake
 • Takes less than 60 seconds
 
-Can't do 20? Start with 10. Or 5. Just DO THEM.
+Can't do 10? Start with 5. Just DO THEM.
 No thinking. Just drop and push.''',
         type: HabitType.good,
         tier: HabitTier.a,
@@ -470,7 +470,7 @@ Your body is your tool. Don't sabotage it.''',
       // REDEMPTION TASK - Complete this to avoid Shadow Execution
       Habit(
         id: 'evening_redemption_pushups',
-        name: '🔥 Evening Redemption (10 Pushups)',
+        name: '🔥 Evening Redemption (15 Pushups)',
         description: '''⚠️ AUTOMATIC PENALTY SYSTEM ⚠️
 
 If you MISSED your morning routine by 10 AM:
@@ -478,7 +478,7 @@ If you MISSED your morning routine by 10 AM:
 → You now OWE a debt
 
 TO CLEAR YOUR DEBT:
-→ DO 10 PUSHUPS RIGHT NOW
+→ DO 15 PUSHUPS RIGHT NOW
 → COMPLETE this habit BEFORE 10 PM
 
 If you DON'T complete this by 10 PM:
