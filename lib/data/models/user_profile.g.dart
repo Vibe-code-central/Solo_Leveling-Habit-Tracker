@@ -36,13 +36,17 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       title: fields[16] as String,
       consecutiveDays: fields[17] as int,
       isInPenaltyZone: fields[18] as bool,
+      unlockedTitles: (fields[19] as List?)?.cast<String>(),
+      bossesDefeated: fields[20] as int,
+      currentWeekBossProgress: fields[21] as int,
+      lastBossWeek: fields[22] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -80,7 +84,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(17)
       ..write(obj.consecutiveDays)
       ..writeByte(18)
-      ..write(obj.isInPenaltyZone);
+      ..write(obj.isInPenaltyZone)
+      ..writeByte(19)
+      ..write(obj.unlockedTitles)
+      ..writeByte(20)
+      ..write(obj.bossesDefeated)
+      ..writeByte(21)
+      ..write(obj.currentWeekBossProgress)
+      ..writeByte(22)
+      ..write(obj.lastBossWeek);
   }
 
   @override

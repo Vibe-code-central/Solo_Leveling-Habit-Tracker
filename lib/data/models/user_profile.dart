@@ -61,6 +61,18 @@ class UserProfile extends HiveObject {
   @HiveField(18)
   bool isInPenaltyZone;
 
+  @HiveField(19)
+  List<String> unlockedTitles;
+
+  @HiveField(20)
+  int bossesDefeated;
+
+  @HiveField(21)
+  int currentWeekBossProgress;
+
+  @HiveField(22)
+  int lastBossWeek;
+
   UserProfile({
     required this.name,
     this.level = 1,
@@ -81,9 +93,14 @@ class UserProfile extends HiveObject {
     this.title = "The Shadow's Candidate",
     this.consecutiveDays = 0,
     this.isInPenaltyZone = false,
+    List<String>? unlockedTitles,
+    this.bossesDefeated = 0,
+    this.currentWeekBossProgress = 0,
+    this.lastBossWeek = 0,
   })  : unlockedShadows = unlockedShadows ?? [],
         activeBuffs = activeBuffs ?? [],
-        activeDebuffs = activeDebuffs ?? [];
+        activeDebuffs = activeDebuffs ?? [],
+        unlockedTitles = unlockedTitles ?? ["The Shadow's Candidate"];
 
   int get xpForNextLevel => (level * 200) + (level * level * 50);
 

@@ -7,6 +7,7 @@ import 'package:solo_leveling/presentation/providers/user_provider.dart';
 import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/screens/onboarding/onboarding_screen.dart';
 import 'buffs_debuffs_guide_screen.dart';
+import 'titles_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -170,12 +171,37 @@ class ProfileScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    Text(
-                      user.title,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppTheme.electricBlue,
-                            fontStyle: FontStyle.italic,
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TitlesScreen(),
                           ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              user.title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: AppTheme.electricBlue,
+                                    fontStyle: FontStyle.italic,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.edit,
+                              color: AppTheme.electricBlue, size: 14),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Container(

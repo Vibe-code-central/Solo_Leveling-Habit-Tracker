@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:solo_leveling/data/models/achievement.dart';
+import 'package:solo_leveling/data/models/weekly_boss.dart';
 import '../../data/models/habit.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/services/notification_service.dart';
@@ -799,32 +800,153 @@ class HabitProvider extends ChangeNotifier {
     int completions = 0;
     int failures = 0;
 
-    // Calculate stats for last 7 days
-    for (int i = 0; i < 7; i++) {
-      final date = now.subtract(Duration(days: i));
-
-      // Good habits completed
-      for (final habit in goodHabits) {
-        if (habit.completedDates.any((d) =>
-            d.year == date.year &&
-            d.month == date.month &&
-            d.day == date.day)) {
+    for (var habit in _habits) {
+      // Calculate completions in the last 7 days
+      for (var date in habit.completedDates) {
+        if (now.difference(date).inDays < 7) {
           completions++;
         }
       }
-
-      // Failures (Bad habits triggered)
-      for (final habit in badHabits) {
-        if (habit.completedDates.any((d) =>
-            d.year == date.year &&
-            d.month == date.month &&
-            d.day == date.day)) {
+      // Calculate failures in the last 7 days
+      for (var date in habit.failedDates) {
+        if (now.difference(date).inDays < 7) {
           failures++;
         }
       }
     }
 
     return {'completions': completions, 'failures': failures};
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // WEEKLY BOSS LOGIC
+  // ═══════════════════════════════════════════════════════════
+
+  WeeklyBoss getCurrentWeeklyBoss() {
+    return WeeklyBoss.getCurrentBoss();
+  }
+
+  bool isWeeklyBossDefeated(UserProvider userProvider) {
+    if (userProvider.userProfile == null) return false;
+
+    // Check if the "last defeated week" matches current boss week
+    final now = DateTime.now();
+    final weekNumber =
+        (now.millisecondsSinceEpoch / (1000 * 60 * 60 * 24 * 7)).floor();
+
+    return userProvider.userProfile!.lastBossWeek == weekNumber;
+  }
+
+  int getWeeklyBossProgress(WeeklyBoss boss) {
+    final now = DateTime.now();
+    final oneWeekAgo = now.subtract(const Duration(days: 7));
+
+    if (boss.isNegativeAvoidance) {
+      // Count DAYS where the specific bad habit was NOT failed
+      if (boss.specificHabitId == null) return 0;
+
+      final habitIndex =
+          _habits.indexWhere((h) => h.id == boss.specificHabitId);
+      if (habitIndex == -1)
+        return 0; // Habit not found, so technically 100% success? No, 0 progress.
+
+      final habit = _habits[habitIndex];
+
+      // Count days in last 7 days that are NOT in failedDates
+      int cleanDays = 0;
+      for (int i = 0; i < 7; i++) {
+        final day = now.subtract(Duration(days: i));
+        // Normalize to midnight
+        // Check if failed on this day
+        final failedOnDay = habit.failedDates.any((d) =>
+            d.year == day.year && d.month == day.month && d.day == day.day);
+
+        if (!failedOnDay) cleanDays++;
+      }
+
+      return cleanDays;
+    } else {
+      // POSITIVE COMPLETION
+      if (boss.specificHabitId != null) {
+        // Count completions of specific habit
+        final habitIndex =
+            _habits.indexWhere((h) => h.id == boss.specificHabitId);
+        if (habitIndex == -1) return 0;
+
+        final habit = _habits[habitIndex];
+        return habit.completedDates.where((d) => d.isAfter(oneWeekAgo)).length;
+      } else if (boss.habitIdPrefix != null) {
+        // Count completions of habits with prefix
+        if (boss.requiresUniqueDays) {
+          // Count distinct DAYS with at least one completion
+          final distinctDays = <String>{};
+          for (final habit in _habits) {
+            if (habit.id.startsWith(boss.habitIdPrefix!)) {
+              for (final date in habit.completedDates) {
+                if (date.isAfter(oneWeekAgo)) {
+                  distinctDays.add(
+                      "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}");
+                }
+              }
+            }
+          }
+          return distinctDays.length;
+        } else {
+          // Count TOTAL completions (volume)
+          int total = 0;
+          for (final habit in _habits) {
+            if (habit.id.startsWith(boss.habitIdPrefix!)) {
+              total += habit.completedDates
+                  .where((d) => d.isAfter(oneWeekAgo))
+                  .length;
+            }
+          }
+          return total;
+        }
+      } else {
+        // Any habit completion
+        int total = 0;
+        for (final habit in _habits) {
+          if (habit.type == HabitType.good) {
+            total +=
+                habit.completedDates.where((d) => d.isAfter(oneWeekAgo)).length;
+          }
+        }
+        return total;
+      }
+    }
+  }
+
+  Future<void> checkAndDefeatWeeklyBoss(UserProvider userProvider) async {
+    if (userProvider.userProfile == null) return;
+    if (isWeeklyBossDefeated(userProvider)) return;
+
+    final boss = getCurrentWeeklyBoss();
+    final progress = getWeeklyBossProgress(boss);
+
+    if (progress >= boss.targetCompletions) {
+      // BOSS DEFEATED!
+      final now = DateTime.now();
+      final weekNumber =
+          (now.millisecondsSinceEpoch / (1000 * 60 * 60 * 24 * 7)).floor();
+
+      userProvider.userProfile!.lastBossWeek = weekNumber;
+      userProvider.userProfile!.bossesDefeated++;
+      userProvider.userProfile!.save();
+
+      // Apply Rewards
+      await userProvider.gainXP(boss.xpReward,
+          source: 'BOSS SLAIN: ${boss.name}');
+      if (boss.statRewards.isNotEmpty) {
+        await userProvider.updateStats(boss.statRewards);
+      }
+
+      // Add to Notification
+      await NotificationService.showAchievementUnlocked(
+          'BOSS SLAIN: ${boss.name}');
+
+      notifyListeners();
+    }
   }
 
   Future<void> resetHabits() async {

@@ -452,9 +452,9 @@ class UserProvider extends ChangeNotifier {
       await updateStats(achievement.statRewards);
     }
 
-    // Update title if provided
+    // Verify unique title before adding
     if (achievement.titleUnlock != null) {
-      _userProfile!.title = achievement.titleUnlock!;
+      await addUnlockedTitle(achievement.titleUnlock!);
     }
 
     // Unlock shadow if provided
@@ -499,6 +499,34 @@ class UserProvider extends ChangeNotifier {
     for (int i = 0; i < _achievements.length; i++) {
       await _achievementBox.put(i, _achievements[i]);
     }
+  }
+
+  Future<void> addUnlockedTitle(String title) async {
+    if (_userProfile == null) return;
+
+    // Security check: Don't add if already unlocked
+    if (_userProfile!.unlockedTitles.contains(title)) return;
+
+    _userProfile!.unlockedTitles.add(title);
+    await _saveUserProfile();
+
+    // Auto-equip if it's the first title or a higher rank title?
+    // For now, let user choose to equip.
+    notifyListeners();
+  }
+
+  Future<void> equipTitle(String title) async {
+    if (_userProfile == null) return;
+
+    // Security Check: Title must be unlocked
+    if (!_userProfile!.unlockedTitles.contains(title)) {
+      debugPrint("SECURITY ALERT: Attempted to equip locked title: $title");
+      return;
+    }
+
+    _userProfile!.title = title;
+    await _saveUserProfile();
+    notifyListeners();
   }
 
   String getRankDisplayName() {

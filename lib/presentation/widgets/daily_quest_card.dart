@@ -467,11 +467,14 @@ class DailyQuestCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(
-              '⏰ Opportunity Missed',
-              style: TextStyle(
-                color: AppTheme.amberGold.withOpacity(0.7),
-                fontSize: 12,
+            Flexible(
+              child: Text(
+                '⏰ Opportunity Missed',
+                style: TextStyle(
+                  color: AppTheme.amberGold.withOpacity(0.7),
+                  fontSize: 12,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

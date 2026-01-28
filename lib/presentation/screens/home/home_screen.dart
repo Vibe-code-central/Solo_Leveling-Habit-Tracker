@@ -9,6 +9,7 @@ import 'package:solo_leveling/presentation/widgets/daily_quest_card.dart';
 import 'package:solo_leveling/presentation/widgets/hunter_profile_card.dart';
 import 'package:solo_leveling/presentation/widgets/morning_routine_progress_card.dart';
 import 'package:solo_leveling/presentation/widgets/shadow_army_display.dart';
+import 'package:solo_leveling/presentation/widgets/weekly_boss_card.dart';
 import 'package:solo_leveling/presentation/widgets/system_message_card.dart';
 import 'package:solo_leveling/presentation/screens/stats/stats_screen.dart';
 import 'package:solo_leveling/presentation/screens/habits/habits_screen.dart';
@@ -239,6 +240,13 @@ class _HomeScreenState extends State<HomeScreen>
                       unlockedShadows: user.unlockedShadows,
                       animationController: _shadowAnimationController,
                     ),
+                    const SizedBox(height: 20),
+
+                    // Weekly Boss Challenge
+                    _buildSectionHeader('WEEKLY BOSS', Icons.security,
+                        color: AppTheme.crimsonRed),
+                    const SizedBox(height: 12),
+                    const WeeklyBossCard(),
                     const SizedBox(height: 20),
 
                     // System Message
