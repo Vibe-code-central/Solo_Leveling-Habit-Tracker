@@ -764,8 +764,12 @@ class HabitProvider extends ChangeNotifier {
   }
 
   Future<void> _saveHabits() async {
-    for (int i = 0; i < _habits.length; i++) {
-      await _habitBox.put(i, _habits[i]);
+    for (var habit in _habits) {
+      if (habit.isInBox) {
+        await habit.save();
+      } else {
+        await _habitBox.add(habit);
+      }
     }
   }
 
@@ -779,7 +783,7 @@ class HabitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteHabit(String habitId) async {
+  Future<void> deleteHabit(String habitId, UserProvider userProvider) async {
     final habitIndex = _habits.indexWhere((h) => h.id == habitId);
     if (habitIndex == -1) return;
 
@@ -788,6 +792,21 @@ class HabitProvider extends ChangeNotifier {
     // Only allow erasing custom habits to prevent breaking game logic
     if (!habit.isCustom) {
       throw Exception('Cannot delete core system habits.');
+    }
+
+    // 🛡️ ANTI-CHEAT: Reform Phantom Habit Loophole
+    if (habit.isCompletedToday) {
+      final xpToRemove = habit.getTotalXPReward();
+      await userProvider.loseXP(xpToRemove,
+          source: 'Anti-Cheat: Deleting completed habit');
+
+      if (habit.statRewards.isNotEmpty) {
+        final negativeRewards = <String, int>{};
+        habit.statRewards.forEach((stat, reward) {
+          negativeRewards[stat] = -reward;
+        });
+        await userProvider.updateStats(negativeRewards);
+      }
     }
 
     _habits.removeAt(habitIndex);
