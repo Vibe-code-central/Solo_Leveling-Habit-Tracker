@@ -7,6 +7,7 @@ class DailyQuestCard extends StatelessWidget {
   final Habit habit;
   final VoidCallback onComplete;
   final VoidCallback? onUndo;
+  final VoidCallback? onDelete; // New delete callback
   final VoidCallback? onIncrement; // For counter-based habits
   final VoidCallback? onDecrement; // For counter-based habits
   final bool isDemonTrap;
@@ -17,6 +18,7 @@ class DailyQuestCard extends StatelessWidget {
     required this.habit,
     required this.onComplete,
     this.onUndo,
+    this.onDelete,
     this.onIncrement,
     this.onDecrement,
     this.isDemonTrap = false,
@@ -258,6 +260,18 @@ class DailyQuestCard extends StatelessWidget {
                   ],
                 ),
               ),
+
+              // DELETE BUTTON (Only if provided)
+              if (onDelete != null)
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: AppTheme.crimsonRed.withOpacity(0.7),
+                    size: 20,
+                  ),
+                  onPressed: onDelete,
+                  tooltip: 'Delete Habit',
+                ),
             ],
           ),
         ),

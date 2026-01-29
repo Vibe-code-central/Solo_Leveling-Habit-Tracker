@@ -219,6 +219,7 @@ class _HabitsScreenState extends State<HabitsScreen>
                     ? _uncompleteHabit(habit.id, habitProvider, userProvider)
                     : _unfailHabit(habit.id, habitProvider, userProvider),
                 isDemonTrap: habit.type == HabitType.bad,
+                onDelete: () => _deleteHabit(habit.id, habitProvider),
               ),
             );
           },
@@ -383,6 +384,55 @@ class _HabitsScreenState extends State<HabitsScreen>
           SnackBar(
             content: const Text('Demon trap triggered! Penalties applied.'),
             backgroundColor: AppTheme.crimsonRed,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteHabit(String habitId, HabitProvider habitProvider) async {
+    // Show confirmation dialog before deleting
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardBg,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'DELETE HABIT',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AppTheme.crimsonRed,
+              ),
+        ),
+        content: Text(
+          'Are you sure you want to delete this habit? This action cannot be undone.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await habitProvider.deleteHabit(habitId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Habit deleted successfully.'),
+            backgroundColor: AppTheme.primaryPurple,
             behavior: SnackBarBehavior.floating,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

@@ -779,6 +779,37 @@ class HabitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteHabit(String habitId) async {
+    final habitIndex = _habits.indexWhere((h) => h.id == habitId);
+    if (habitIndex == -1) return;
+
+    final habit = _habits[habitIndex];
+
+    // Only allow erasing custom habits to prevent breaking game logic
+    if (!habit.isCustom) {
+      throw Exception('Cannot delete core system habits.');
+    }
+
+    _habits.removeAt(habitIndex);
+
+    // Hive requires key to delete, but we've been using index or auto-increment.
+    // Ideally, we should delete by key.
+    // If habit extends HiveObject, we can call habit.delete()
+    if (habit.isInBox) {
+      await habit.delete();
+    } else {
+      // Fallback if not in box (shouldn't happen if loaded normally)
+      final keyToDelete = _habitBox.keys.firstWhere(
+          (k) => _habitBox.get(k)?.id == habitId,
+          orElse: () => null);
+      if (keyToDelete != null) {
+        await _habitBox.delete(keyToDelete);
+      }
+    }
+
+    notifyListeners();
+  }
+
   double getTodayCompletionRate() {
     if (goodHabits.isEmpty) return 0.0;
     final completedCount = goodHabits.where((h) => h.isCompletedToday).length;
