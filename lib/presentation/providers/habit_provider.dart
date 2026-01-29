@@ -68,6 +68,16 @@ class HabitProvider extends ChangeNotifier {
         _habits = _habitBox.values.toList();
       }
 
+      // MIGRATION: Ensure 'daily_reading' habit exists for existing users
+      final hasReadingHabit = _habits.any((h) => h.id == 'daily_reading');
+      if (!hasReadingHabit && _habitBox.isNotEmpty) {
+        final readingHabit =
+            Habit.getDefaultHabits().firstWhere((h) => h.id == 'daily_reading');
+        _habits.add(readingHabit);
+        await _habitBox.add(readingHabit);
+        debugPrint("MIGRATION: Added missing 'daily_reading' habit.");
+      }
+
       // Initial check for time travel / reset
       await _checkDailyResetAndGhostDays();
     } catch (e) {
@@ -375,6 +385,22 @@ class HabitProvider extends ChangeNotifier {
 
     // Prevent double completion
     if (habit.isCompletedToday) return false;
+
+    // 🛡️ ANTI-CHEAT: strict Time Travel Check
+    // If current time is SIGNIFICANTLY in the past (vs last known time), block progress.
+    if (_settingsBox != null) {
+      final now = DateTime.now();
+      final lastKnownTimeEpoch =
+          _settingsBox!.get('last_known_time_epoch', defaultValue: 0);
+
+      // Allow 2 minutes of drift/boot time difference, but block major reversals
+      if (lastKnownTimeEpoch > 0 &&
+          now.millisecondsSinceEpoch < lastKnownTimeEpoch - 120000) {
+        throw Exception(
+            '⏰ TIME ANOMALY DETECTED!\n\nSystem time is in the past compared to last save.\n'
+            'Please correct your device time to continue leveling up.');
+      }
+    }
 
     habit.markCompleted();
 
@@ -899,8 +925,9 @@ class HabitProvider extends ChangeNotifier {
 
       final habitIndex =
           _habits.indexWhere((h) => h.id == boss.specificHabitId);
-      if (habitIndex == -1)
+      if (habitIndex == -1) {
         return 0; // Habit not found, so technically 100% success? No, 0 progress.
+      }
 
       final habit = _habits[habitIndex];
 

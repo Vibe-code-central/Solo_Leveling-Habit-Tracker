@@ -360,6 +360,33 @@ Track your intake. Your body is your weapon - keep it hydrated.''',
         minMinutesBetweenIncrements: 15, // 15-minute cooldown
       ),
 
+      // HABIT 7: DAILY READING - Intelligence Stat
+      Habit(
+        id: 'daily_reading',
+        name: '📖 Daily Reading (10 Pages)',
+        description: '''READING EXPANDS THE MIND.
+        
+PROTOCOL:
+• Read 10 pages of a non-fiction or skill-building book.
+• Audiobooks count ONLY if you take notes.
+• Articles/Tweets do NOT count.
+
+Rewards:
+• +100 XP
+• +2 Intelligence
+• +1 Wisdom
+
+"A reader lives a thousand lives before he dies."''',
+        type: HabitType.good,
+        tier: HabitTier.a,
+        xpReward: 100,
+        xpPenalty: 50,
+        statRewards: {'intelligence': 2, 'wisdom': 1},
+        statPenalties: {'intelligence': 1},
+        streakBonus: 10,
+        createdAt: DateTime.now(),
+      ),
+
       // ═══════════════════════════════════════════════════════════
       // DEMON TRAPS - Bad Habits to Avoid
       // ═══════════════════════════════════════════════════════════
