@@ -219,7 +219,8 @@ class _HabitsScreenState extends State<HabitsScreen>
                     ? _uncompleteHabit(habit.id, habitProvider, userProvider)
                     : _unfailHabit(habit.id, habitProvider, userProvider),
                 isDemonTrap: habit.type == HabitType.bad,
-                onDelete: () => _deleteHabit(habit.id, habitProvider),
+                onDelete: () =>
+                    _deleteHabit(habit.id, habitProvider, userProvider),
               ),
             );
           },
@@ -393,7 +394,8 @@ class _HabitsScreenState extends State<HabitsScreen>
     }
   }
 
-  Future<void> _deleteHabit(String habitId, HabitProvider habitProvider) async {
+  Future<void> _deleteHabit(String habitId, HabitProvider habitProvider,
+      UserProvider userProvider) async {
     // Show confirmation dialog before deleting
     final confirmed = await showDialog<bool>(
       context: context,
@@ -407,7 +409,7 @@ class _HabitsScreenState extends State<HabitsScreen>
               ),
         ),
         content: Text(
-          'Are you sure you want to delete this habit? This action cannot be undone.',
+          'Are you sure you want to delete this habit? \n\n⚠️ ANTI-CHEAT WARNING: \nIf you completed this habit today, all XP and Stats gained will be REMOVED to prevent exploitation.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
@@ -426,7 +428,7 @@ class _HabitsScreenState extends State<HabitsScreen>
     );
 
     if (confirmed == true) {
-      await habitProvider.deleteHabit(habitId);
+      await habitProvider.deleteHabit(habitId, userProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
