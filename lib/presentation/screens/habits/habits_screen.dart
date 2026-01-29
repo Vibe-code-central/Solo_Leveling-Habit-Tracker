@@ -5,6 +5,9 @@ import 'package:solo_leveling/data/models/habit.dart';
 import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
 import 'package:solo_leveling/presentation/widgets/daily_quest_card.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
+import 'package:solo_leveling/presentation/widgets/system/level_up_dialog.dart';
 
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({super.key});
@@ -31,88 +34,73 @@ class _HabitsScreenState extends State<HabitsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.darkBg,
-              AppTheme.primaryPurple.withOpacity(0.1),
-              AppTheme.darkBg,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.assignment,
-                      color: AppTheme.primaryPurple,
-                      size: 28,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'QUEST MANAGEMENT',
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            fontFamily: 'Orbitron',
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
+    return SystemBackground(
+        child: Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.assignment,
+                    color: AppTheme.primaryPurple,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'QUEST MANAGEMENT',
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          fontFamily: 'Orbitron',
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
               ),
+            ),
 
-              // Tab Bar
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBg,
+            // Tab Bar
+            SystemContainer(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.zero,
+              backgroundColor: AppTheme.cardBg,
+              borderColor: AppTheme.primaryPurple,
+              cutSize: 8,
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  color: AppTheme.primaryPurple.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.primaryPurple.withOpacity(0.3),
-                    width: 1,
-                  ),
                 ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicator: BoxDecoration(
-                    color: AppTheme.primaryPurple.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  labelColor: AppTheme.primaryPurple,
-                  unselectedLabelColor: AppTheme.textSecondary,
-                  labelStyle: const TextStyle(
-                    fontFamily: 'Rajdhani',
-                    fontWeight: FontWeight.bold,
-                  ),
-                  tabs: const [
-                    Tab(text: 'DAILY QUESTS'),
-                    Tab(text: 'DEMON TRAPS'),
-                    Tab(text: 'CUSTOM'),
-                  ],
+                labelColor: AppTheme.primaryPurple,
+                unselectedLabelColor: AppTheme.textSecondary,
+                labelStyle: const TextStyle(
+                  fontFamily: 'Rajdhani',
+                  fontWeight: FontWeight.bold,
                 ),
+                tabs: const [
+                  Tab(text: 'DAILY QUESTS'),
+                  Tab(text: 'DEMON TRAPS'),
+                  Tab(text: 'CUSTOM'),
+                ],
               ),
+            ),
 
-              // Tab Content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildDailyQuestsTab(),
-                    _buildDemonTrapsTab(),
-                    _buildCustomHabitsTab(),
-                  ],
-                ),
+            // Tab Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildDailyQuestsTab(),
+                  _buildDemonTrapsTab(),
+                  _buildCustomHabitsTab(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -120,7 +108,7 @@ class _HabitsScreenState extends State<HabitsScreen>
         backgroundColor: AppTheme.primaryPurple,
         child: const Icon(Icons.add, color: Colors.white),
       ),
-    );
+    ));
   }
 
   Widget _buildDailyQuestsTab() {
@@ -246,21 +234,17 @@ class _HabitsScreenState extends State<HabitsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SystemContainer(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryPurple.withOpacity(0.1),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.primaryPurple.withOpacity(0.3),
-                  width: 2,
+              backgroundColor: AppTheme.primaryPurple.withOpacity(0.1),
+              borderColor: AppTheme.primaryPurple,
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: AppTheme.primaryPurple,
+                  size: 48,
                 ),
-              ),
-              child: Icon(
-                icon,
-                color: AppTheme.primaryPurple,
-                size: 48,
               ),
             ),
             const SizedBox(height: 24),
@@ -298,9 +282,20 @@ class _HabitsScreenState extends State<HabitsScreen>
 
   Future<void> _completeHabit(String habitId, HabitProvider habitProvider,
       UserProvider userProvider) async {
-    await habitProvider.completeHabit(habitId, userProvider);
+    final leveledUp = await habitProvider.completeHabit(habitId, userProvider);
 
     if (mounted) {
+      if (leveledUp) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => LevelUpDialog(
+            newLevel: userProvider.userProfile!.level,
+            onConfirm: () => Navigator.pop(context),
+          ),
+        );
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Quest completed! XP gained.'),
@@ -421,160 +416,170 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: AppTheme.cardBg,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(
-        'CREATE CUSTOM HABIT',
-        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-            ),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Habit Name
-            TextField(
-              controller: _nameController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration(
-                labelText: 'Habit Name',
-                labelStyle: TextStyle(color: AppTheme.textSecondary),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppTheme.primaryPurple),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide:
-                      BorderSide(color: AppTheme.electricBlue, width: 2),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: SystemContainer(
+        padding: const EdgeInsets.all(24),
+        backgroundColor: AppTheme.cardBg,
+        borderColor: AppTheme.primaryPurple,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'CREATE CUSTOM HABIT',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppTheme.primaryPurple,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 24),
+
+              // Habit Name
+              TextField(
+                controller: _nameController,
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: InputDecoration(
+                  labelText: 'Habit Name',
+                  labelStyle: TextStyle(color: AppTheme.textSecondary),
+                  border: OutlineInputBorder(
+                    // borderRadius: BorderRadius.zero, // Default theme handles this
+                    borderSide: BorderSide(color: AppTheme.primaryPurple),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    // borderRadius: BorderRadius.zero,
+                    borderSide:
+                        BorderSide(color: AppTheme.electricBlue, width: 2),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Description
-            TextField(
-              controller: _descriptionController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              maxLines: 2,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                labelStyle: TextStyle(color: AppTheme.textSecondary),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppTheme.primaryPurple),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide:
-                      BorderSide(color: AppTheme.electricBlue, width: 2),
+              // Description
+              TextField(
+                controller: _descriptionController,
+                style: Theme.of(context).textTheme.bodyMedium,
+                maxLines: 2,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: AppTheme.textSecondary),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.primaryPurple),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppTheme.electricBlue, width: 2),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Habit Type
-            Text(
-              'Habit Type',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<HabitType>(
-                    title: const Text('Good Habit'),
-                    value: HabitType.good,
-                    groupValue: _selectedType,
-                    onChanged: (value) =>
-                        setState(() => _selectedType = value!),
-                    activeColor: AppTheme.emeraldGreen,
-                  ),
-                ),
-                Expanded(
-                  child: RadioListTile<HabitType>(
-                    title: const Text('Bad Habit'),
-                    value: HabitType.bad,
-                    groupValue: _selectedType,
-                    onChanged: (value) =>
-                        setState(() => _selectedType = value!),
-                    activeColor: AppTheme.crimsonRed,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Tier Selection
-            Text(
-              'Tier',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<HabitTier>(
-              value: _selectedTier,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              // Habit Type
+              Text(
+                'Habit Type',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-              items: [
-                DropdownMenuItem(
-                    value: HabitTier.c, child: Text('C-Tier (Easy)')),
-                DropdownMenuItem(
-                    value: HabitTier.b, child: Text('B-Tier (Medium)')),
-                DropdownMenuItem(
-                    value: HabitTier.a, child: Text('A-Tier (Hard)')),
-                DropdownMenuItem(
-                    value: HabitTier.s, child: Text('S-Tier (Extreme)')),
-              ],
-              onChanged: (value) => setState(() {
-                _selectedTier = value!;
-                _updateXPReward();
-              }),
-            ),
-
-            const SizedBox(height: 16),
-
-            // XP Reward
-            Text(
-              'XP Reward/Penalty: $_xpReward',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<HabitType>(
+                      title: const Text('Good Habit'),
+                      value: HabitType.good,
+                      groupValue: _selectedType,
+                      onChanged: (value) =>
+                          setState(() => _selectedType = value!),
+                      activeColor: AppTheme.emeraldGreen,
+                    ),
                   ),
-            ),
-            Slider(
-              value: _xpReward.toDouble(),
-              min: 10,
-              max: 200,
-              divisions: 19,
-              activeColor: AppTheme.primaryPurple,
-              onChanged: (value) => setState(() => _xpReward = value.toInt()),
-            ),
-          ],
+                  Expanded(
+                    child: RadioListTile<HabitType>(
+                      title: const Text('Bad Habit'),
+                      value: HabitType.bad,
+                      groupValue: _selectedType,
+                      onChanged: (value) =>
+                          setState(() => _selectedType = value!),
+                      activeColor: AppTheme.crimsonRed,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // Tier Selection
+              Text(
+                'Tier',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<HabitTier>(
+                value: _selectedTier,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  DropdownMenuItem(
+                      value: HabitTier.c, child: Text('C-Tier (Easy)')),
+                  DropdownMenuItem(
+                      value: HabitTier.b, child: Text('B-Tier (Medium)')),
+                  DropdownMenuItem(
+                      value: HabitTier.a, child: Text('A-Tier (Hard)')),
+                  DropdownMenuItem(
+                      value: HabitTier.s, child: Text('S-Tier (Extreme)')),
+                ],
+                onChanged: (value) => setState(() {
+                  _selectedTier = value!;
+                  _updateXPReward();
+                }),
+              ),
+
+              const SizedBox(height: 16),
+
+              // XP Reward
+              Text(
+                'XP Reward/Penalty: $_xpReward',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              Slider(
+                value: _xpReward.toDouble(),
+                min: 10,
+                max: 200,
+                divisions: 19,
+                activeColor: AppTheme.primaryPurple,
+                onChanged: (value) => setState(() => _xpReward = value.toInt()),
+              ),
+
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('CANCEL'),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed:
+                        _nameController.text.isNotEmpty ? _createHabit : null,
+                    child: const Text('CREATE'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('CANCEL'),
-        ),
-        ElevatedButton(
-          onPressed: _nameController.text.isNotEmpty ? _createHabit : null,
-          child: const Text('CREATE'),
-        ),
-      ],
     );
   }
 

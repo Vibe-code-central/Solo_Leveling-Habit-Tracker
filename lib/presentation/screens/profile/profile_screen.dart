@@ -8,26 +8,18 @@ import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/screens/onboarding/onboarding_screen.dart';
 import 'buffs_debuffs_guide_screen.dart';
 import 'titles_screen.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.darkBg,
-              AppTheme.primaryPurple.withOpacity(0.1),
-              AppTheme.darkBg,
-            ],
-          ),
-        ),
-        child: SafeArea(
+    return SystemBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: Consumer<UserProvider>(
             builder: (context, userProvider, child) {
               final user = userProvider.userProfile;
@@ -103,30 +95,11 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildProfileCard(
       BuildContext context, UserProfile user, UserProvider userProvider) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppTheme.cardBg,
-            userProvider.getRankColor().withOpacity(0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: userProvider.getRankColor().withOpacity(0.5),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: userProvider.getRankColor().withOpacity(0.3),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
+      backgroundColor: AppTheme.cardBg,
+      borderColor: userProvider.getRankColor(),
+      cutSize: 20,
       child: Column(
         children: [
           // Avatar and Basic Info
@@ -316,9 +289,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatsOverview(BuildContext context, UserProfile user) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -386,9 +360,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildShadowArmySection(BuildContext context, UserProfile user) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -466,9 +441,10 @@ class ProfileScreen extends StatelessWidget {
     final totalCount = userProvider.achievements.length;
     final completionRate = totalCount > 0 ? unlockedCount / totalCount : 0.0;
 
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -534,9 +510,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildGuidesSection(BuildContext context) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.electricBlue,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -629,9 +606,10 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsSection(BuildContext context) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -4,6 +4,8 @@ import 'package:solo_leveling/core/theme/app_theme.dart';
 import 'package:solo_leveling/data/models/user_profile.dart';
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
 import 'package:solo_leveling/presentation/screens/home/home_screen.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -20,20 +22,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.darkBg,
-              AppTheme.primaryPurple.withOpacity(0.2),
-              AppTheme.darkBg,
-            ],
-          ),
-        ),
-        child: PageView(
+    return SystemBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: PageView(
           controller: _pageController,
           onPageChanged: (page) => setState(() => _currentPage = page),
           children: [
@@ -53,25 +45,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SystemContainer(
             width: 200,
             height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppTheme.primaryPurple,
-                  AppTheme.primaryPurple.withOpacity(0.3),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryPurple.withOpacity(0.5),
-                  blurRadius: 30,
-                  spreadRadius: 10,
-                ),
-              ],
-            ),
+            backgroundColor: AppTheme.primaryPurple.withOpacity(0.1),
+            borderColor: AppTheme.primaryPurple,
             child: const Icon(
               Icons.person,
               size: 100,
@@ -132,9 +110,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 40),
-          Container(
+          SystemContainer(
             padding: const EdgeInsets.all(24),
-            decoration: AppTheme.glowingContainer,
+            backgroundColor: AppTheme.cardBg,
+            borderColor: AppTheme.primaryPurple,
             child: Column(
               children: [
                 Text(
@@ -149,17 +128,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: InputDecoration(
                     hintText: 'Your name...',
                     hintStyle: TextStyle(color: AppTheme.textSecondary),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryPurple),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: AppTheme.electricBlue, width: 2),
-                    ),
                     filled: true,
                     fillColor: AppTheme.darkBg.withOpacity(0.5),
+                    // Theme handles border radius (zero)
                   ),
                 ),
               ],
@@ -270,41 +241,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return GestureDetector(
       onTap: () => setState(() => _selectedClass = hunterClass),
-      child: Container(
+      child: SystemContainer(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.2) : AppTheme.cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? color : AppTheme.primaryPurple.withOpacity(0.3),
-            width: isSelected ? 3 : 1,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : null,
-        ),
+        backgroundColor: isSelected ? color.withOpacity(0.2) : AppTheme.cardBg,
+        borderColor:
+            isSelected ? color : AppTheme.primaryPurple.withOpacity(0.3),
         child: Row(
           children: [
             Container(
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: color.withOpacity(0.5),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
-                      ]
-                    : null,
+                borderRadius: BorderRadius.zero,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -347,25 +295,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SystemContainer(
             width: 150,
             height: 150,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  AppTheme.emeraldGreen,
-                  AppTheme.emeraldGreen.withOpacity(0.3),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.emeraldGreen.withOpacity(0.5),
-                  blurRadius: 30,
-                  spreadRadius: 10,
-                ),
-              ],
-            ),
+            backgroundColor: AppTheme.emeraldGreen.withOpacity(0.1),
+            borderColor: AppTheme.emeraldGreen,
             child: const Icon(
               Icons.check,
               size: 80,
@@ -387,9 +321,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 40),
-          Container(
+          SystemContainer(
             padding: const EdgeInsets.all(24),
-            decoration: AppTheme.glowingContainer,
+            backgroundColor: AppTheme.cardBg,
+            borderColor: AppTheme.primaryPurple,
             child: Column(
               children: [
                 Text(

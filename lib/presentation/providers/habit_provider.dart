@@ -367,20 +367,21 @@ class HabitProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> completeHabit(String habitId, UserProvider userProvider) async {
+  Future<bool> completeHabit(String habitId, UserProvider userProvider) async {
     final habitIndex = _habits.indexWhere((h) => h.id == habitId);
-    if (habitIndex == -1) return;
+    if (habitIndex == -1) return false;
 
     final habit = _habits[habitIndex];
 
     // Prevent double completion
-    if (habit.isCompletedToday) return;
+    if (habit.isCompletedToday) return false;
 
     habit.markCompleted();
 
     // Apply rewards
     final totalXP = habit.getTotalXPReward();
-    await userProvider.gainXP(totalXP, source: 'Habit: ${habit.name}');
+    final leveledUp =
+        await userProvider.gainXP(totalXP, source: 'Habit: ${habit.name}');
 
     if (habit.statRewards.isNotEmpty) {
       await userProvider.updateStats(habit.statRewards);
@@ -391,6 +392,7 @@ class HabitProvider extends ChangeNotifier {
 
     await _saveHabits();
     notifyListeners();
+    return leveledUp;
   }
 
   Future<void> uncompleteHabit(

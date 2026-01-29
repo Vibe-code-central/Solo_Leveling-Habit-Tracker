@@ -91,8 +91,8 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> gainXP(int xp, {String? source}) async {
-    if (_userProfile == null) return;
+  Future<bool> gainXP(int xp, {String? source}) async {
+    if (_userProfile == null) return false;
 
     // Apply XP multipliers from active debuffs
     final xpMultiplier = _getXPMultiplier();
@@ -101,13 +101,16 @@ class UserProvider extends ChangeNotifier {
     final oldLevel = _userProfile!.level;
     _userProfile!.gainXP(effectiveXP);
 
+    bool didLevelUp = false;
     if (_userProfile!.level > oldLevel) {
+      didLevelUp = true;
       await NotificationService.showLevelUpNotification(_userProfile!.level);
       _checkLevelAchievements();
     }
 
     await _saveUserProfile();
     notifyListeners();
+    return didLevelUp;
   }
 
   Future<void> loseXP(int xp, {String? source}) async {

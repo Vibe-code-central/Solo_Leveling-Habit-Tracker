@@ -5,6 +5,8 @@ import 'package:solo_leveling/core/theme/app_theme.dart';
 import 'package:solo_leveling/data/models/user_profile.dart';
 import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
@@ -31,20 +33,10 @@ class _StatsScreenState extends State<StatsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.darkBg,
-              AppTheme.primaryPurple.withOpacity(0.1),
-              AppTheme.darkBg,
-            ],
-          ),
-        ),
-        child: SafeArea(
+    return SystemBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: Column(
             children: [
               // Header
@@ -70,16 +62,12 @@ class _StatsScreenState extends State<StatsScreen>
               ),
 
               // Tab Bar
-              Container(
+              SystemContainer(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.primaryPurple.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
+                padding: EdgeInsets.zero,
+                backgroundColor: AppTheme.cardBg,
+                borderColor: AppTheme.primaryPurple,
+                cutSize: 8,
                 child: TabBar(
                   controller: _tabController,
                   indicator: BoxDecoration(
@@ -209,10 +197,11 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildStatsRadarChart(UserProfile user) {
-    return Container(
+    return SystemContainer(
       height: 300,
       padding: const EdgeInsets.all(20),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -330,23 +319,10 @@ class _StatsScreenState extends State<StatsScreen>
 
   Widget _buildStatCard(
       String title, String value, IconData icon, Color color) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withOpacity(0.1),
-            color.withOpacity(0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
+      backgroundColor: color.withOpacity(0.1),
+      borderColor: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -372,9 +348,10 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildActiveEffects(UserProfile user) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.systemPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -466,10 +443,11 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildXPProgressChart(UserProfile user) {
-    return Container(
+    return SystemContainer(
       height: 200,
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -590,9 +568,10 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildLevelMilestones(UserProfile user) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -666,9 +645,10 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildRankProgress(UserProfile user) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -717,10 +697,11 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildCompletionRateChart(HabitProvider habitProvider) {
-    return Container(
+    return SystemContainer(
       height: 200,
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -766,9 +747,10 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildHabitPerformance(HabitProvider habitProvider) {
-    return Container(
+    return SystemContainer(
       padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glowingContainer,
+      backgroundColor: AppTheme.systemNavy,
+      borderColor: AppTheme.primaryPurple,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -16,6 +16,10 @@ import 'package:solo_leveling/presentation/screens/habits/habits_screen.dart';
 import 'package:solo_leveling/presentation/screens/achievements/achievements_screen.dart';
 import 'package:solo_leveling/presentation/screens/profile/profile_screen.dart';
 
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
+import 'package:solo_leveling/presentation/widgets/system/glass_panel.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -90,22 +94,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.darkBg,
-              AppTheme.primaryPurple.withOpacity(0.1),
-              AppTheme.darkBg,
-            ],
-          ),
-        ),
-        child: _buildBody(),
+    return SystemBackground(
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent, // Important for SystemBackground to show
+        body: _buildBody(),
+        extendBody: true, // Make body go behind navbar
+        bottomNavigationBar: _buildBottomNavigation(),
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
     );
   }
 
@@ -260,9 +256,11 @@ class _HomeScreenState extends State<HomeScreen>
                     // Habit Performance Section
                     _buildSectionHeader('HABIT PERFORMANCE', Icons.trending_up),
                     const SizedBox(height: 12),
-                    Container(
+                    SystemContainer(
                       padding: const EdgeInsets.all(16),
-                      decoration: AppTheme.glowingContainer,
+                      // decoration: AppTheme.glowingContainer, // Replaced by SystemContainer
+                      backgroundColor: AppTheme.systemNavy,
+                      borderColor: AppTheme.systemCyan,
                       child: Column(
                         children: habitProvider.goodHabits.take(5).map((habit) {
                           final completionRate = habit.completedDates.length > 0
@@ -290,8 +288,8 @@ class _HomeScreenState extends State<HomeScreen>
                                       .bodyMedium
                                       ?.copyWith(
                                         color: completionRate > 50
-                                            ? AppTheme.emeraldGreen
-                                            : AppTheme.crimsonRed,
+                                            ? AppTheme.systemCyan
+                                            : AppTheme.systemCrimson,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -309,19 +307,16 @@ class _HomeScreenState extends State<HomeScreen>
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
+                          child: SystemContainer(
                             padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: AppTheme.emeraldGreen.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: AppTheme.emeraldGreen.withOpacity(0.3),
-                              ),
-                            ),
+                            backgroundColor:
+                                AppTheme.systemCyan.withOpacity(0.1),
+                            borderColor: AppTheme.systemCyan,
+                            cutSize: 10,
                             child: Column(
                               children: [
                                 Icon(Icons.check_circle,
-                                    color: AppTheme.emeraldGreen, size: 32),
+                                    color: AppTheme.systemCyan, size: 32),
                                 const SizedBox(height: 8),
                                 Text(
                                   '${habitProvider.getWeeklyStats()['completions']}',
@@ -329,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       .textTheme
                                       .headlineLarge
                                       ?.copyWith(
-                                        color: AppTheme.emeraldGreen,
+                                        color: AppTheme.systemCyan,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -343,19 +338,16 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Container(
+                          child: SystemContainer(
                             padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: AppTheme.crimsonRed.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: AppTheme.crimsonRed.withOpacity(0.3),
-                              ),
-                            ),
+                            backgroundColor:
+                                AppTheme.systemCrimson.withOpacity(0.1),
+                            borderColor: AppTheme.systemCrimson,
+                            cutSize: 10,
                             child: Column(
                               children: [
                                 Icon(Icons.cancel,
-                                    color: AppTheme.crimsonRed, size: 32),
+                                    color: AppTheme.systemCrimson, size: 32),
                                 const SizedBox(height: 8),
                                 Text(
                                   '${habitProvider.getWeeklyStats()['failures']}',
@@ -363,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       .textTheme
                                       .headlineLarge
                                       ?.copyWith(
-                                        color: AppTheme.crimsonRed,
+                                        color: AppTheme.systemCrimson,
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
@@ -469,16 +461,19 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildSectionHeader(String title, IconData icon, {Color? color}) {
     return Row(
       children: [
-        Container(
+        SystemContainer(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: (color ?? AppTheme.primaryPurple).withOpacity(0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: color ?? AppTheme.primaryPurple,
-            size: 20,
+          backgroundColor: (color ?? AppTheme.systemPurple).withOpacity(0.2),
+          borderColor: color ?? AppTheme.systemPurple,
+          cutSize: 5,
+          width: 40,
+          height: 40,
+          child: Center(
+            child: Icon(
+              icon,
+              color: color ?? AppTheme.systemPurple,
+              size: 20,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -494,60 +489,57 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildBottomNavigation() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.cardBg,
-        border: Border(
-          top: BorderSide(
-            color: AppTheme.primaryPurple.withOpacity(0.3),
-            width: 1,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      child: SystemGlassPanel(
+        blur: 20,
+        opacity: 0.8,
+        borderColor: AppTheme.systemCyan.withOpacity(0.3),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Colors.transparent,
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index) => setState(() => _selectedIndex = index),
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedItemColor: AppTheme.systemCyan,
+            unselectedItemColor: AppTheme.systemGrey,
+            selectedLabelStyle: const TextStyle(
+              fontFamily: 'Rajdhani',
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontFamily: 'Rajdhani',
+              fontSize: 10,
+            ),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_filled),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bar_chart),
+                label: 'Stats',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.assignment),
+                label: 'Habits',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.emoji_events),
+                label: 'Trophies',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryPurple.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: AppTheme.primaryPurple,
-        unselectedItemColor: AppTheme.textSecondary,
-        selectedLabelStyle: const TextStyle(
-          fontFamily: 'Rajdhani',
-          fontWeight: FontWeight.bold,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontFamily: 'Rajdhani',
-        ),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Habits',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events),
-            label: 'Achievements',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
