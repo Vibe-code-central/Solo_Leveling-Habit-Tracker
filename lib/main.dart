@@ -37,6 +37,8 @@ void main() async {
     Hive.registerAdapter(HabitAdapter());
     Hive.registerAdapter(AchievementAdapter());
     Hive.registerAdapter(AchievementCategoryAdapter());
+    Hive.registerAdapter(
+        AchievementRarityAdapter()); // NEW: Register rarity adapter
     Hive.registerAdapter(HabitTypeAdapter());
     Hive.registerAdapter(HabitTierAdapter());
 
