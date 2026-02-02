@@ -122,13 +122,16 @@ class PlayerStatsAdapter extends TypeAdapter<PlayerStats> {
       charisma: fields[2] as int,
       endurance: fields[3] as int,
       wisdom: fields[4] as int,
+      intelligence:
+          fields[5] as int? ?? 10, // Default to 10 if null (migration)
+      awareness: fields[6] as int? ?? 10, // Default to 10 if null (migration)
     );
   }
 
   @override
   void write(BinaryWriter writer, PlayerStats obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.strength)
       ..writeByte(1)
@@ -138,7 +141,11 @@ class PlayerStatsAdapter extends TypeAdapter<PlayerStats> {
       ..writeByte(3)
       ..write(obj.endurance)
       ..writeByte(4)
-      ..write(obj.wisdom);
+      ..write(obj.wisdom)
+      ..writeByte(5)
+      ..write(obj.intelligence)
+      ..writeByte(6)
+      ..write(obj.awareness);
   }
 
   @override

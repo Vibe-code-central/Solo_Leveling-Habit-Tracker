@@ -511,23 +511,85 @@ class DailyQuestCard extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-            if (habit.statRewards.isNotEmpty && !isDemonTrap) ...[
-              const SizedBox(width: 12),
-              const Icon(Icons.trending_up,
-                  color: AppTheme.electricBlue, size: 14),
-              const SizedBox(width: 4),
-              const Text(
-                'Stats',
+            // Show stat rewards/penalties as chips
+            if ((habit.statRewards.isNotEmpty && !isDemonTrap) ||
+                (habit.statPenalties.isNotEmpty && isDemonTrap)) ...[
+              const SizedBox(width: 8),
+              Text(
+                isDemonTrap ? '−' : '+',
                 style: TextStyle(
-                  color: AppTheme.electricBlue,
+                  color:
+                      isDemonTrap ? AppTheme.crimsonRed : AppTheme.electricBlue,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Wrap(
+                  spacing: 4,
+                  runSpacing: 2,
+                  children: (isDemonTrap
+                          ? habit.statPenalties.entries
+                          : habit.statRewards.entries)
+                      .map((entry) {
+                    final statName = _getStatDisplay(entry.key);
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: (isDemonTrap
+                                ? AppTheme.crimsonRed
+                                : AppTheme.electricBlue)
+                            .withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: (isDemonTrap
+                                  ? AppTheme.crimsonRed
+                                  : AppTheme.electricBlue)
+                              .withOpacity(0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        '$statName ${entry.value}',
+                        style: TextStyle(
+                          color: isDemonTrap
+                              ? AppTheme.crimsonRed
+                              : AppTheme.electricBlue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ],
           ],
         ),
     ];
+  }
+
+  String _getStatDisplay(String statKey) {
+    switch (statKey.toLowerCase()) {
+      case 'strength':
+        return '💪 STR';
+      case 'willpower':
+        return '🔥 WIL';
+      case 'charisma':
+        return '⭐ CHA';
+      case 'endurance':
+        return '⚡ END';
+      case 'wisdom':
+        return '🧠 WIS';
+      case 'intelligence':
+        return '📚 INT';
+      case 'awareness':
+        return '👁 AWA';
+      default:
+        return statKey.toUpperCase();
+    }
   }
 
   Color _getCardColor() {

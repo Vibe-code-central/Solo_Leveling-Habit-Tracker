@@ -228,6 +228,8 @@ class _StatsScreenState extends State<StatsScreen>
                       RadarEntry(value: user.stats.charisma.toDouble()),
                       RadarEntry(value: user.stats.endurance.toDouble()),
                       RadarEntry(value: user.stats.wisdom.toDouble()),
+                      RadarEntry(value: user.stats.intelligence.toDouble()),
+                      RadarEntry(value: user.stats.awareness.toDouble()),
                     ],
                   ),
                 ],
@@ -255,6 +257,10 @@ class _StatsScreenState extends State<StatsScreen>
                       return RadarChartTitle(text: 'END');
                     case 4:
                       return RadarChartTitle(text: 'WIS');
+                    case 5:
+                      return RadarChartTitle(text: 'INT');
+                    case 6:
+                      return RadarChartTitle(text: 'AWA');
                     default:
                       return const RadarChartTitle(text: '');
                   }

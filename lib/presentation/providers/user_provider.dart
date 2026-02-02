@@ -320,27 +320,38 @@ class UserProvider extends ChangeNotifier {
         case 'strength':
           multiplier = statMultipliers['strength'] ?? 1.0;
           stats.strength =
-              (stats.strength + (change * multiplier).round()).clamp(0, 999);
+              (stats.strength + (change * multiplier).round()).clamp(10, 999);
           break;
         case 'willpower':
           multiplier = statMultipliers['willpower'] ?? 1.0;
           stats.willpower =
-              (stats.willpower + (change * multiplier).round()).clamp(0, 999);
+              (stats.willpower + (change * multiplier).round()).clamp(10, 999);
           break;
         case 'charisma':
           multiplier = statMultipliers['charisma'] ?? 1.0;
           stats.charisma =
-              (stats.charisma + (change * multiplier).round()).clamp(0, 999);
+              (stats.charisma + (change * multiplier).round()).clamp(10, 999);
           break;
         case 'endurance':
           multiplier = statMultipliers['endurance'] ?? 1.0;
           stats.endurance =
-              (stats.endurance + (change * multiplier).round()).clamp(0, 999);
+              (stats.endurance + (change * multiplier).round()).clamp(10, 999);
           break;
         case 'wisdom':
           multiplier = statMultipliers['wisdom'] ?? 1.0;
           stats.wisdom =
-              (stats.wisdom + (change * multiplier).round()).clamp(0, 999);
+              (stats.wisdom + (change * multiplier).round()).clamp(10, 999);
+          break;
+        case 'intelligence':
+          multiplier = statMultipliers['intelligence'] ?? 1.0;
+          stats.intelligence =
+              (stats.intelligence + (change * multiplier).round())
+                  .clamp(10, 999);
+          break;
+        case 'awareness':
+          multiplier = statMultipliers['awareness'] ?? 1.0;
+          stats.awareness =
+              (stats.awareness + (change * multiplier).round()).clamp(10, 999);
           break;
       }
     });
@@ -374,6 +385,8 @@ class UserProvider extends ChangeNotifier {
       'charisma': 1.0,
       'endurance': 1.0,
       'wisdom': 1.0,
+      'intelligence': 1.0,
+      'awareness': 1.0,
     };
 
     if (_userProfile == null) return multipliers;

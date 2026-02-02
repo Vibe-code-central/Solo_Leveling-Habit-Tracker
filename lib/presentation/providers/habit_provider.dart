@@ -386,8 +386,8 @@ class HabitProvider extends ChangeNotifier {
     // Prevent double completion
     if (habit.isCompletedToday) return false;
 
-    // 🛡️ ANTI-CHEAT: strict Time Travel Check
-    // If current time is SIGNIFICANTLY in the past (vs last known time), block progress.
+    // 🛡️ ANTI-CHEAT: STRICT Time Travel Check - BLOCKS ALL ACTIONS
+    // If current time is SIGNIFICANTLY in the past (vs last known time), BLOCK all progress.
     if (_settingsBox != null) {
       final now = DateTime.now();
       final lastKnownTimeEpoch =
@@ -396,10 +396,17 @@ class HabitProvider extends ChangeNotifier {
       // Allow 2 minutes of drift/boot time difference, but block major reversals
       if (lastKnownTimeEpoch > 0 &&
           now.millisecondsSinceEpoch < lastKnownTimeEpoch - 120000) {
+        // Lock account until time is corrected
+        await _settingsBox!.put('account_locked_time_anomaly', true);
         throw Exception(
-            '⏰ TIME ANOMALY DETECTED!\n\nSystem time is in the past compared to last save.\n'
-            'Please correct your device time to continue leveling up.');
+            '⏰ TIME ANOMALY DETECTED!\n\nSystem time moved backwards.\n'
+            'Please ensure your device time is correct before continuing.\n\n'
+            'Detected: ${DateTime.fromMillisecondsSinceEpoch(lastKnownTimeEpoch)} → $now');
       }
+
+      // Update last known time on successful check
+      await _settingsBox!
+          .put('last_known_time_epoch', now.millisecondsSinceEpoch);
     }
 
     habit.markCompleted();
@@ -804,6 +811,27 @@ class HabitProvider extends ChangeNotifier {
   // ═══════════════════════════════════════════════════════════
 
   Future<void> addCustomHabit(Habit habit) async {
+    // 🛡️ ANTI-CHEAT: Validate custom habit to prevent XP farming
+    if (habit.isCustom) {
+      // Cap XP rewards
+      const maxCustomXP = 200;
+      if (habit.xpReward > maxCustomXP) {
+        throw Exception(
+            '⚠️ CUSTOM HABIT LIMIT\\n\\nCustom habits cannot exceed $maxCustomXP XP.\\n'
+            'This prevents \"Breathe Air - 9999 XP\" exploits while still allowing meaningful rewards.');
+      }
+
+      // Cap stat bonuses
+      const maxStatBonus = 3;
+      for (var entry in habit.statRewards.entries) {
+        if (entry.value > maxStatBonus) {
+          throw Exception(
+              '⚠️ STAT LIMIT\\n\\nCustom habits cannot grant more than +$maxStatBonus to any stat.\\n'
+              'Found: ${entry.key} +${entry.value}');
+        }
+      }
+    }
+
     _habits.add(habit);
     await _habitBox.add(habit);
     notifyListeners();
