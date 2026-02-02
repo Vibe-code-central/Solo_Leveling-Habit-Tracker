@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solo_leveling/core/theme/app_theme.dart';
-import 'package:solo_leveling/data/models/achievement.dart'; // To process Achievement.getDefaultAchievements()
+import 'package:solo_leveling/data/models/achievement.dart'; // Achievement and AchievementRarity
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
 
 class TitlesScreen extends StatelessWidget {
@@ -99,6 +99,7 @@ class TitlesScreen extends StatelessWidget {
                           isEquipped: isEquipped,
                           description:
                               sourceAchievement?.description ?? "Default Title",
+                          rarity: sourceAchievement?.rarity,
                           onEquip: () {
                             if (isUnlocked && !isEquipped) {
                               userProvider.equipTitle(titleName);
@@ -124,26 +125,34 @@ class TitlesScreen extends StatelessWidget {
     required bool isEquipped,
     required String description,
     required VoidCallback onEquip,
+    AchievementRarity? rarity,
   }) {
     final cardColor =
         isUnlocked ? AppTheme.cardBg : Colors.grey.withOpacity(0.1);
+
+    // Get rarity color for border
+    final rarityColor = _getRarityColor(rarity ?? AchievementRarity.rare);
+
     final borderColor = isEquipped
         ? AppTheme.amberGold
-        : (isUnlocked
-            ? AppTheme.primaryPurple.withOpacity(0.5)
-            : Colors.transparent);
+        : (isUnlocked ? rarityColor : Colors.transparent);
 
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: isEquipped ? 2 : 1),
+        border: Border.all(color: borderColor, width: isEquipped ? 3 : 2),
         boxShadow: isEquipped
             ? [
                 BoxShadow(
-                    color: AppTheme.amberGold.withOpacity(0.3), blurRadius: 12)
+                    color: AppTheme.amberGold.withOpacity(0.4), blurRadius: 16)
               ]
-            : null,
+            : (isUnlocked
+                ? [
+                    BoxShadow(
+                        color: rarityColor.withOpacity(0.3), blurRadius: 8)
+                  ]
+                : null),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -256,5 +265,20 @@ class TitlesScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getRarityColor(AchievementRarity rarity) {
+    switch (rarity) {
+      case AchievementRarity.common:
+        return Colors.green.shade400; // 🟢 Green
+      case AchievementRarity.rare:
+        return Colors.blue.shade400; // 🔵 Blue
+      case AchievementRarity.epic:
+        return AppTheme.primaryPurple; // 🟣 Purple
+      case AchievementRarity.legendary:
+        return AppTheme.amberGold; // 🟠 Gold
+      case AchievementRarity.mythic:
+        return Colors.black87; // ⚫ Shadow/Black
+    }
   }
 }

@@ -26,6 +26,13 @@ class UserProvider extends ChangeNotifier {
       if (_userBox.isNotEmpty) {
         _userProfile = _userBox.getAt(0);
         _updateDailyReset();
+
+        // 🛡️ SECURITY: Ensure default title always exists
+        if (!_userProfile!.unlockedTitles.contains("The Shadow's Candidate")) {
+          _userProfile!.unlockedTitles.add("The Shadow's Candidate");
+          await _userBox.putAt(0, _userProfile!);
+          debugPrint("✅ Restored default title: The Shadow's Candidate");
+        }
       }
 
       await _loadAchievements();
@@ -313,6 +320,14 @@ class UserProvider extends ChangeNotifier {
     final stats = _userProfile!.stats;
     final statMultipliers = _getStatMultipliers();
 
+    // 🛡️ SECURITY: Log suspicious stat changes (>100 increase)
+    statChanges.forEach((stat, change) {
+      if (change > 100) {
+        debugPrint(
+            "⚠️ SUSPICIOUS STAT CHANGE: $stat +$change (>100 threshold)");
+      }
+    });
+
     statChanges.forEach((stat, change) {
       // Apply stat multipliers from debuffs
       double multiplier = 1.0;
@@ -433,22 +448,22 @@ class UserProvider extends ChangeNotifier {
       if (!achievement.isUnlocked &&
           achievement.category == AchievementCategory.statMaster) {
         int currentStatValue = 0;
-        switch (achievement.id) {
-          case 'strength_adept':
-            currentStatValue = stats.strength;
-            break;
-          case 'willpower_titan':
-            currentStatValue = stats.willpower;
-            break;
-          case 'charisma_master':
-            currentStatValue = stats.charisma;
-            break;
-          case 'endurance_guardian':
-            currentStatValue = stats.endurance;
-            break;
-          case 'wisdom_sage':
-            currentStatValue = stats.wisdom;
-            break;
+
+        // Map achievement ID to stat value and check threshold
+        if (achievement.id.startsWith('strength_tier')) {
+          currentStatValue = stats.strength;
+        } else if (achievement.id.startsWith('intelligence_tier')) {
+          currentStatValue = stats.intelligence;
+        } else if (achievement.id.startsWith('awareness_tier')) {
+          currentStatValue = stats.awareness;
+        } else if (achievement.id.startsWith('willpower_tier')) {
+          currentStatValue = stats.willpower;
+        } else if (achievement.id.startsWith('charisma_tier')) {
+          currentStatValue = stats.charisma;
+        } else if (achievement.id.startsWith('endurance_tier')) {
+          currentStatValue = stats.endurance;
+        } else if (achievement.id.startsWith('wisdom_tier')) {
+          currentStatValue = stats.wisdom;
         }
 
         if (currentStatValue >= achievement.targetValue) {
@@ -534,9 +549,21 @@ class UserProvider extends ChangeNotifier {
   Future<void> equipTitle(String title) async {
     if (_userProfile == null) return;
 
+    // 🛡️ SECURITY: Validate title exists in master achievement list
+    final validTitles = Achievement.getDefaultAchievements()
+        .where((a) => a.titleUnlock != null)
+        .map((a) => a.titleUnlock!)
+        .toSet()
+      ..add("The Shadow's Candidate"); // Default title
+
+    if (!validTitles.contains(title)) {
+      debugPrint("🚨 SECURITY ALERT: Attempted to equip invalid title: $title");
+      return; // Block fake/injected titles
+    }
+
     // Security Check: Title must be unlocked
     if (!_userProfile!.unlockedTitles.contains(title)) {
-      debugPrint("SECURITY ALERT: Attempted to equip locked title: $title");
+      debugPrint("🚨 SECURITY ALERT: Attempted to equip locked title: $title");
       return;
     }
 

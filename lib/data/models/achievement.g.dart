@@ -30,13 +30,14 @@ class AchievementAdapter extends TypeAdapter<Achievement> {
       targetValue: fields[10] as int,
       currentProgress: fields[11] as int,
       icon: fields[12] as String,
+      rarity: fields[13] as AchievementRarity? ?? AchievementRarity.rare,
     );
   }
 
   @override
   void write(BinaryWriter writer, Achievement obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class AchievementAdapter extends TypeAdapter<Achievement> {
       ..writeByte(11)
       ..write(obj.currentProgress)
       ..writeByte(12)
-      ..write(obj.icon);
+      ..write(obj.icon)
+      ..writeByte(13)
+      ..write(obj.rarity);
   }
 
   @override
@@ -72,6 +75,60 @@ class AchievementAdapter extends TypeAdapter<Achievement> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AchievementAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AchievementRarityAdapter extends TypeAdapter<AchievementRarity> {
+  @override
+  final int typeId = 11;
+
+  @override
+  AchievementRarity read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return AchievementRarity.common;
+      case 1:
+        return AchievementRarity.rare;
+      case 2:
+        return AchievementRarity.epic;
+      case 3:
+        return AchievementRarity.legendary;
+      case 4:
+        return AchievementRarity.mythic;
+      default:
+        return AchievementRarity.common;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, AchievementRarity obj) {
+    switch (obj) {
+      case AchievementRarity.common:
+        writer.writeByte(0);
+        break;
+      case AchievementRarity.rare:
+        writer.writeByte(1);
+        break;
+      case AchievementRarity.epic:
+        writer.writeByte(2);
+        break;
+      case AchievementRarity.legendary:
+        writer.writeByte(3);
+        break;
+      case AchievementRarity.mythic:
+        writer.writeByte(4);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AchievementRarityAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
