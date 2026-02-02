@@ -84,6 +84,13 @@ class Habit extends HiveObject {
   @HiveField(25)
   int minMinutesBetweenIncrements;
 
+  // 🛡️ BAD HABIT ESCALATION: 3x consecutive tracking
+  @HiveField(26)
+  int consecutiveCompletions;
+
+  @HiveField(27)
+  DateTime? lastBadHabitDate;
+
   Habit({
     required this.id,
     required this.name,
@@ -98,6 +105,8 @@ class Habit extends HiveObject {
     this.hpDamage = 0,
     this.mpDrain = 0,
     this.debuffName,
+    this.consecutiveCompletions = 0,
+    this.lastBadHabitDate,
     this.streakBonus = 0,
     List<DateTime>? completedDates,
     List<DateTime>? failedDates,
@@ -192,10 +201,35 @@ class Habit extends HiveObject {
   }
 
   int getTotalXPPenalty() {
-    // Increase penalty based on consecutive failures
-    final recentFailures = _getRecentConsecutiveFailures();
-    final multiplier = 1.0 + (recentFailures * 0.2).clamp(0.0, 1.0);
-    return (xpPenalty * multiplier).round();
+    return xpPenalty;
+  }
+
+  // 🎯 BAD HABIT TIER SYSTEM
+  int getCurrentTier() {
+    if (type != HabitType.bad) return 0;
+    return consecutiveCompletions.clamp(1, 3);
+  }
+
+  int getTierXpPenalty() {
+    if (type != HabitType.bad) return 0;
+
+    final tier = getCurrentTier();
+    // Tier 1: base, Tier 2: +50%, Tier 3: +100%
+    return (xpPenalty * (1 + (tier - 1) * 0.5)).round();
+  }
+
+  Map<String, int> getTierStatPenalties() {
+    if (type != HabitType.bad) return {};
+
+    final tier = getCurrentTier();
+    final penalties = <String, int>{};
+
+    // Scale penalties by tier
+    statPenalties.forEach((stat, value) {
+      penalties[stat] = (value * (1 + (tier - 1) * 0.5)).round();
+    });
+
+    return penalties;
   }
 
   int _getRecentConsecutiveFailures() {
@@ -248,10 +282,10 @@ This is the first battle of your day. WIN IT.
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 100, // S-tier = Hard difficulty
-        xpPenalty: 150,
+        xpPenalty: 0, // No daily penalty - 7-day grace period
         statRewards: {'willpower': 2, 'endurance': 1}, // Max 2 stats
-        statPenalties: {'willpower': 4, 'endurance': 2},
-        hpDamage: 150,
+        statPenalties: {}, // No daily stat loss
+        hpDamage: 0, // No daily HP damage
         streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
@@ -274,10 +308,10 @@ No thinking. Just drop and push.''',
         type: HabitType.good,
         tier: HabitTier.a,
         xpReward: 50, // A-tier = Medium difficulty
-        xpPenalty: 70,
+        xpPenalty: 0, // No daily penalty
         statRewards: {'strength': 2, 'endurance': 1}, // Max 2 stats
-        statPenalties: {'strength': 1, 'endurance': 1},
-        hpDamage: 50,
+        statPenalties: {}, // No daily stat loss
+        hpDamage: 0, // No daily HP damage
         streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
@@ -299,10 +333,10 @@ This takes 10 seconds. No excuses.''',
         type: HabitType.good,
         tier: HabitTier.a,
         xpReward: 25, // A-tier = Easy difficulty (quick task)
-        xpPenalty: 50,
+        xpPenalty: 0, // No daily penalty
         statRewards: {'awareness': 2, 'willpower': 1}, // Max 2 stats
-        statPenalties: {'awareness': 1, 'willpower': 1},
-        hpDamage: 30,
+        statPenalties: {}, // No daily stat loss
+        hpDamage: 0, // No daily HP damage
         streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
@@ -329,13 +363,13 @@ No more showering once a week. That stops TODAY.''',
         type: HabitType.good,
         tier: HabitTier.s,
         xpReward: 100, // S-tier = Important daily habit
-        xpPenalty: 100,
+        xpPenalty: 0, // No daily penalty
         statRewards: {
           'awareness': 2,
           'endurance': 1
         }, // Max 2 stats (clean feeling)
-        statPenalties: {'charisma': 2, 'endurance': 1},
-        hpDamage: 80,
+        statPenalties: {}, // No daily stat loss
+        hpDamage: 0, // No daily HP damage
         streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
@@ -365,13 +399,13 @@ Track your intake. Your body is your weapon - keep it hydrated.''',
         type: HabitType.good,
         tier: HabitTier.b,
         xpReward: 50, // B-tier: 200ml per glass = medium effort
-        xpPenalty: 30,
+        xpPenalty: 0, // No daily penalty
         statRewards: {
           'endurance': 2,
           'awareness': 1
         }, // Max 2 stats (body awareness)
-        statPenalties: {'endurance': 1},
-        hpDamage: 30,
+        statPenalties: {}, // No daily stat loss
+        hpDamage: 0, // No daily HP damage
         streakBonus: 0, // Disabled - keep XP constant
         createdAt: DateTime.now(),
         isCounterBased: true,
@@ -400,9 +434,9 @@ Rewards:
         type: HabitType.good,
         tier: HabitTier.a,
         xpReward: 50, // A-tier = Medium difficulty (20 min)
-        xpPenalty: 50,
+        xpPenalty: 0, // No daily penalty
         statRewards: {'intelligence': 2, 'wisdom': 1}, // Perfect 2 stats
-        statPenalties: {'intelligence': 1},
+        statPenalties: {}, // No daily stat loss
         streakBonus: 0, // Disabled - keep XP constant
         createdAt: DateTime.now(),
       ),
@@ -428,10 +462,10 @@ No exceptions. No "just checking one thing."''',
         type: HabitType.bad,
         tier: HabitTier.catastrophic,
         xpReward: 0,
-        xpPenalty: 200,
-        statPenalties: {'willpower': 5, 'endurance': 3, 'awareness': 2},
-        hpDamage: 150,
-        mpDrain: 100,
+        xpPenalty: 100, // Balanced: equivalent to ruining ARISE
+        statPenalties: {'willpower': 3, 'endurance': 2}, // 5 total (was 10)
+        hpDamage: 100, // Reduced from 150
+        mpDrain: 50, // Reduced from 100
         debuffName: "Demon's Grip",
         createdAt: DateTime.now(),
       ),
@@ -453,9 +487,9 @@ WIN IT.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 150,
-        statPenalties: {'willpower': 4, 'endurance': 2},
-        hpDamage: 100,
+        xpPenalty: 75, // Balanced: 1.5x Pushups penalty
+        statPenalties: {'willpower': 2, 'endurance': 1}, // 3 total (was 6)
+        hpDamage: 75, // Reduced from 100
         debuffName: 'Sluggish Start',
         createdAt: DateTime.now(),
       ),
@@ -477,9 +511,9 @@ Weekend gaming is fine. Weekdays are for building.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 180,
-        statPenalties: {'willpower': 4, 'intelligence': 2},
-        mpDrain: 200,
+        xpPenalty: 100, // Balanced: equivalent to wasting productive day
+        statPenalties: {'willpower': 3, 'intelligence': 1}, // 4 total (was 6)
+        mpDrain: 100, // Reduced from 200
         debuffName: 'Time Void',
         createdAt: DateTime.now(),
       ),
@@ -500,9 +534,9 @@ Your body is your tool. Don't sabotage it.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 120,
-        statPenalties: {'endurance': 3, 'strength': 2, 'awareness': 1},
-        hpDamage: 120,
+        xpPenalty: 50, // Balanced: equivalent to 1x Reading session
+        statPenalties: {'endurance': 2, 'strength': 1}, // 3 total (was 6)
+        hpDamage: 80, // Reduced from 120, physical penalty is main punishment
         debuffName: 'Weakened State',
         createdAt: DateTime.now(),
       ),

@@ -36,258 +36,298 @@ class DailyQuestCard extends StatelessWidget {
     final isFailed = isDeadlinePassed && !isCompleted && !isDemonTrap;
 
     return GestureDetector(
-      onTap: habit.isCounterBased
-          ? null // Disable tap for counter-based habits
-          : () {
-              // ANTI-CHEAT: Can't complete after deadline
-              if (isFailed) {
-                ScaffoldMessenger.of(context)
-                  ..clearSnackBars()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Text(
-                          '⏰ DEADLINE PASSED - XP LOST. No second chances.'),
-                      backgroundColor: AppTheme.crimsonRed,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                return;
-              }
-
-              if (isCompleted) {
-                // ANTI-CHEAT: No undo after deadline
-                if (isDeadlinePassed) {
+        onTap: habit.isCounterBased
+            ? null // Disable tap for counter-based habits
+            : () {
+                // ANTI-CHEAT: Can't complete after deadline
+                if (isFailed) {
                   ScaffoldMessenger.of(context)
                     ..clearSnackBars()
                     ..showSnackBar(
                       SnackBar(
                         content: Text(
-                            'Cannot undo after deadline. Stay disciplined.'),
+                            '⏰ DEADLINE PASSED - XP LOST. No second chances.'),
                         backgroundColor: AppTheme.crimsonRed,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
                   return;
                 }
-                _showUndoDialog(context);
-              } else {
-                onComplete();
-              }
-            },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isFailed
-                ? [
-                    AppTheme.crimsonRed.withOpacity(0.3),
-                    AppTheme.crimsonRed.withOpacity(0.1)
-                  ]
-                : [
-                    isCompleted
-                        ? AppTheme.emeraldGreen.withOpacity(0.2)
-                        : cardColor.withOpacity(0.1),
-                    isCompleted
-                        ? AppTheme.emeraldGreen.withOpacity(0.1)
-                        : cardColor.withOpacity(0.05),
-                  ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isFailed
-                ? AppTheme.crimsonRed
-                : (isCompleted
-                    ? AppTheme.emeraldGreen
-                    : cardColor.withOpacity(0.5)),
-            width: (isFailed || isCompleted) ? 3 : 1,
-          ),
-          boxShadow: isFailed
-              ? [
-                  BoxShadow(
-                    color: AppTheme.crimsonRed.withOpacity(0.4),
-                    blurRadius: 20,
-                    spreadRadius: 3,
-                  ),
-                ]
-              : (isCompleted
-                  ? [
-                      BoxShadow(
-                        color: AppTheme.emeraldGreen.withOpacity(0.4),
-                        blurRadius: 20,
-                        spreadRadius: 3,
-                      ),
-                    ]
-                  : null),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // MISSED STATE: Softer amber clock (not harsh red cross)
-              if (isFailed)
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppTheme.amberGold.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppTheme.amberGold.withOpacity(0.6), width: 3),
-                  ),
-                  child: Icon(Icons.schedule,
-                      color: AppTheme.amberGold.withOpacity(0.8), size: 28),
-                )
-              // Normal checkbox
-              else
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: isCompleted
-                        ? AppTheme.emeraldGreen
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isCompleted ? AppTheme.emeraldGreen : cardColor,
-                      width: 3,
-                    ),
-                  ),
-                  child: isCompleted
-                      ? const Icon(Icons.check, color: Colors.white, size: 32)
-                      : Icon(
-                          isDemonTrap
-                              ? Icons.warning_outlined
-                              : Icons.radio_button_unchecked,
-                          color: cardColor,
-                          size: 28,
+
+                if (isCompleted) {
+                  // ANTI-CHEAT: No undo after deadline
+                  if (isDeadlinePassed) {
+                    ScaffoldMessenger.of(context)
+                      ..clearSnackBars()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Cannot undo after deadline. Stay disciplined.'),
+                          backgroundColor: AppTheme.crimsonRed,
+                          behavior: SnackBarBehavior.floating,
                         ),
-                ),
-
-              const SizedBox(width: 16),
-
-              // Quest Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header row with tier badge and streak
-                    Row(
-                      children: [
-                        // MISSED badge (softer than FAILED)
-                        if (isFailed)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.amberGold.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: AppTheme.amberGold.withOpacity(0.6),
-                                  width: 1),
-                            ),
-                            child: Text(
-                              '⏰ MISSED',
-                              style: TextStyle(
-                                color: AppTheme.amberGold.withOpacity(0.9),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                              ),
-                            ),
-                          )
-                        else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: tierColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: tierColor, width: 1),
-                            ),
-                            child: Text(
-                              _getTierDisplayName(),
-                              style: TextStyle(
-                                color: tierColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ),
-                        if (habit.currentStreak > 0 &&
-                            !isDemonTrap &&
-                            !isFailed) ...[
-                          const SizedBox(width: 8),
-                          const Icon(Icons.local_fire_department,
-                              color: AppTheme.amberGold, size: 16),
-                          Text(
-                            '${habit.currentStreak}',
-                            style: const TextStyle(
-                              color: AppTheme.amberGold,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ],
+                      );
+                    return;
+                  }
+                  _showUndoDialog(context);
+                } else {
+                  onComplete();
+                }
+              },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isFailed
+                  ? [
+                      AppTheme.crimsonRed.withOpacity(0.3),
+                      AppTheme.crimsonRed.withOpacity(0.1)
+                    ]
+                  : [
+                      isCompleted
+                          ? AppTheme.emeraldGreen.withOpacity(0.2)
+                          : cardColor.withOpacity(0.1),
+                      isCompleted
+                          ? AppTheme.emeraldGreen.withOpacity(0.1)
+                          : cardColor.withOpacity(0.05),
+                    ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isFailed
+                  ? AppTheme.crimsonRed
+                  : (isCompleted
+                      ? AppTheme.emeraldGreen
+                      : cardColor.withOpacity(0.5)),
+              width: (isFailed || isCompleted) ? 3 : 1,
+            ),
+            boxShadow: isFailed
+                ? [
+                    BoxShadow(
+                      color: AppTheme.crimsonRed.withOpacity(0.4),
+                      blurRadius: 20,
+                      spreadRadius: 3,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      habit.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isFailed
-                                ? AppTheme.amberGold.withOpacity(0.7)
-                                : (isCompleted
-                                    ? AppTheme.emeraldGreen
-                                    : Colors.white),
-                            decoration: (isCompleted || isFailed)
-                                ? TextDecoration.lineThrough
-                                : null,
-                            decorationColor: isFailed
-                                ? AppTheme.amberGold.withOpacity(0.5)
-                                : null,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // COUNTER UI for water habit
-                    if (habit.isCounterBased)
-                      ..._buildCounterUI()
-                    // NORMAL XP/STAT UI for other habits
-                    else
-                      ..._buildNormalUI(isFailed, isCompleted),
-                  ],
-                ),
-              ),
-
-              // DELETE BUTTON (Only if provided)
-              if (onDelete != null)
-                IconButton(
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: AppTheme.crimsonRed.withOpacity(0.7),
-                    size: 20,
-                  ),
-                  onPressed: onDelete,
-                  tooltip: 'Delete Habit',
-                ),
-            ],
+                  ]
+                : (isCompleted
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.emeraldGreen.withOpacity(0.4),
+                          blurRadius: 20,
+                          spreadRadius: 3,
+                        ),
+                      ]
+                    : null),
           ),
-        ),
-      )
-          .animate(target: isCompleted ? 1 : 0)
-          .scale(
-              begin: const Offset(1, 1),
-              end: const Offset(1.05, 1.05),
-              duration: 200.ms)
-          .then()
-          .scale(
-              begin: const Offset(1.05, 1.05),
-              end: const Offset(1, 1),
-              duration: 200.ms)
-          .shimmer(
-              duration: 800.ms, color: AppTheme.emeraldGreen.withOpacity(0.5)),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // MISSED STATE: Softer amber clock (not harsh red cross)
+                if (isFailed)
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: AppTheme.amberGold.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: AppTheme.amberGold.withOpacity(0.6), width: 3),
+                    ),
+                    child: Icon(Icons.schedule,
+                        color: AppTheme.amberGold.withOpacity(0.8), size: 28),
+                  )
+                // Normal checkbox
+                else
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: isCompleted
+                          ? AppTheme.emeraldGreen
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isCompleted ? AppTheme.emeraldGreen : cardColor,
+                        width: 3,
+                      ),
+                    ),
+                    child: isCompleted
+                        ? const Icon(Icons.check, color: Colors.white, size: 32)
+                        : Icon(
+                            isDemonTrap
+                                ? Icons.warning_outlined
+                                : Icons.radio_button_unchecked,
+                            color: cardColor,
+                            size: 28,
+                          ),
+                  ),
+
+                const SizedBox(width: 16),
+
+                // Quest Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header row with tier badge and streak
+                      Row(
+                        children: [
+                          // MISSED badge (softer than FAILED)
+                          if (isFailed)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.amberGold.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: AppTheme.amberGold.withOpacity(0.6),
+                                    width: 1),
+                              ),
+                              child: Text(
+                                '⏰ MISSED',
+                                style: TextStyle(
+                                  color: AppTheme.amberGold.withOpacity(0.9),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: tierColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: tierColor, width: 1),
+                              ),
+                              child: Text(
+                                _getTierDisplayName(),
+                                style: TextStyle(
+                                  color: tierColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          if (isDemonTrap) ...[
+                            const SizedBox(width: 8),
+                            _buildTierCircles(context),
+                          ],
+                          if (habit.currentStreak > 0 &&
+                              !isDemonTrap &&
+                              !isFailed) ...[
+                            const SizedBox(width: 8),
+                            const Icon(Icons.local_fire_department,
+                                color: AppTheme.amberGold, size: 16),
+                            Text(
+                              '${habit.currentStreak}',
+                              style: const TextStyle(
+                                color: AppTheme.amberGold,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        habit.name,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: isFailed
+                                      ? AppTheme.amberGold.withOpacity(0.7)
+                                      : (isCompleted
+                                          ? AppTheme.emeraldGreen
+                                          : Colors.white),
+                                  decoration: (isCompleted || isFailed)
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  decorationColor: isFailed
+                                      ? AppTheme.amberGold.withOpacity(0.5)
+                                      : null,
+                                ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // COUNTER UI for water habit
+                      if (habit.isCounterBased)
+                        ..._buildCounterUI()
+                      // NORMAL XP/STAT UI for other habits
+                      else
+                        ..._buildNormalUI(isFailed, isCompleted),
+                    ],
+                  ),
+                ),
+
+                // DELETE BUTTON (Only if provided)
+                if (onDelete != null)
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: AppTheme.crimsonRed.withOpacity(0.7),
+                      size: 20,
+                    ),
+                    onPressed: onDelete,
+                    tooltip: 'Delete Habit',
+                  ),
+              ],
+            ),
+          ),
+        )
+            .animate(target: isCompleted ? 1 : 0)
+            .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.05, 1.05),
+                duration: 200.ms)
+            .then()
+            .scale(
+                begin: const Offset(1.05, 1.05),
+                end: const Offset(1, 1),
+                duration: 200.ms)
+            .shimmer(
+                duration: 800.ms,
+                color: AppTheme.emeraldGreen.withOpacity(0.5)));
+  }
+
+  // 🔴 MATCHING ESCALATION CIRCLES
+  Widget _buildTierCircles(BuildContext context) {
+    int current = habit.consecutiveCompletions;
+    // Determine potential tier if fail today (just visual estimation)
+    // If last fail was yesterday, we are at 'current'.
+    // If last fail was ages ago, strict logic might reset it,
+    // but here we just show what the DB says.
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (index) {
+        bool isFilled = index < current;
+        return Container(
+          margin: const EdgeInsets.only(right: 4),
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: isFilled ? AppTheme.crimsonRed : Colors.transparent,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppTheme.crimsonRed, width: 1.5),
+            boxShadow: isFilled
+                ? [
+                    BoxShadow(
+                      color: AppTheme.crimsonRed.withOpacity(0.6),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    )
+                  ]
+                : null,
+          ),
+        );
+      }),
     );
   }
 
@@ -503,7 +543,8 @@ class DailyQuestCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              '${isDemonTrap ? habit.getTotalXPPenalty() : habit.getTotalXPReward()} XP',
+              // Scale penalty for display if bad habit
+              '${isDemonTrap ? habit.getTierXpPenalty() : habit.getTotalXPReward()} XP',
               style: TextStyle(
                 color:
                     isDemonTrap ? AppTheme.crimsonRed : AppTheme.emeraldGreen,

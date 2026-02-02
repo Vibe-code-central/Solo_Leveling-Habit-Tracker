@@ -19,6 +19,7 @@ import 'package:solo_leveling/presentation/screens/profile/profile_screen.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
 import 'package:solo_leveling/presentation/widgets/system/glass_panel.dart';
+import 'package:solo_leveling/presentation/widgets/system/level_up_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -779,75 +780,9 @@ class _HomeScreenState extends State<HomeScreen>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppTheme.amberGold.withOpacity(0.9),
-                AppTheme.primaryPurple.withOpacity(0.9),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.amberGold, width: 3),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.amberGold.withOpacity(0.5),
-                blurRadius: 30,
-                spreadRadius: 10,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.emoji_events, color: Colors.white, size: 80),
-              const SizedBox(height: 16),
-              Text(
-                'LEVEL UP!',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Level $newLevel',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'All stats increased!',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppTheme.primaryPurple,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                ),
-                child: Text('CONTINUE',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ),
+      builder: (context) => LevelUpDialog(
+        newLevel: newLevel,
+        onConfirm: () => Navigator.of(context).pop(),
       ),
     );
   }

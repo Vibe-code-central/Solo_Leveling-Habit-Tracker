@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/achievement.dart';
+import '../../data/models/debuff.dart'; // Import Debuff
 import '../../data/services/notification_service.dart';
+
+part 'user_provider_debuff_methods.dart';
 
 class UserProvider extends ChangeNotifier {
   UserProfile? _userProfile;
@@ -11,6 +14,15 @@ class UserProvider extends ChangeNotifier {
 
   late Box<UserProfile> _userBox;
   late Box<Achievement> _achievementBox;
+  late Box<Debuff> _debuffBox; // Debuff box
+
+  // 🛡️ SECURITY: Daily XP tracking for cap enforcement
+  int _dailyXPEarned = 0;
+  String _lastXPResetDate = '';
+  static const int MAX_DAILY_XP = 500; // Prevents level rushing
+
+  // 🎯 Debuff tracking
+  List<Debuff> _activeDebuffs = [];
 
   UserProfile? get userProfile => _userProfile;
   List<Achievement> get achievements => _achievements;
@@ -22,10 +34,12 @@ class UserProvider extends ChangeNotifier {
     try {
       _userBox = Hive.box<UserProfile>('userProfile');
       _achievementBox = Hive.box<Achievement>('achievements');
+      _debuffBox = Hive.box<Debuff>('debuffs'); // Initialize debuff box
 
       if (_userBox.isNotEmpty) {
         _userProfile = _userBox.getAt(0);
         _updateDailyReset();
+        await _loadDebuffs(); // Load active debuffs
 
         // 🛡️ SECURITY: Ensure default title always exists
         if (!_userProfile!.unlockedTitles.contains("The Shadow's Candidate")) {
@@ -101,18 +115,55 @@ class UserProvider extends ChangeNotifier {
   Future<bool> gainXP(int xp, {String? source}) async {
     if (_userProfile == null) return false;
 
+    // 🛡️ SECURITY: Daily XP Cap (500 XP max per day)
+    final today = DateTime.now().toIso8601String().split('T')[0];
+
+    // Reset daily counter if new day
+    if (_lastXPResetDate != today) {
+      _dailyXPEarned = 0;
+      _lastXPResetDate = today;
+    }
+
+    // Check if daily cap reached
+    if (_dailyXPEarned >= MAX_DAILY_XP) {
+      debugPrint(
+          '⚠️ Daily XP cap reached ($MAX_DAILY_XP XP). Come back tomorrow!');
+      // Don't throw exception, just return false (no level up)
+      return false;
+    }
+
+    // Cap XP to remaining daily allowance
+    final remainingXP = MAX_DAILY_XP - _dailyXPEarned;
+    final cappedXP = xp > remainingXP ? remainingXP : xp;
+
+    if (cappedXP < xp) {
+      debugPrint(
+          '⚠️ XP capped: Tried to gain $xp XP, but only $cappedXP XP remaining today');
+    }
+
     // Apply XP multipliers from active debuffs
-    final xpMultiplier = _getXPMultiplier();
-    final effectiveXP = (xp * xpMultiplier).round();
+    final xpMultiplier = getXPMultiplier(); // Use new debuff method
+    final effectiveXP = (cappedXP * xpMultiplier).round();
+
+    // Track daily XP
+    _dailyXPEarned += effectiveXP;
 
     final oldLevel = _userProfile!.level;
     _userProfile!.gainXP(effectiveXP);
 
     bool didLevelUp = false;
+
+    // \ud83d\udee1\ufe0f Check if level-up is blocked by curse
     if (_userProfile!.level > oldLevel) {
-      didLevelUp = true;
-      await NotificationService.showLevelUpNotification(_userProfile!.level);
-      _checkLevelAchievements();
+      if (!isLevelUpBlocked()) {
+        didLevelUp = true;
+        await NotificationService.showLevelUpNotification(_userProfile!.level);
+        _checkLevelAchievements();
+      } else {
+        // Blocked! Reset level but keep XP
+        debugPrint('💀 LEVEL UP BLOCKED BY CURSE!');
+        _userProfile!.level = oldLevel;
+      }
     }
 
     await _saveUserProfile();
@@ -614,14 +665,6 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> resetProgress() async {
-    // 1. Delete User Profile
-    await _userBox.clear();
-    _userProfile = null;
-
-    // 2. Reset Achievements
-    await _initializeDefaultAchievements();
-
-    notifyListeners();
-  }
+  /// Helper to allow extensions to notify listeners
+  void notify() => notifyListeners();
 }

@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'data/models/user_profile.dart';
 import 'data/models/habit.dart';
 import 'data/models/achievement.dart';
+import 'data/models/debuff.dart'; // Import Debuff model
 import 'data/services/notification_service.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/habit_provider.dart';
@@ -38,6 +39,8 @@ void main() async {
     Hive.registerAdapter(AchievementAdapter());
     Hive.registerAdapter(AchievementCategoryAdapter());
     Hive.registerAdapter(AchievementRarityAdapter()); // Register rarity adapter
+    Hive.registerAdapter(DebuffAdapter()); // Register Debuff adapter
+    Hive.registerAdapter(DebuffSpecialEffectAdapter()); // Register enum adapter
     Hive.registerAdapter(HabitTypeAdapter());
     Hive.registerAdapter(HabitTierAdapter());
 
@@ -51,6 +54,8 @@ void main() async {
       await Hive.deleteBoxFromDisk('achievements');
       await Hive.openBox<Achievement>('achievements');
     }
+
+    await Hive.openBox<Debuff>('debuffs'); // Open debuffs box
 
     await Hive.openBox('settings');
 

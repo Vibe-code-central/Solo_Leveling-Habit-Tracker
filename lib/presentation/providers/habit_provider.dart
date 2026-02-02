@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:solo_leveling/data/models/achievement.dart';
 import 'package:solo_leveling/data/models/weekly_boss.dart';
+import 'package:solo_leveling/data/models/debuff.dart';
 import '../../data/models/habit.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/services/notification_service.dart';
@@ -387,16 +388,13 @@ class HabitProvider extends ChangeNotifier {
     if (habit.isCompletedToday) return false;
 
     // 🛡️ ANTI-CHEAT: STRICT Time Travel Check - BLOCKS ALL ACTIONS
-    // If current time is SIGNIFICANTLY in the past (vs last known time), BLOCK all progress.
     if (_settingsBox != null) {
       final now = DateTime.now();
       final lastKnownTimeEpoch =
           _settingsBox!.get('last_known_time_epoch', defaultValue: 0);
 
-      // Allow 2 minutes of drift/boot time difference, but block major reversals
       if (lastKnownTimeEpoch > 0 &&
           now.millisecondsSinceEpoch < lastKnownTimeEpoch - 120000) {
-        // Lock account until time is corrected
         await _settingsBox!.put('account_locked_time_anomaly', true);
         throw Exception(
             '⏰ TIME ANOMALY DETECTED!\n\nSystem time moved backwards.\n'
@@ -404,14 +402,18 @@ class HabitProvider extends ChangeNotifier {
             'Detected: ${DateTime.fromMillisecondsSinceEpoch(lastKnownTimeEpoch)} → $now');
       }
 
-      // Update last known time on successful check
       await _settingsBox!
           .put('last_known_time_epoch', now.millisecondsSinceEpoch);
     }
 
+    // 🎯 Route bad habits to tier-based completion
+    if (habit.type == HabitType.bad) {
+      return await _completeBadHabit(habit, userProvider);
+    }
+
+    // Good habit completion (normal flow)
     habit.markCompleted();
 
-    // Apply rewards
     final totalXP = habit.getTotalXPReward();
     final leveledUp =
         await userProvider.gainXP(totalXP, source: 'Habit: ${habit.name}');
@@ -420,12 +422,97 @@ class HabitProvider extends ChangeNotifier {
       await userProvider.updateStats(habit.statRewards);
     }
 
-    // Check for streak achievements
     _checkStreakAchievements(habit, userProvider);
 
     await _saveHabits();
     notifyListeners();
     return leveledUp;
+  }
+
+  // 💀 BAD HABIT TIER-BASED COMPLETION
+  Future<bool> _completeBadHabit(Habit habit, UserProvider userProvider) async {
+    final now = DateTime.now();
+
+    // Check if consecutive
+    if (habit.lastBadHabitDate != null) {
+      final daysSince = now.difference(habit.lastBadHabitDate!).inDays;
+
+      if (daysSince == 1) {
+        // Consecutive day - escalate tier
+        habit.consecutiveCompletions++;
+      } else if (daysSince > 1) {
+        // Not consecutive - reset to tier 1
+        habit.consecutiveCompletions = 1;
+      }
+      // Same day would be caught by isCompletedToday check
+    } else {
+      // First time completing this bad habit
+      habit.consecutiveCompletions = 1;
+    }
+
+    habit.lastBadHabitDate = now;
+    habit.markCompleted();
+
+    final tier = habit.getCurrentTier();
+
+    // Apply tier-based penalties
+    final xpLoss = habit.getTierXpPenalty();
+    final statLoss = habit.getTierStatPenalties();
+
+    await userProvider.loseXP(xpLoss, source: 'Bad Habit: ${habit.name}');
+
+    if (statLoss.isNotEmpty) {
+      // Apply negative stats
+      final negativeStats = statLoss.map((k, v) => MapEntry(k, -v));
+      await userProvider.updateStats(negativeStats);
+    }
+
+    // Apply HP/MP damage
+    if (habit.hpDamage > 0) {
+      userProvider.userProfile?.currentHP =
+          (userProvider.userProfile!.currentHP - habit.hpDamage)
+              .clamp(0, userProvider.userProfile!.maxHP);
+    }
+    if (habit.mpDrain > 0) {
+      userProvider.userProfile?.currentMP =
+          (userProvider.userProfile!.currentMP - habit.mpDrain)
+              .clamp(0, userProvider.userProfile!.maxMP);
+    }
+
+    // TODO: Apply debuff based on tier
+    // For now, just track the tier
+    final debuffDuration = Duration(days: tier); // T1=1d, T2=2d, T3=3d
+    final xpReduction = tier * 0.10; // T1=10%, T2=20%, T3=30%
+
+    // Determine special effect for Tier 3
+    DebuffSpecialEffect? specialEffect;
+    if (tier == 3) {
+      if (habit.id == 'screen_10pm')
+        specialEffect = DebuffSpecialEffect.levelBlock;
+      if (habit.id == 'snooze_button')
+        specialEffect = DebuffSpecialEffect.habitLock;
+      if (habit.id == 'junk_food')
+        specialEffect = DebuffSpecialEffect.strEndBlock;
+      if (habit.id == 'gaming') specialEffect = DebuffSpecialEffect.intWisBlock;
+    }
+
+    final debuff = Debuff(
+      id: DateTime.now().millisecondsSinceEpoch.toString(), // Simple ID
+      name: habit.debuffName ?? 'Curse of ${habit.name}',
+      tier: tier,
+      habitId: habit.id,
+      xpReductionPercent: xpReduction,
+      tempStatReduction: statLoss, // Reuse stat loss as active reduction
+      specialEffect: specialEffect,
+      createdAt: now,
+      expiresAt: now.add(debuffDuration),
+    );
+
+    await userProvider.applyDebuff(debuff);
+
+    await _saveHabits();
+    notifyListeners();
+    return false; // Bad habits never level up
   }
 
   Future<void> uncompleteHabit(
@@ -811,23 +898,31 @@ class HabitProvider extends ChangeNotifier {
   // ═══════════════════════════════════════════════════════════
 
   Future<void> addCustomHabit(Habit habit) async {
-    // 🛡️ ANTI-CHEAT: Validate custom habit to prevent XP farming
+    // 🛡️ SECURITY: Validate custom habit to prevent XP farming
     if (habit.isCustom) {
-      // Cap XP rewards
-      const maxCustomXP = 200;
+      // Cap XP rewards at 50 (prevents instant max-level exploits)
+      const maxCustomXP = 50;
       if (habit.xpReward > maxCustomXP) {
         throw Exception(
-            '⚠️ CUSTOM HABIT LIMIT\\n\\nCustom habits cannot exceed $maxCustomXP XP.\\n'
-            'This prevents \"Breathe Air - 9999 XP\" exploits while still allowing meaningful rewards.');
+            '⚠️ CUSTOM HABIT LIMIT\n\nCustom habits cannot exceed $maxCustomXP XP.\n\n'
+            'This prevents progression exploits while still allowing meaningful rewards.');
       }
 
-      // Cap stat bonuses
-      const maxStatBonus = 3;
+      // Cap total stat points at 3
+      final totalStats =
+          habit.statRewards.values.fold(0, (sum, val) => sum + val);
+      if (totalStats > 3) {
+        throw Exception(
+            '⚠️ STAT LIMIT\n\nCustom habits limited to +3 total stat points.\n'
+            'You tried: +$totalStats points\n\n'
+            'Example: +2 Strength, +1 Endurance = 3 points ✅');
+      }
+
+      // Cap individual stat bonuses at +2
       for (var entry in habit.statRewards.entries) {
-        if (entry.value > maxStatBonus) {
-          throw Exception(
-              '⚠️ STAT LIMIT\\n\\nCustom habits cannot grant more than +$maxStatBonus to any stat.\\n'
-              'Found: ${entry.key} +${entry.value}');
+        if (entry.value > 2) {
+          throw Exception('⚠️ STAT LIMIT\n\nMax +2 per individual stat.\n'
+              'You tried: ${entry.key} +${entry.value}');
         }
       }
     }

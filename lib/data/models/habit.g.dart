@@ -30,6 +30,8 @@ class HabitAdapter extends TypeAdapter<Habit> {
       hpDamage: fields[9] as int,
       mpDrain: fields[10] as int,
       debuffName: fields[17] as String?,
+      consecutiveCompletions: fields[26] as int,
+      lastBadHabitDate: fields[27] as DateTime?,
       streakBonus: fields[18] as int,
       completedDates: (fields[11] as List?)?.cast<DateTime>(),
       failedDates: (fields[12] as List?)?.cast<DateTime>(),
@@ -49,7 +51,7 @@ class HabitAdapter extends TypeAdapter<Habit> {
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(28)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -101,7 +103,11 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(24)
       ..write(obj.lastCounterIncrement)
       ..writeByte(25)
-      ..write(obj.minMinutesBetweenIncrements);
+      ..write(obj.minMinutesBetweenIncrements)
+      ..writeByte(26)
+      ..write(obj.consecutiveCompletions)
+      ..writeByte(27)
+      ..write(obj.lastBadHabitDate);
   }
 
   @override

@@ -8,8 +8,10 @@ import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/screens/onboarding/onboarding_screen.dart';
 import 'buffs_debuffs_guide_screen.dart';
 import 'titles_screen.dart';
-import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import 'package:solo_leveling/data/models/debuff.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_dialog.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -61,11 +63,18 @@ class ProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
+                    const SizedBox(height: 24),
                     // Stats Overview
                     _buildStatsOverview(context, user),
 
-                    const SizedBox(height: 20),
+                    // 🔴 ACTIVE DEBUFFS SECTION
+                    if (userProvider.activeDebuffs.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      _buildActiveEffectsSection(
+                          context, userProvider.activeDebuffs),
+                    ],
 
+                    const SizedBox(height: 24),
                     // Shadow Army
                     _buildShadowArmySection(context, user),
 
@@ -791,28 +800,121 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
+    showDialog(
       context: context,
-      applicationName: 'Solo Leveling: Shadow Monarch',
-      applicationVersion: '1.0.2',
-      applicationIcon: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppTheme.primaryPurple,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(
-          Icons.person,
-          color: Colors.white,
-          size: 30,
-        ),
+      builder: (context) => SystemDialog(
+        title: 'SYSTEM INFORMATION',
+        message: 'Solo Leveling: Shadow Monarch\nVersion 1.0.2\n\n'
+            'Transform your daily habits into an immersive RPG experience. '
+            'Level up your real life through the power of the Shadow Monarch.',
+        primaryColor: AppTheme.primaryPurple,
+        icon: Icons.info_outline,
+        confirmText: 'CLOSE',
+        onConfirm: () => Navigator.of(context).pop(),
       ),
+    );
+  }
+
+  Widget _buildActiveEffectsSection(
+      BuildContext context, List<Debuff> debuffs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Transform your daily habits into an immersive RPG experience. '
-          'Level up your real life through the power of the Shadow Monarch.',
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            children: [
+              Icon(Icons.gpp_bad, color: AppTheme.crimsonRed, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'ACTIVE STATUS EFFECTS',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppTheme.crimsonRed,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+              ),
+            ],
+          ),
         ),
+        const SizedBox(height: 12),
+        ...debuffs.map((debuff) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.crimsonRed.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppTheme.crimsonRed.withOpacity(0.4)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.crimsonRed.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.bolt, color: AppTheme.crimsonRed, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        debuff.name.toUpperCase(),
+                        style: const TextStyle(
+                          color: AppTheme.crimsonRed,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'tier ${debuff.tier} • -${(debuff.xpReductionPercent * 100).toInt()}% XP',
+                        style: TextStyle(
+                          color: AppTheme.crimsonRed.withOpacity(0.8),
+                          fontSize: 12,
+                        ),
+                      ),
+                      if (debuff.specialEffect != null)
+                        Text(
+                          'CURSE: ${debuff.specialEffect.toString().split('.').last.toUpperCase()}',
+                          style: const TextStyle(
+                            color: AppTheme.crimsonRed,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                // Timer
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'EXPIRES IN',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 8,
+                      ),
+                    ),
+                    Text(
+                      '${debuff.hoursRemaining}h',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ],
     );
   }

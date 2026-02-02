@@ -30,7 +30,7 @@ class AchievementAdapter extends TypeAdapter<Achievement> {
       targetValue: fields[10] as int,
       currentProgress: fields[11] as int,
       icon: fields[12] as String,
-      rarity: fields[13] as AchievementRarity? ?? AchievementRarity.rare,
+      rarity: fields[13] as AchievementRarity,
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:solo_leveling/core/theme/app_theme.dart';
 import 'package:solo_leveling/data/models/habit.dart';
+import 'package:solo_leveling/presentation/widgets/system/system_dialog.dart';
 import 'package:solo_leveling/presentation/providers/habit_provider.dart';
 import 'package:solo_leveling/presentation/providers/user_provider.dart';
 import 'package:solo_leveling/presentation/widgets/daily_quest_card.dart';
@@ -346,50 +347,84 @@ class _HabitsScreenState extends State<HabitsScreen>
 
   Future<void> _failHabit(String habitId, HabitProvider habitProvider,
       UserProvider userProvider) async {
-    // Show confirmation dialog for demon traps
+    final habit = habitProvider.badHabits.firstWhere((h) => h.id == habitId);
+
+    // Calculate NEXT tier logic (simulated)
+    int nextTier = 1;
+    if (habit.lastBadHabitDate != null) {
+      final daysSince =
+          DateTime.now().difference(habit.lastBadHabitDate!).inDays;
+      if (daysSince == 1) {
+        nextTier = (habit.consecutiveCompletions + 1).clamp(1, 3);
+      }
+    }
+
+    String title = 'DEMON TRAP TRIGGERED';
+    String message =
+        'You have fallen into a demon trap. This will result in penalties.';
+    Color color = AppTheme.crimsonRed;
+
+    if (nextTier == 2) {
+      title = '⚠️ TIER 2 WARNING';
+      message =
+          'Consecutive failure detected! Penalties are increased by 50%.\n\nStop now or face a CURSE.';
+      color = AppTheme.amberGold;
+    } else if (nextTier == 3) {
+      title = '💀 CURSE IMMINENT';
+      message =
+          'FATAL ERROR: 3rd Strike.\n\nA powerful CURSE will be applied to your hunter profile.\nThis will hinder your growth specifically based on this bad habit.\n\nAre you ready to accept your fate?';
+      color = const Color(0xFF8B0000); // Dark Red
+    }
+
+    // Show confirmation dialog for demon traps (Tier Aware)
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.cardBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'DEMON TRAP TRIGGERED',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AppTheme.crimsonRed,
-              ),
-        ),
-        content: Text(
-          'You have fallen into a demon trap. This will result in penalties. Are you sure?',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('CANCEL'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style:
-                ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
-            child: const Text('CONFIRM'),
-          ),
-        ],
+      builder: (context) => SystemDialog(
+        title: title,
+        message: message,
+        primaryColor: color,
+        icon: Icons.warning_amber_rounded,
+        confirmText: nextTier == 3 ? 'I ACCEPT MY FATE' : 'CONFIRM',
+        onConfirm: () => Navigator.of(context).pop(true),
+        onCancel: () => Navigator.of(context).pop(false),
       ),
     );
 
     if (confirmed == true) {
-      await habitProvider.failHabit(habitId, userProvider);
+      await habitProvider.completeHabit(
+          habitId, userProvider); // Handles bad habit logic internally
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Demon trap triggered! Penalties applied.'),
-            backgroundColor: AppTheme.crimsonRed,
-            behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
+        // Show Curse Screen for Tier 3
+        if (nextTier == 3) {
+          // TODO: Show full curse screen overlay
+          // For now, simpler notification
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => SystemDialog(
+              title: '☠️ CURSE APPLIED',
+              message:
+                  'A generic curse has taken hold.\nCheck your Profile for active debuffs.',
+              primaryColor: AppTheme.crimsonRed,
+              icon: Icons.gpp_bad,
+              confirmText: 'UNDERSTOOD',
+              onConfirm: () => Navigator.of(context).pop(),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(nextTier == 2
+                  ? 'Tier 2 Penalties Applied!'
+                  : 'Demon trap triggered! Penalties applied.'),
+              backgroundColor: AppTheme.crimsonRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
       }
     }
   }
