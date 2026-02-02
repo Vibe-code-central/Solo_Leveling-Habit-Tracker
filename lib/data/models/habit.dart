@@ -174,7 +174,21 @@ class Habit extends HiveObject {
   }
 
   int getTotalXPReward() {
-    return xpReward + (currentStreak * streakBonus);
+    // Milestone-based streak bonuses (prevents linear inflation)
+    double bonusMultiplier = 0.0;
+
+    if (currentStreak >= 28) {
+      bonusMultiplier = 0.10; // 10% bonus at 28+ days
+    } else if (currentStreak >= 21) {
+      bonusMultiplier = 0.15; // 15% bonus at 21-27 days
+    } else if (currentStreak >= 14) {
+      bonusMultiplier = 0.20; // 20% bonus at 14-20 days
+    } else if (currentStreak >= 7) {
+      bonusMultiplier = 0.25; // 25% bonus at 7-13 days
+    }
+    // else: 0% bonus for days 1-6
+
+    return (xpReward * (1 + bonusMultiplier)).round();
   }
 
   int getTotalXPPenalty() {
@@ -238,7 +252,7 @@ This is the first battle of your day. WIN IT.
         statRewards: {'willpower': 2, 'endurance': 1}, // Max 2 stats
         statPenalties: {'willpower': 4, 'endurance': 2},
         hpDamage: 150,
-        streakBonus: 25,
+        streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
@@ -264,7 +278,7 @@ No thinking. Just drop and push.''',
         statRewards: {'strength': 2, 'endurance': 1}, // Max 2 stats
         statPenalties: {'strength': 1, 'endurance': 1},
         hpDamage: 50,
-        streakBonus: 12,
+        streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
       ),
@@ -289,7 +303,7 @@ This takes 10 seconds. No excuses.''',
         statRewards: {'awareness': 2, 'willpower': 1}, // Max 2 stats
         statPenalties: {'awareness': 1, 'willpower': 1},
         hpDamage: 30,
-        streakBonus: 10,
+        streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Morning Fog',
         createdAt: DateTime.now(),
       ),
@@ -322,7 +336,7 @@ No more showering once a week. That stops TODAY.''',
         }, // Max 2 stats (clean feeling)
         statPenalties: {'charisma': 2, 'endurance': 1},
         hpDamage: 80,
-        streakBonus: 18,
+        streakBonus: 0, // Disabled - keep XP constant
         debuffName: 'Light Sluggish',
         createdAt: DateTime.now(),
       ),
@@ -358,7 +372,7 @@ Track your intake. Your body is your weapon - keep it hydrated.''',
         }, // Max 2 stats (body awareness)
         statPenalties: {'endurance': 1},
         hpDamage: 30,
-        streakBonus: 8,
+        streakBonus: 0, // Disabled - keep XP constant
         createdAt: DateTime.now(),
         isCounterBased: true,
         maxCount: 8,
@@ -389,7 +403,7 @@ Rewards:
         xpPenalty: 50,
         statRewards: {'intelligence': 2, 'wisdom': 1}, // Perfect 2 stats
         statPenalties: {'intelligence': 1},
-        streakBonus: 10,
+        streakBonus: 0, // Disabled - keep XP constant
         createdAt: DateTime.now(),
       ),
 
