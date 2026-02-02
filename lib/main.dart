@@ -37,12 +37,21 @@ void main() async {
     Hive.registerAdapter(HabitAdapter());
     Hive.registerAdapter(AchievementAdapter());
     Hive.registerAdapter(AchievementCategoryAdapter());
+    Hive.registerAdapter(AchievementRarityAdapter()); // Register rarity adapter
     Hive.registerAdapter(HabitTypeAdapter());
     Hive.registerAdapter(HabitTierAdapter());
 
     await Hive.openBox<UserProfile>('userProfile');
     await Hive.openBox<Habit>('habits');
-    await Hive.openBox<Achievement>('achievements');
+
+    // Migration: Handle corrupt achievements
+    try {
+      await Hive.openBox<Achievement>('achievements');
+    } catch (e) {
+      await Hive.deleteBoxFromDisk('achievements');
+      await Hive.openBox<Achievement>('achievements');
+    }
+
     await Hive.openBox('settings');
 
     // SystemChrome setup
