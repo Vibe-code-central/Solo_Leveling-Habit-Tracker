@@ -145,6 +145,8 @@ class UserProfile extends HiveObject {
     stats.charisma = (stats.charisma - 2).clamp(10, 999);
     stats.endurance = (stats.endurance - 3).clamp(10, 999);
     stats.wisdom = (stats.wisdom - 2).clamp(10, 999);
+    stats.intelligence = (stats.intelligence - 2).clamp(10, 999);
+    stats.awareness = (stats.awareness - 2).clamp(10, 999);
 
     // Decrease HP/MP
     maxHP = (maxHP - 50).clamp(1000, 999999);
@@ -191,6 +193,8 @@ class UserProfile extends HiveObject {
     stats.charisma += 2;
     stats.endurance += 3;
     stats.wisdom += 2;
+    stats.intelligence += 2;
+    stats.awareness += 2;
 
     // Increase HP/MP
     maxHP += 50;
@@ -286,12 +290,20 @@ class PlayerStats extends HiveObject {
   @HiveField(4)
   int wisdom;
 
+  @HiveField(5)
+  int intelligence;
+
+  @HiveField(6)
+  int awareness;
+
   PlayerStats({
     this.strength = 10,
     this.willpower = 10,
     this.charisma = 10,
     this.endurance = 10,
     this.wisdom = 10,
+    this.intelligence = 10,
+    this.awareness = 10,
   });
 }
 
