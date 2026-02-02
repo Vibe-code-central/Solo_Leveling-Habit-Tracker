@@ -233,9 +233,9 @@ This is the first battle of your day. WIN IT.
 • Getting this right enables all other habits''',
         type: HabitType.good,
         tier: HabitTier.s,
-        xpReward: 180,
+        xpReward: 100, // S-tier = Hard difficulty
         xpPenalty: 150,
-        statRewards: {'willpower': 6, 'endurance': 2},
+        statRewards: {'willpower': 2, 'endurance': 1}, // Max 2 stats
         statPenalties: {'willpower': 4, 'endurance': 2},
         hpDamage: 150,
         streakBonus: 25,
@@ -259,9 +259,9 @@ Can't do 10? Start with 5. Just DO THEM.
 No thinking. Just drop and push.''',
         type: HabitType.good,
         tier: HabitTier.a,
-        xpReward: 100,
-        xpPenalty: 70, // Reduced from 120
-        statRewards: {'strength': 3, 'endurance': 2},
+        xpReward: 50, // A-tier = Medium difficulty
+        xpPenalty: 70,
+        statRewards: {'strength': 2, 'endurance': 1}, // Max 2 stats
         statPenalties: {'strength': 1, 'endurance': 1},
         hpDamage: 50,
         streakBonus: 12,
@@ -284,9 +284,9 @@ Benefits:
 This takes 10 seconds. No excuses.''',
         type: HabitType.good,
         tier: HabitTier.a,
-        xpReward: 80,
-        xpPenalty: 50, // Reduced from 100
-        statRewards: {'awareness': 2, 'willpower': 2},
+        xpReward: 25, // A-tier = Easy difficulty (quick task)
+        xpPenalty: 50,
+        statRewards: {'awareness': 2, 'willpower': 1}, // Max 2 stats
         statPenalties: {'awareness': 1, 'willpower': 1},
         hpDamage: 30,
         streakBonus: 10,
@@ -314,9 +314,12 @@ Why this matters:
 No more showering once a week. That stops TODAY.''',
         type: HabitType.good,
         tier: HabitTier.s,
-        xpReward: 130,
-        xpPenalty: 100, // Reduced from 160
-        statRewards: {'charisma': 3, 'endurance': 2, 'awareness': 1},
+        xpReward: 100, // S-tier = Important daily habit
+        xpPenalty: 100,
+        statRewards: {
+          'awareness': 2,
+          'endurance': 1
+        }, // Max 2 stats (clean feeling)
         statPenalties: {'charisma': 2, 'endurance': 1},
         hpDamage: 80,
         streakBonus: 18,
@@ -347,20 +350,19 @@ Benefits:
 Track your intake. Your body is your weapon - keep it hydrated.''',
         type: HabitType.good,
         tier: HabitTier.b,
-        xpReward: 80, // B-tier: 10 XP per glass
+        xpReward: 50, // B-tier: 200ml per glass = medium effort
         xpPenalty: 30,
         statRewards: {
           'endurance': 2,
-          'strength': 1,
           'awareness': 1
-        }, // B-tier appropriate
+        }, // Max 2 stats (body awareness)
         statPenalties: {'endurance': 1},
         hpDamage: 30,
         streakBonus: 8,
         createdAt: DateTime.now(),
         isCounterBased: true,
         maxCount: 8,
-        xpPerCount: 10, // 10 XP per glass
+        xpPerCount: 6, // 6 XP per glass (50 XP / 8 glasses = 6.25)
         minMinutesBetweenIncrements: 15, // 15-minute cooldown
       ),
 
@@ -383,9 +385,9 @@ Rewards:
 "A reader lives a thousand lives before he dies."''',
         type: HabitType.good,
         tier: HabitTier.a,
-        xpReward: 100,
+        xpReward: 50, // A-tier = Medium difficulty (20 min)
         xpPenalty: 50,
-        statRewards: {'intelligence': 2, 'wisdom': 1},
+        statRewards: {'intelligence': 2, 'wisdom': 1}, // Perfect 2 stats
         statPenalties: {'intelligence': 1},
         streakBonus: 10,
         createdAt: DateTime.now(),
@@ -520,9 +522,9 @@ If your morning was SUCCESSFUL:
 → You don't need this. Skip it.''',
         type: HabitType.good,
         tier: HabitTier.a,
-        xpReward: 30, // Small reward - damage control
+        xpReward: 25, // Easy difficulty
         xpPenalty: 0,
-        statRewards: {'willpower': 2, 'strength': 1},
+        statRewards: {'willpower': 2, 'strength': 1}, // Perfect 2 stats
         statPenalties: {},
         hpDamage: 0,
         streakBonus: 0,
