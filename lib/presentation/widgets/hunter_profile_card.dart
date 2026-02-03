@@ -179,29 +179,15 @@ class HunterProfileCard extends StatelessWidget {
   }
 
   Widget _buildXPProgressBar() {
-    // Calculate progress based on totalXP to show effective total exp (can be negative)
-    // If totalXP is negative, show negative progress extending to the left
-    final currentProgress = userProfile.xpProgress;
-    final totalXP = userProfile.totalXP;
-    final xpForNextLevel = userProfile.xpForNextLevel;
-
-    // Calculate effective progress: if totalXP is negative, show negative progress
-    // Clamp negative progress to reasonable bounds (max -1.0 to extend one full bar width to the left)
-    final effectiveProgress = totalXP < 0
-        ? (totalXP / xpForNextLevel)
-            .clamp(-1.0, 0.0) // Negative progress clamped to -1.0 max
-        : currentProgress;
-
-    final isNegative = effectiveProgress < 0;
-    final absProgress = effectiveProgress.abs();
+    // FIX: Always show current progress for valid leveling visualization
+    // We ignore negative TotalXP for the visual bar as it represents debt/score,
+    // ensuring the level progress bar always reflects progress to the NEXT level.
+    final effectiveProgress = userProfile.xpProgress;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final barWidth = constraints.maxWidth;
-        final progressWidth = isNegative
-            ? (absProgress * barWidth).clamp(
-                0.0, barWidth * 2.0) // Can extend up to 2x width to the left
-            : (effectiveProgress.clamp(0.0, 1.0) * barWidth);
+        final progressWidth = (effectiveProgress.clamp(0.0, 1.0) * barWidth);
 
         return Container(
           height: 8,
@@ -212,37 +198,28 @@ class HunterProfileCard extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              // Progress bar (can extend left if negative)
+              // Progress bar
               Positioned(
-                left: isNegative ? barWidth - progressWidth : 0,
+                left: 0,
                 top: 0,
                 bottom: 0,
                 width: progressWidth,
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: isNegative
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      end: isNegative
-                          ? Alignment.centerLeft
-                          : Alignment.centerRight,
-                      colors: isNegative
-                          ? [
-                              AppTheme.crimsonRed.withOpacity(0.7),
-                              AppTheme.crimsonRed,
-                            ]
-                          : [
-                              AppTheme.primaryPurple,
-                              AppTheme.electricBlue,
-                            ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        AppTheme.primaryPurple,
+                        AppTheme.electricBlue,
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               ),
-              // Animated shimmer overlay (only for positive progress)
-              if (!isNegative && effectiveProgress > 0)
+              // Animated shimmer overlay
+              if (effectiveProgress > 0)
                 Positioned(
                   left: 0,
                   top: 0,
