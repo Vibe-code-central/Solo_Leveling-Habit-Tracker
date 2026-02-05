@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/achievement.dart';
 import '../../data/models/debuff.dart'; // Import Debuff
+import '../../data/models/user_inventory.dart'; // NEW: Inventory & Gold
 import '../../data/services/notification_service.dart';
 
 part 'user_provider_debuff_methods.dart';
@@ -23,6 +24,13 @@ class UserProvider extends ChangeNotifier {
 
   // 🎯 Debuff tracking
   List<Debuff> _activeDebuffs = [];
+
+  // 💰 NEW: Gold & Inventory System
+  UserInventory? _inventory;
+  late Box _inventoryBox;
+
+  UserInventory? get inventory => _inventory;
+  int get gold => _inventory?.gold ?? 0;
 
   UserProfile? get userProfile => _userProfile;
   List<Achievement> get achievements => _achievements;
@@ -50,6 +58,9 @@ class UserProvider extends ChangeNotifier {
       }
 
       await _loadAchievements();
+
+      // 💰 NEW: Load/Initialize Inventory
+      await _loadInventory();
     } catch (e) {
       debugPrint('Error loading user profile: $e');
     } finally {
@@ -187,6 +198,146 @@ class UserProvider extends ChangeNotifier {
     await _saveUserProfile();
     notifyListeners();
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // 💰 GOLD & INVENTORY SYSTEM
+  // ═══════════════════════════════════════════════════════════════
+
+  /// Load or initialize user inventory
+  Future<void> _loadInventory() async {
+    try {
+      _inventoryBox = Hive.box('inventory');
+      _inventory = _inventoryBox.get('user_inventory');
+
+      if (_inventory == null) {
+        // New user or migration - create inventory
+        _inventory = UserInventory(gold: 500); // 500 Gold welcome bonus!
+        await _inventoryBox.put('user_inventory', _inventory);
+        debugPrint('✅ Created new inventory with 500 Gold welcome bonus');
+      }
+
+      // Migrate existing users (sync Gold field to UserProfile)
+      if (_userProfile != null && _userProfile!.gold == null) {
+        _userProfile!.gold = _inventory!.gold;
+        await _saveUserProfile();
+        debugPrint('✅ Migrated user to Gold system: ${_inventory!.gold} Gold');
+      }
+    } catch (e) {
+      debugPrint('Error loading inventory: $e');
+      // Create default inventory on error
+      _inventory = UserInventory(gold: 0);
+    }
+  }
+
+  /// Earn Gold with transaction logging
+  Future<void> earnGold(int amount, String source, TransactionType type) async {
+    if (_inventory == null || amount <= 0) return;
+
+    // Apply Gold Multiplier from active buffs
+    final multiplier = getGoldMultiplier();
+    final effectiveGold = (amount * multiplier).round();
+
+    final transaction = Transaction(
+      id: '${DateTime.now().millisecondsSinceEpoch}_${type.name}',
+      timestamp: DateTime.now(),
+      type: type,
+      goldChange: effectiveGold, // Log actual amount earned
+      source: source,
+      goldBefore: _inventory!.gold,
+      goldAfter: _inventory!.gold + effectiveGold,
+    );
+
+    _inventory!.addTransaction(transaction);
+
+    // Sync to UserProfile
+    if (_userProfile != null) {
+      _userProfile!.gold = _inventory!.gold;
+    }
+    await _saveUserProfile();
+
+    await _inventoryBox.put('user_inventory', _inventory);
+
+    debugPrint(
+        '💰 Earned $amount Gold from: $source (Total: ${_inventory!.gold})');
+    notifyListeners();
+  }
+
+  /// Spend Gold with validation
+  Future<bool> spendGold(int amount, String source) async {
+    if (_inventory == null || amount <= 0) return false;
+
+    // Check if enough Gold
+    if (_inventory!.gold < amount) {
+      debugPrint('❌ Insufficient Gold! Need $amount, have ${_inventory!.gold}');
+      return false;
+    }
+
+    final transaction = Transaction(
+      id: '${DateTime.now().millisecondsSinceEpoch}_purchase',
+      timestamp: DateTime.now(),
+      type: TransactionType.shopPurchase,
+      goldChange: -amount,
+      source: source,
+      goldBefore: _inventory!.gold,
+      goldAfter: _inventory!.gold - amount,
+    );
+
+    _inventory!.addTransaction(transaction);
+
+    // Sync to UserProfile
+    if (_userProfile != null) {
+      _userProfile!.gold = _inventory!.gold;
+      await _saveUserProfile();
+    }
+
+    await _inventoryBox.put('user_inventory', _inventory);
+
+    debugPrint(
+        '💸 Spent $amount Gold on: $source (Remaining: ${_inventory!.gold})');
+    notifyListeners();
+    return true;
+  }
+
+  /// Add item to inventory
+  Future<void> addInventoryItem(String shopItemId) async {
+    if (_inventory == null) return;
+
+    final item = InventoryItem(
+      id: '${DateTime.now().millisecondsSinceEpoch}_$shopItemId',
+      shopItemId: shopItemId,
+      acquiredAt: DateTime.now(),
+    );
+
+    _inventory!.items.add(item);
+    await _inventoryBox.put('user_inventory', _inventory);
+
+    debugPrint('📦 Added item to inventory: $shopItemId');
+    notifyListeners();
+  }
+
+  /// Use/consume an inventory item
+  Future<bool> useInventoryItem(String inventoryItemId) async {
+    if (_inventory == null) return false;
+
+    try {
+      final item = _inventory!.items.firstWhere(
+        (i) => i.id == inventoryItemId && !i.isUsed,
+      );
+
+      item.isUsed = true;
+      item.usedAt = DateTime.now();
+      await _inventoryBox.put('user_inventory', _inventory);
+
+      debugPrint('✅ Used item: ${item.shopItemId}');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('❌ Item not found or already used');
+      return false;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
 
   Future<void> takeDamage(int damage) async {
     if (_userProfile == null) return;
@@ -428,19 +579,50 @@ class UserProvider extends ChangeNotifier {
   }
 
   /// Get combined XP multiplier from all active debuffs
-  double _getXPMultiplier() {
+  /// Get combined XP multiplier from all active buffs and debuffs
+  double getXPMultiplier() {
     if (_userProfile == null) return 1.0;
 
-    // Remove expired debuffs
+    double multiplier = 1.0;
+
+    // 1. Check Debuffs (Penalty)
     _userProfile!.activeDebuffs.removeWhere((d) => d.isExpired);
+    for (final debuff in _userProfile!.activeDebuffs) {
+      final xpMult = debuff.statModifiers['xpMultiplier'];
+      if (xpMult != null) {
+        multiplier *= xpMult;
+      }
+    }
 
-    // Since we only keep one debuff active, just get the first one
-    if (_userProfile!.activeDebuffs.isEmpty) return 1.0;
+    // 2. Check Buffs (Bonus)
+    _userProfile!.activeBuffs.removeWhere((b) => b.isExpired);
+    for (final buff in _userProfile!.activeBuffs) {
+      final xpMult = buff.statModifiers['xpMultiplier'];
+      if (xpMult != null) {
+        multiplier *= xpMult;
+      }
+    }
 
-    final debuff = _userProfile!.activeDebuffs.first;
-    final xpMult = debuff.statModifiers['xpMultiplier'];
+    return multiplier;
+  }
 
-    return xpMult ?? 1.0;
+  /// Get combined Gold multiplier from all active buffs
+  double getGoldMultiplier() {
+    if (_userProfile == null) return 1.0;
+
+    double multiplier = 1.0;
+
+    // Check Buffs (Bonus)
+    // Note: Debuffs generally don't reduce gold, but we could add it if needed
+    _userProfile!.activeBuffs.removeWhere((b) => b.isExpired);
+    for (final buff in _userProfile!.activeBuffs) {
+      final goldMult = buff.statModifiers['goldMultiplier'];
+      if (goldMult != null) {
+        multiplier *= goldMult;
+      }
+    }
+
+    return multiplier;
   }
 
   /// Get combined stat multipliers from all active debuffs

@@ -55,10 +55,13 @@ class Habit extends HiveObject {
   @HiveField(16)
   DateTime createdAt;
 
+  // DEPRECATED - Old debuff system (kept for migration)
   @HiveField(17)
+  @Deprecated('Debuffs removed in v2. Use direct penalties instead.')
   String? debuffName;
 
   @HiveField(18)
+  @Deprecated('Streak bonuses now milestone-based in v2.')
   int streakBonus;
 
   @HiveField(19)
@@ -91,6 +94,18 @@ class Habit extends HiveObject {
   @HiveField(27)
   DateTime? lastBadHabitDate;
 
+  // ═════════════════════════════════════════════════════════════
+  // NEW FIELDS - Solo Leveling System v2 (Gold Economy)
+  // ═════════════════════════════════════════════════════════════
+
+  /// Gold reward for completing this habit
+  @HiveField(28)
+  int? goldReward;
+
+  /// Gold penalty for failing/completing bad habit
+  @HiveField(29)
+  int? goldPenalty;
+
   Habit({
     required this.id,
     required this.name,
@@ -120,6 +135,8 @@ class Habit extends HiveObject {
     this.isCounterBased = false,
     this.lastCounterIncrement,
     int? minMinutesBetweenIncrements, // Nullable to handle existing Hive data
+    this.goldReward,
+    this.goldPenalty,
   })  : minMinutesBetweenIncrements = minMinutesBetweenIncrements ?? 0,
         statRewards = statRewards ?? {},
         statPenalties = statPenalties ?? {},
@@ -180,6 +197,26 @@ class Habit extends HiveObject {
         date.year == today.year &&
         date.month == today.month &&
         date.day == today.day);
+  }
+
+  /// Get total Gold reward (uses default if not set)
+  int get totalGoldReward {
+    if (goldReward != null) return goldReward!;
+
+    // Calculate default based on tier
+    switch (tier) {
+      case HabitTier.s:
+        return 25;
+      case HabitTier.a:
+        return 15;
+      case HabitTier.b:
+        return 8;
+      case HabitTier.c:
+        return 5;
+      case HabitTier.severe:
+      case HabitTier.catastrophic:
+        return 0; // Bad habits don't reward Gold
+    }
   }
 
   int getTotalXPReward() {

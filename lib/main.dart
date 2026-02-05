@@ -10,11 +10,18 @@ import 'data/models/user_profile.dart';
 import 'data/models/habit.dart';
 import 'data/models/achievement.dart';
 import 'data/models/debuff.dart'; // Import Debuff model
+import 'data/models/shop_item.dart'; // NEW: Shop system
+import 'data/models/user_inventory.dart'; // NEW: Inventory & Gold
+import 'data/models/gate.dart'; // NEW: Gate system
+import 'data/models/activity_data.dart'; // NEW: Activity tracker
 import 'data/services/notification_service.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/habit_provider.dart';
+import 'presentation/providers/shop_provider.dart';
+import 'presentation/providers/gate_provider.dart';
 import 'presentation/screens/home/home_screen.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
+import 'presentation/widgets/system/gate_dialog.dart';
 
 // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -44,6 +51,22 @@ void main() async {
     Hive.registerAdapter(HabitTypeAdapter());
     Hive.registerAdapter(HabitTierAdapter());
 
+    // ═════════════════════════════════════════════════════════════
+    // NEW ADAPTERS - Solo Leveling System v2 (MUST be in typeId order!)
+    // ═════════════════════════════════════════════════════════════
+    Hive.registerAdapter(ShopItemTypeAdapter()); // typeId: 25
+    Hive.registerAdapter(ShopItemRarityAdapter()); // typeId: 26
+    Hive.registerAdapter(ShopItemAdapter()); // typeId: 27
+    Hive.registerAdapter(TransactionTypeAdapter()); // typeId: 28
+    Hive.registerAdapter(TransactionAdapter()); // typeId: 29
+    Hive.registerAdapter(InventoryItemAdapter()); // typeId: 30
+    Hive.registerAdapter(UserInventoryAdapter()); // typeId: 31
+    Hive.registerAdapter(GateTypeAdapter()); // typeId: 32
+    Hive.registerAdapter(GateRewardAdapter()); // typeId: 33
+    Hive.registerAdapter(GateAdapter()); // typeId: 34
+    Hive.registerAdapter(RedGateBattleAdapter()); // typeId: 35
+    Hive.registerAdapter(ActivityDataAdapter()); // typeId: 36
+
     await Hive.openBox<UserProfile>('userProfile');
     await Hive.openBox<Habit>('habits');
 
@@ -56,6 +79,12 @@ void main() async {
     }
 
     await Hive.openBox<Debuff>('debuffs'); // Open debuffs box
+
+    // NEW BOXES - Solo Leveling System v2
+    await Hive.openBox('inventory'); // User inventory & Gold
+    await Hive.openBox('gates'); // Active gates
+    await Hive.openBox('activity'); // Activity tracker data
+    await Hive.openBox('shop'); // Shop stock & cooldowns
 
     await Hive.openBox('settings');
 
@@ -97,6 +126,8 @@ class SoloLevelingApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()),
+        ChangeNotifierProvider(create: (_) => ShopProvider()),
+        ChangeNotifierProvider(create: (_) => GateProvider()),
       ],
       child: MaterialApp(
         title: 'ARISE',
@@ -129,9 +160,29 @@ class _AppInitializerState extends State<AppInitializer> {
   Future<void> _initializeApp() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    final shopProvider = Provider.of<ShopProvider>(context, listen: false);
+    final gateProvider = Provider.of<GateProvider>(context, listen: false);
 
     await userProvider.loadUserProfile();
     await habitProvider.loadHabits();
+    await shopProvider.initialize();
+    await gateProvider.initialize();
+
+    // Check for random gate spawn (-1% chance for Red Gate, 10% for Blue)
+    // Runs once per app launch (provider handles daily/hourly limit cooldown)
+    final spawnSuccess = await gateProvider.checkForGateSpawn(userProvider);
+    if (spawnSuccess && mounted) {
+      final gate = gateProvider.activeGate;
+      if (gate != null) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => GateDialog(gate: gate),
+        );
+      }
+      debugPrint("⛩️ GATE SPAWNED! UI NEEDED");
+    }
+
     // await NotificationService.scheduleDailyReminders();
 
     if (mounted) {

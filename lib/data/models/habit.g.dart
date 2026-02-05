@@ -45,13 +45,15 @@ class HabitAdapter extends TypeAdapter<Habit> {
       isCounterBased: fields[23] as bool,
       lastCounterIncrement: fields[24] as DateTime?,
       minMinutesBetweenIncrements: fields[25] as int?,
+      goldReward: fields[28] as int?,
+      goldPenalty: fields[29] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(28)
+      ..writeByte(30)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -107,7 +109,11 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(26)
       ..write(obj.consecutiveCompletions)
       ..writeByte(27)
-      ..write(obj.lastBadHabitDate);
+      ..write(obj.lastBadHabitDate)
+      ..writeByte(28)
+      ..write(obj.goldReward)
+      ..writeByte(29)
+      ..write(obj.goldPenalty);
   }
 
   @override

@@ -370,9 +370,9 @@ class _HabitsScreenState extends State<HabitsScreen>
           'Consecutive failure detected! Penalties are increased by 50%.\n\nStop now or face a CURSE.';
       color = AppTheme.amberGold;
     } else if (nextTier == 3) {
-      title = '💀 CURSE IMMINENT';
+      title = '💀 MAX STRIKE LEVEL';
       message =
-          'FATAL ERROR: 3rd Strike.\n\nA powerful CURSE will be applied to your hunter profile.\nThis will hinder your growth specifically based on this bad habit.\n\nAre you ready to accept your fate?';
+          'FATAL ERROR: 3rd Strike.\n\nYou are facing MAXIMUM PENALTIES (+100%).\nContinued failure will result in massive XP loss.\n\nAre you ready to accept your fate?';
       color = const Color(0xFF8B0000); // Dark Red
     }
 
@@ -395,21 +395,16 @@ class _HabitsScreenState extends State<HabitsScreen>
           habitId, userProvider); // Handles bad habit logic internally
 
       if (mounted) {
-        // Show Curse Screen for Tier 3
+        // Show Curse Screen for Tier 3 - DISABLED (Curses removed)
         if (nextTier == 3) {
-          // TODO: Show full curse screen overlay
-          // For now, simpler notification
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => SystemDialog(
-              title: '☠️ CURSE APPLIED',
-              message:
-                  'A generic curse has taken hold.\nCheck your Profile for active debuffs.',
-              primaryColor: AppTheme.crimsonRed,
-              icon: Icons.gpp_bad,
-              confirmText: 'UNDERSTOOD',
-              onConfirm: () => Navigator.of(context).pop(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  const Text('MAXIMUM PENALTY APPLIED! (+100% XP/Stat Loss)'),
+              backgroundColor: const Color(0xFF8B0000),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
           );
         } else {

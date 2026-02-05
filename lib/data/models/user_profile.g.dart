@@ -40,13 +40,17 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       bossesDefeated: fields[20] as int,
       currentWeekBossProgress: fields[21] as int,
       lastBossWeek: fields[22] as int,
+      gold: fields[23] as int?,
+      dataIntegrityHash: fields[24] as String?,
+      securityViolationCount: fields[25] as int?,
+      xpGainTimestamps: (fields[26] as List?)?.cast<int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -92,7 +96,15 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(21)
       ..write(obj.currentWeekBossProgress)
       ..writeByte(22)
-      ..write(obj.lastBossWeek);
+      ..write(obj.lastBossWeek)
+      ..writeByte(23)
+      ..write(obj.gold)
+      ..writeByte(24)
+      ..write(obj.dataIntegrityHash)
+      ..writeByte(25)
+      ..write(obj.securityViolationCount)
+      ..writeByte(26)
+      ..write(obj.xpGainTimestamps);
   }
 
   @override

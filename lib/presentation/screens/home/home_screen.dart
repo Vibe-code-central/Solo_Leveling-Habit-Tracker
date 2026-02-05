@@ -15,9 +15,10 @@ import 'package:solo_leveling/presentation/screens/stats/stats_screen.dart';
 import 'package:solo_leveling/presentation/screens/habits/habits_screen.dart';
 import 'package:solo_leveling/presentation/screens/achievements/achievements_screen.dart';
 import 'package:solo_leveling/presentation/screens/profile/profile_screen.dart';
+import 'package:solo_leveling/presentation/screens/shop/shop_screen.dart';
 
 import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
-import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
+
 import 'package:solo_leveling/presentation/widgets/system/glass_panel.dart';
 import 'package:solo_leveling/presentation/widgets/system/level_up_dialog.dart';
 
@@ -150,6 +151,50 @@ class _HomeScreenState extends State<HomeScreen>
                   centerTitle: true,
                 ),
                 actions: [
+                  // 💰 NEW: Gold Display
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.amberGold.withOpacity(0.15),
+                        border: Border.all(color: AppTheme.amberGold, width: 1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.monetization_on,
+                              color: AppTheme.amberGold, size: 20),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${userProvider.gold}',
+                            style: TextStyle(
+                              color: AppTheme.amberGold,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontFamily: 'Orbitron',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // 🛒 Shop Button
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag,
+                        color: AppTheme.primaryPurple),
+                    tooltip: 'Shop',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ShopScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   Center(
                       child: Text("v1.0.2 ",
                           style:
@@ -257,11 +302,14 @@ class _HomeScreenState extends State<HomeScreen>
                     // Habit Performance Section
                     _buildSectionHeader('HABIT PERFORMANCE', Icons.trending_up),
                     const SizedBox(height: 12),
-                    SystemContainer(
+                    Container(
                       padding: const EdgeInsets.all(16),
-                      // decoration: AppTheme.glowingContainer, // Replaced by SystemContainer
-                      backgroundColor: AppTheme.systemNavy,
-                      borderColor: AppTheme.systemCyan,
+                      decoration: BoxDecoration(
+                        color: AppTheme.systemNavy,
+                        border:
+                            Border.all(color: AppTheme.systemCyan, width: 1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Column(
                         children: habitProvider.goodHabits.take(5).map((habit) {
                           final completionRate = habit.completedDates.length > 0
@@ -308,12 +356,14 @@ class _HomeScreenState extends State<HomeScreen>
                     Row(
                       children: [
                         Expanded(
-                          child: SystemContainer(
+                          child: Container(
                             padding: const EdgeInsets.all(20),
-                            backgroundColor:
-                                AppTheme.systemCyan.withOpacity(0.1),
-                            borderColor: AppTheme.systemCyan,
-                            cutSize: 10,
+                            decoration: BoxDecoration(
+                              color: AppTheme.systemCyan.withOpacity(0.1),
+                              border: Border.all(
+                                  color: AppTheme.systemCyan, width: 1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Column(
                               children: [
                                 Icon(Icons.check_circle,
@@ -339,12 +389,14 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: SystemContainer(
+                          child: Container(
                             padding: const EdgeInsets.all(20),
-                            backgroundColor:
-                                AppTheme.systemCrimson.withOpacity(0.1),
-                            borderColor: AppTheme.systemCrimson,
-                            cutSize: 10,
+                            decoration: BoxDecoration(
+                              color: AppTheme.systemCrimson.withOpacity(0.1),
+                              border: Border.all(
+                                  color: AppTheme.systemCrimson, width: 1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Column(
                               children: [
                                 Icon(Icons.cancel,
@@ -462,13 +514,15 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildSectionHeader(String title, IconData icon, {Color? color}) {
     return Row(
       children: [
-        SystemContainer(
-          padding: const EdgeInsets.all(8),
-          backgroundColor: (color ?? AppTheme.systemPurple).withOpacity(0.2),
-          borderColor: color ?? AppTheme.systemPurple,
-          cutSize: 5,
+        Container(
           width: 40,
           height: 40,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (color ?? AppTheme.systemPurple).withOpacity(0.2),
+            border: Border.all(color: color ?? AppTheme.systemPurple, width: 1),
+            borderRadius: BorderRadius.circular(5),
+          ),
           child: Center(
             child: Icon(
               icon,
@@ -575,6 +629,14 @@ class _HomeScreenState extends State<HomeScreen>
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Text('+$xpGained XP gained'),
+                    // 💰 NEW: Show Gold earned
+                    Text(
+                      '+${habit.totalGoldReward} Gold',
+                      style: TextStyle(
+                        color: AppTheme.amberGold,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     if (leveledUp)
                       Text(
                         '🎉 LEVEL UP! Now Level $newLevel',

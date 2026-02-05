@@ -5,6 +5,7 @@ import 'package:solo_leveling/data/models/weekly_boss.dart';
 import 'package:solo_leveling/data/models/debuff.dart';
 import '../../data/models/habit.dart';
 import '../../data/models/user_profile.dart';
+import '../../data/models/user_inventory.dart'; // NEW: For TransactionType
 import '../../data/services/notification_service.dart';
 import 'user_provider.dart';
 
@@ -305,17 +306,9 @@ class HabitProvider extends ChangeNotifier {
     await userProvider.takeDamage(50);
 
     // Apply debuff
-    final debuff = ActiveDebuff(
-      name: 'Morning Fog',
-      description:
-          'AUTO-APPLIED: Missed 10 AM deadline. -20% XP, -15% Willpower for 24h',
-      expiresAt: DateTime.now().add(const Duration(hours: 24)),
-      statModifiers: {
-        'xpMultiplier': 0.80,
-        'willpowerMultiplier': 0.85,
-      },
-    );
-    await userProvider.addDebuff(debuff);
+    // Debuff removed as per request
+    // final debuff = ActiveDebuff(...)
+    // await userProvider.addDebuff(debuff);
 
     // Show notification
     await NotificationService.showPenaltyNotification(
@@ -341,21 +334,9 @@ class HabitProvider extends ChangeNotifier {
     await userProvider.consumeMP(200);
 
     // Apply devastating debuff
-    final debuff = ActiveDebuff(
-      name: "Failure's Mark",
-      description:
-          '💀 SHADOW EXECUTED. -50% XP, -30% all stats for 72h. No escape.',
-      expiresAt: DateTime.now().add(const Duration(hours: 72)),
-      statModifiers: {
-        'xpMultiplier': 0.50,
-        'strengthMultiplier': 0.70,
-        'willpowerMultiplier': 0.70,
-        'charismaMultiplier': 0.70,
-        'enduranceMultiplier': 0.70,
-        'wisdomMultiplier': 0.70,
-      },
-    );
-    await userProvider.addDebuff(debuff);
+    // Debuff removed as per request
+    // final debuff = ActiveDebuff(...)
+    // await userProvider.addDebuff(debuff);
 
     // Show notification
     await NotificationService.showPenaltyNotification(
@@ -422,6 +403,16 @@ class HabitProvider extends ChangeNotifier {
       await userProvider.updateStats(habit.statRewards);
     }
 
+    // 💰 NEW: Award Gold for completing habit
+    final goldReward = habit.totalGoldReward;
+    if (goldReward > 0) {
+      await userProvider.earnGold(
+        goldReward,
+        'Habit: ${habit.name}',
+        TransactionType.habitCompletion,
+      );
+    }
+
     _checkStreakAchievements(habit, userProvider);
 
     await _saveHabits();
@@ -479,36 +470,15 @@ class HabitProvider extends ChangeNotifier {
               .clamp(0, userProvider.userProfile!.maxMP);
     }
 
-    // TODO: Apply debuff based on tier
-    // For now, just track the tier
-    final debuffDuration = Duration(days: tier); // T1=1d, T2=2d, T3=3d
-    final xpReduction = tier * 0.10; // T1=10%, T2=20%, T3=30%
-
-    // Determine special effect for Tier 3
-    DebuffSpecialEffect? specialEffect;
-    if (tier == 3) {
-      if (habit.id == 'screen_10pm')
-        specialEffect = DebuffSpecialEffect.levelBlock;
-      if (habit.id == 'snooze_button')
-        specialEffect = DebuffSpecialEffect.habitLock;
-      if (habit.id == 'junk_food')
-        specialEffect = DebuffSpecialEffect.strEndBlock;
-      if (habit.id == 'gaming') specialEffect = DebuffSpecialEffect.intWisBlock;
+    // 7-Day Bad Habit Streak Penalty (-500 XP)
+    if (habit.consecutiveCompletions == 7) {
+      await userProvider.loseXP(500, source: '7-Day Bad Streak: ${habit.name}');
+      await NotificationService.showPenaltyNotification(
+          'BAD HABIT STREAK (7 DAYS)', 500);
     }
 
-    final debuff = Debuff(
-      id: DateTime.now().millisecondsSinceEpoch.toString(), // Simple ID
-      name: habit.debuffName ?? 'Curse of ${habit.name}',
-      tier: tier,
-      habitId: habit.id,
-      xpReductionPercent: xpReduction,
-      tempStatReduction: statLoss, // Reuse stat loss as active reduction
-      specialEffect: specialEffect,
-      createdAt: now,
-      expiresAt: now.add(debuffDuration),
-    );
-
-    await userProvider.applyDebuff(debuff);
+    // Debuff Logic Removed as per request
+    // Lines 473-502 removed.
 
     await _saveHabits();
     notifyListeners();
@@ -663,9 +633,12 @@ class HabitProvider extends ChangeNotifier {
         await userProvider.consumeMP(habit.mpDrain);
       }
 
-      // Apply debuff if specified
-      if (habit.debuffName != null) {
-        await _applyDebuff(habit, userProvider);
+      // 7-Day Bad Habit Streak Penalty (-500 XP)
+      if (_isBadHabitStreak(habit, 7)) {
+        await userProvider.loseXP(500,
+            source: '7-Day Bad Streak: ${habit.name}');
+        await NotificationService.showPenaltyNotification(
+            'BAD HABIT STREAK (7 DAYS)', 500);
       }
 
       await NotificationService.showPenaltyNotification(
@@ -1165,5 +1138,23 @@ class HabitProvider extends ChangeNotifier {
     await _initializeDefaultHabits();
 
     notifyListeners();
+  }
+
+  /// Check if the habit has been failed for [days] consecutive days (ending today)
+  bool _isBadHabitStreak(Habit habit, int days) {
+    if (habit.failedDates.isEmpty) return false;
+
+    final today = DateTime.now();
+    final todayMidnight = DateTime(today.year, today.month, today.day);
+
+    // Create a Set of normalized failure dates for O(1) lookup
+    final dates =
+        habit.failedDates.map((d) => DateTime(d.year, d.month, d.day)).toSet();
+
+    for (int i = 0; i < days; i++) {
+      final target = todayMidnight.subtract(Duration(days: i));
+      if (!dates.contains(target)) return false;
+    }
+    return true;
   }
 }

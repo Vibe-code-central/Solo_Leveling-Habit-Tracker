@@ -73,6 +73,26 @@ class UserProfile extends HiveObject {
   @HiveField(22)
   int lastBossWeek;
 
+  // ═════════════════════════════════════════════════════════════
+  // NEW FIELDS - Solo Leveling System v2 Update
+  // ═════════════════════════════════════════════════════════════
+
+  /// Gold currency (earned from habits, streaks, gates)
+  @HiveField(23)
+  int? gold;
+
+  /// Data integrity hash for tamper detection
+  @HiveField(24)
+  String? dataIntegrityHash;
+
+  /// Counter for security violations (resets never - permanent record)
+  @HiveField(25)
+  int? securityViolationCount;
+
+  /// XP gain timestamps for rolling 24-hour cap (Unix epoch milliseconds)
+  @HiveField(26)
+  List<int>? xpGainTimestamps;
+
   UserProfile({
     required this.name,
     this.level = 1,
@@ -97,7 +117,12 @@ class UserProfile extends HiveObject {
     this.bossesDefeated = 0,
     this.currentWeekBossProgress = 0,
     this.lastBossWeek = 0,
+    this.gold,
+    this.dataIntegrityHash,
+    this.securityViolationCount,
+    List<int>? xpGainTimestamps,
   })  : unlockedShadows = unlockedShadows ?? [],
+        xpGainTimestamps = xpGainTimestamps ?? [],
         activeBuffs = activeBuffs ?? [],
         activeDebuffs = activeDebuffs ?? [],
         unlockedTitles = unlockedTitles ?? ["The Shadow's Candidate"];

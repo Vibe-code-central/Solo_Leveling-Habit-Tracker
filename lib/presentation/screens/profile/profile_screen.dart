@@ -12,6 +12,9 @@ import 'package:solo_leveling/data/models/debuff.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_dialog.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_clipper.dart';
 import 'package:solo_leveling/presentation/widgets/system/system_background.dart';
+import '../inventory/inventory_screen.dart';
+import '../../widgets/activity_heatmap.dart';
+import 'package:solo_leveling/data/models/habit.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -24,6 +27,7 @@ class ProfileScreen extends StatelessWidget {
         body: SafeArea(
           child: Consumer<UserProvider>(
             builder: (context, userProvider, child) {
+              final habitProvider = Provider.of<HabitProvider>(context);
               final user = userProvider.userProfile;
               if (user == null) {
                 return const Center(child: CircularProgressIndicator());
@@ -61,11 +65,47 @@ class ProfileScreen extends StatelessWidget {
                     // Profile Card
                     _buildProfileCard(context, user, userProvider),
 
+                    const SizedBox(height: 16),
+
+                    // Inventory Button
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const InventoryScreen())),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.systemCyan.withOpacity(0.1),
+                          border: Border.all(color: AppTheme.systemCyan),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.backpack, color: AppTheme.systemCyan),
+                            SizedBox(width: 8),
+                            Text("OPEN INVENTORY",
+                                style: TextStyle(
+                                    color: AppTheme.systemCyan,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Orbitron',
+                                    letterSpacing: 1.5)),
+                          ],
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(height: 20),
 
                     const SizedBox(height: 24),
                     // Stats Overview
                     _buildStatsOverview(context, user),
+
+                    const SizedBox(height: 24),
+                    // Activity Heatmap
+                    _buildHeatmapSection(habitProvider),
 
                     // 🔴 ACTIVE DEBUFFS SECTION
                     if (userProvider.activeDebuffs.isNotEmpty) ...[
@@ -104,11 +144,13 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildProfileCard(
       BuildContext context, UserProfile user, UserProvider userProvider) {
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(20),
-      backgroundColor: AppTheme.cardBg,
-      borderColor: userProvider.getRankColor(),
-      cutSize: 20,
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        border: Border.all(color: userProvider.getRankColor()),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         children: [
           // Avatar and Basic Info
@@ -298,10 +340,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildStatsOverview(BuildContext context, UserProfile user) {
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(16),
-      backgroundColor: AppTheme.systemNavy,
-      borderColor: AppTheme.primaryPurple,
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.primaryPurple),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -330,6 +375,23 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeatmapSection(HabitProvider habitProvider) {
+    final habits = habitProvider.habits.where((h) => h.type == HabitType.good);
+    final Map<DateTime, int> activityMap = {};
+
+    for (var habit in habits) {
+      for (var date in habit.completedDates) {
+        // Normalize date to prevent timestamp mismatch
+        final normalized = DateTime(date.year, date.month, date.day);
+        activityMap[normalized] = (activityMap[normalized] ?? 0) + 1;
+      }
+    }
+
+    return ActivityHeatmap(
+      activityData: activityMap,
     );
   }
 
@@ -369,10 +431,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildShadowArmySection(BuildContext context, UserProfile user) {
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(16),
-      backgroundColor: AppTheme.systemNavy,
-      borderColor: AppTheme.primaryPurple,
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.primaryPurple),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -450,10 +515,13 @@ class ProfileScreen extends StatelessWidget {
     final totalCount = userProvider.achievements.length;
     final completionRate = totalCount > 0 ? unlockedCount / totalCount : 0.0;
 
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(16),
-      backgroundColor: AppTheme.systemNavy,
-      borderColor: AppTheme.primaryPurple,
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.primaryPurple),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -519,10 +587,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildGuidesSection(BuildContext context) {
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(16),
-      backgroundColor: AppTheme.systemNavy,
-      borderColor: AppTheme.electricBlue,
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.electricBlue),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -615,10 +686,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsSection(BuildContext context) {
-    return SystemContainer(
+    return Container(
       padding: const EdgeInsets.all(16),
-      backgroundColor: AppTheme.systemNavy,
-      borderColor: AppTheme.primaryPurple,
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.primaryPurple),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
