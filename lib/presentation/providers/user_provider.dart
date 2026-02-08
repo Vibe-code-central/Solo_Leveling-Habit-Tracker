@@ -4,6 +4,7 @@ import '../../data/models/user_profile.dart';
 import '../../data/models/achievement.dart';
 import '../../data/models/debuff.dart'; // Import Debuff
 import '../../data/models/user_inventory.dart'; // NEW: Inventory & Gold
+import '../../data/models/exp_transaction.dart'; // NEW: EXP Logs
 import '../../data/services/notification_service.dart';
 
 part 'user_provider_debuff_methods.dart';
@@ -153,14 +154,47 @@ class UserProvider extends ChangeNotifier {
     }
 
     // Apply XP multipliers from active debuffs
-    final xpMultiplier = getXPMultiplier(); // Use new debuff method
-    final effectiveXP = (cappedXP * xpMultiplier).round();
+    final debuffMultiplier = getXPMultiplier();
 
-    // Track daily XP
-    _dailyXPEarned += effectiveXP;
+    // Apply XP multipliers from active buffs
+    final buffMultiplier = _getActiveBuffXPMultiplier();
 
+    // Apply passive permanent upgrades
+    final passiveMultiplier = _userProfile!.passiveXPMultiplier ?? 1.0;
+
+    // Combine all multipliers
+    final totalMultiplier =
+        debuffMultiplier * buffMultiplier * passiveMultiplier;
+    final effectiveXP = (cappedXP * totalMultiplier).round();
+
+    final xpBefore = _userProfile!.currentXP;
     final oldLevel = _userProfile!.level;
     _userProfile!.gainXP(effectiveXP);
+    final xpAfter = _userProfile!.currentXP;
+
+    // Track daily XP (add to counter)
+    _dailyXPEarned += effectiveXP;
+
+    // 📜 RECORD XP LOG
+    if (effectiveXP != 0) {
+      final transaction = ExpTransaction(
+        id: '${DateTime.now().millisecondsSinceEpoch}_gain',
+        timestamp: DateTime.now(),
+        type: _determineTransactionType(source),
+        xpChange: effectiveXP,
+        source: source ?? 'Unknown Source',
+        xpBefore: xpBefore,
+        xpAfter: xpAfter,
+      );
+
+      _userProfile!.expLogs ??= [];
+      _userProfile!.expLogs!.insert(0, transaction);
+
+      // Keep only last 100 logs
+      if (_userProfile!.expLogs!.length > 100) {
+        _userProfile!.expLogs = _userProfile!.expLogs!.sublist(0, 100);
+      }
+    }
 
     bool didLevelUp = false;
 
@@ -185,8 +219,31 @@ class UserProvider extends ChangeNotifier {
   Future<void> loseXP(int xp, {String? source}) async {
     if (_userProfile == null) return;
 
+    final xpBefore = _userProfile!.currentXP;
     final oldLevel = _userProfile!.level;
     _userProfile!.loseXP(xp);
+    final xpAfter = _userProfile!.currentXP;
+
+    // 📜 RECORD XP LOG
+    if (xp != 0) {
+      final transaction = ExpTransaction(
+        id: '${DateTime.now().millisecondsSinceEpoch}_loss',
+        timestamp: DateTime.now(),
+        type: ExpTransactionType.penalty,
+        xpChange: -xp,
+        source: source ?? 'Penalty',
+        xpBefore: xpBefore,
+        xpAfter: xpAfter,
+      );
+
+      _userProfile!.expLogs ??= [];
+      _userProfile!.expLogs!.insert(0, transaction);
+
+      // Keep only last 100 logs
+      if (_userProfile!.expLogs!.length > 100) {
+        _userProfile!.expLogs = _userProfile!.expLogs!.sublist(0, 100);
+      }
+    }
 
     if (_userProfile!.level < oldLevel) {
       await NotificationService.showPenaltyNotification(
@@ -197,6 +254,42 @@ class UserProvider extends ChangeNotifier {
 
     await _saveUserProfile();
     notifyListeners();
+  }
+
+  /// Decrement daily XP counter when XP is refunded (undo exploit fix)
+  void decrementDailyXP(int amount) {
+    _dailyXPEarned = (_dailyXPEarned - amount).clamp(0, MAX_DAILY_XP);
+  }
+
+  /// Get XP multiplier from active buffs
+  double _getActiveBuffXPMultiplier() {
+    if (_userProfile == null || _userProfile!.activeBuffs.isEmpty) return 1.0;
+
+    double multiplier = 1.0;
+    for (final buff in _userProfile!.activeBuffs) {
+      if (buff.expiresAt.isAfter(DateTime.now())) {
+        final xpMult = buff.statModifiers['xpMultiplier'] as double?;
+        if (xpMult != null) {
+          multiplier *= xpMult;
+        }
+      }
+    }
+    return multiplier;
+  }
+
+  /// Helper to determine transaction type from source string
+  ExpTransactionType _determineTransactionType(String? source) {
+    if (source == null) return ExpTransactionType.adminGrant;
+    final s = source.toLowerCase();
+
+    if (s.contains('habit')) return ExpTransactionType.habitCompletion;
+    if (s.contains('achievement')) return ExpTransactionType.achievement;
+    if (s.contains('gate')) return ExpTransactionType.gateClear;
+    if (s.contains('streak')) return ExpTransactionType.streakBonus;
+    if (s.contains('undo')) return ExpTransactionType.undo;
+    if (s.contains('penalty')) return ExpTransactionType.penalty;
+
+    return ExpTransactionType.adminGrant;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -707,6 +800,13 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> _unlockAchievement(Achievement achievement) async {
+    // 🛡️ SECURITY: Prevent duplicate achievement unlock exploit
+    if (achievement.isUnlocked) {
+      debugPrint(
+          '⚠️ Achievement "${achievement.name}" already unlocked. Skipping.');
+      return;
+    }
+
     achievement.unlock();
 
     // Apply rewards

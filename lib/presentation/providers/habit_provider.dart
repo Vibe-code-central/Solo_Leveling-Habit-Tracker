@@ -199,9 +199,9 @@ class HabitProvider extends ChangeNotifier {
           if (lastGhostCheckKey != lastCheckKey) {
             debugPrint("GHOST DAYS DETECTED: $ghostDays missed days");
 
-            // STRICT PENALTY: 300 XP + 100 HP per day
-            final totalPenaltyXP = ghostDays * 300;
-            final totalDamage = ghostDays * 100;
+            // REDUCED PENALTY: 25 XP + 10 HP per day
+            final totalPenaltyXP = ghostDays * 25;
+            final totalDamage = ghostDays * 10;
 
             if (totalPenaltyXP > 0) {
               await userProvider.loseXP(totalPenaltyXP,
@@ -297,13 +297,13 @@ class HabitProvider extends ChangeNotifier {
   /// Apply Morning Incomplete penalty automatically
   Future<void> _applyMorningIncompletePenalty(UserProvider userProvider) async {
     // XP Penalty
-    await userProvider.loseXP(50, source: 'Morning Incomplete - Auto Penalty');
+    await userProvider.loseXP(5, source: 'Morning Incomplete - Auto Penalty');
 
-    // Stat Penalties
-    await userProvider.updateStats({'willpower': -3, 'endurance': -2});
+    // Stat Penalties removed as per request to minimize
+    // await userProvider.updateStats({'willpower': -3, 'endurance': -2});
 
     // HP Damage
-    await userProvider.takeDamage(50);
+    await userProvider.takeDamage(5);
 
     // Apply debuff
     // Debuff removed as per request
@@ -319,19 +319,17 @@ class HabitProvider extends ChangeNotifier {
 
   /// Apply Shadow Execution penalty automatically - DEVASTATING
   Future<void> _applyShadowExecutionPenalty(UserProvider userProvider) async {
-    // Massive XP Penalty
-    await userProvider.loseXP(250, source: 'SHADOW EXECUTION - Auto Penalty');
+    // Reduced XP Penalty
+    await userProvider.loseXP(25, source: 'SHADOW EXECUTION - Auto Penalty');
 
-    // Stat Penalties
+    // Reduced Stat Penalties
     await userProvider.updateStats({
-      'willpower': -6,
-      'strength': -3,
-      'endurance': -4,
+      'willpower': -1,
     });
 
-    // HP & MP Damage
-    await userProvider.takeDamage(300);
-    await userProvider.consumeMP(200);
+    // Reduced HP & MP Damage
+    await userProvider.takeDamage(30);
+    await userProvider.consumeMP(20);
 
     // Apply devastating debuff
     // Debuff removed as per request
@@ -470,11 +468,11 @@ class HabitProvider extends ChangeNotifier {
               .clamp(0, userProvider.userProfile!.maxMP);
     }
 
-    // 7-Day Bad Habit Streak Penalty (-500 XP)
+    // 7-Day Bad Habit Streak Penalty (-50 XP)
     if (habit.consecutiveCompletions == 7) {
-      await userProvider.loseXP(500, source: '7-Day Bad Streak: ${habit.name}');
+      await userProvider.loseXP(50, source: '7-Day Bad Streak: ${habit.name}');
       await NotificationService.showPenaltyNotification(
-          'BAD HABIT STREAK (7 DAYS)', 500);
+          'BAD HABIT STREAK (7 DAYS)', 50);
     }
 
     // Debuff Logic Removed as per request
@@ -508,6 +506,9 @@ class HabitProvider extends ChangeNotifier {
     // Remove rewards
     final totalXP = habit.getTotalXPReward();
     await userProvider.loseXP(totalXP, source: 'Undo: ${habit.name}');
+
+    // 🛡️ SECURITY: Decrement daily XP counter to prevent cap bypass
+    userProvider.decrementDailyXP(totalXP);
 
     if (habit.statRewards.isNotEmpty) {
       final negativeRewards = <String, int>{};
@@ -633,12 +634,12 @@ class HabitProvider extends ChangeNotifier {
         await userProvider.consumeMP(habit.mpDrain);
       }
 
-      // 7-Day Bad Habit Streak Penalty (-500 XP)
+      // 7-Day Bad Habit Streak Penalty (-50 XP)
       if (_isBadHabitStreak(habit, 7)) {
-        await userProvider.loseXP(500,
+        await userProvider.loseXP(50,
             source: '7-Day Bad Streak: ${habit.name}');
         await NotificationService.showPenaltyNotification(
-            'BAD HABIT STREAK (7 DAYS)', 500);
+            'BAD HABIT STREAK (7 DAYS)', 50);
       }
 
       await NotificationService.showPenaltyNotification(

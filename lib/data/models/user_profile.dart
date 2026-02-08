@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'exp_transaction.dart';
 
 part 'user_profile.g.dart';
 
@@ -93,6 +94,18 @@ class UserProfile extends HiveObject {
   @HiveField(26)
   List<int>? xpGainTimestamps;
 
+  /// EXP transaction logs for history tracking
+  @HiveField(27)
+  List<ExpTransaction>? expLogs;
+
+  /// Passive XP multiplier from permanent shop upgrades (default 1.0 = no bonus)
+  @HiveField(28)
+  double? passiveXPMultiplier;
+
+  /// Passive Gold multiplier from permanent shop upgrades (default 1.0 = no bonus)
+  @HiveField(29)
+  double? passiveGoldMultiplier;
+
   UserProfile({
     required this.name,
     this.level = 1,
@@ -121,8 +134,12 @@ class UserProfile extends HiveObject {
     this.dataIntegrityHash,
     this.securityViolationCount,
     List<int>? xpGainTimestamps,
+    List<ExpTransaction>? expLogs,
+    this.passiveXPMultiplier = 1.0,
+    this.passiveGoldMultiplier = 1.0,
   })  : unlockedShadows = unlockedShadows ?? [],
         xpGainTimestamps = xpGainTimestamps ?? [],
+        expLogs = expLogs ?? [],
         activeBuffs = activeBuffs ?? [],
         activeDebuffs = activeDebuffs ?? [],
         unlockedTitles = unlockedTitles ?? ["The Shadow's Candidate"];

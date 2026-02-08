@@ -220,17 +220,17 @@ class Habit extends HiveObject {
   }
 
   int getTotalXPReward() {
-    // Milestone-based streak bonuses (prevents linear inflation)
+    // Milestone-based streak bonuses (FIXED: longer streaks now reward more!)
     double bonusMultiplier = 0.0;
 
     if (currentStreak >= 28) {
-      bonusMultiplier = 0.10; // 10% bonus at 28+ days
+      bonusMultiplier = 0.25; // 25% bonus at 28+ days (HIGHEST)
     } else if (currentStreak >= 21) {
-      bonusMultiplier = 0.15; // 15% bonus at 21-27 days
+      bonusMultiplier = 0.20; // 20% bonus at 21-27 days
     } else if (currentStreak >= 14) {
-      bonusMultiplier = 0.20; // 20% bonus at 14-20 days
+      bonusMultiplier = 0.15; // 15% bonus at 14-20 days
     } else if (currentStreak >= 7) {
-      bonusMultiplier = 0.25; // 25% bonus at 7-13 days
+      bonusMultiplier = 0.10; // 10% bonus at 7-13 days
     }
     // else: 0% bonus for days 1-6
 
@@ -499,10 +499,10 @@ No exceptions. No "just checking one thing."''',
         type: HabitType.bad,
         tier: HabitTier.catastrophic,
         xpReward: 0,
-        xpPenalty: 100, // Balanced: equivalent to ruining ARISE
-        statPenalties: {'willpower': 3, 'endurance': 2}, // 5 total (was 10)
-        hpDamage: 100, // Reduced from 150
-        mpDrain: 50, // Reduced from 100
+        xpPenalty: 50, // Somewhat Strict: 50 XP
+        statPenalties: {'willpower': 3, 'endurance': 2},
+        hpDamage: 50, // Somewhat Strict: 50 HP
+        mpDrain: 25, // Somewhat Strict: 25 MP
         debuffName: "Demon's Grip",
         createdAt: DateTime.now(),
       ),
@@ -524,9 +524,9 @@ WIN IT.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 75, // Balanced: 1.5x Pushups penalty
-        statPenalties: {'willpower': 2, 'endurance': 1}, // 3 total (was 6)
-        hpDamage: 75, // Reduced from 100
+        xpPenalty: 30, // Somewhat Strict: 30 XP
+        statPenalties: {'willpower': 2, 'endurance': 1},
+        hpDamage: 30, // Somewhat Strict: 30 HP
         debuffName: 'Sluggish Start',
         createdAt: DateTime.now(),
       ),
@@ -548,9 +548,9 @@ Weekend gaming is fine. Weekdays are for building.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 100, // Balanced: equivalent to wasting productive day
-        statPenalties: {'willpower': 3, 'intelligence': 1}, // 4 total (was 6)
-        mpDrain: 100, // Reduced from 200
+        xpPenalty: 50, // Somewhat Strict: 50 XP
+        statPenalties: {'willpower': 3, 'intelligence': 1},
+        mpDrain: 50, // Somewhat Strict: 50 MP
         debuffName: 'Time Void',
         createdAt: DateTime.now(),
       ),
@@ -571,9 +571,9 @@ Your body is your tool. Don't sabotage it.''',
         type: HabitType.bad,
         tier: HabitTier.severe,
         xpReward: 0,
-        xpPenalty: 50, // Balanced: equivalent to 1x Reading session
-        statPenalties: {'endurance': 2, 'strength': 1}, // 3 total (was 6)
-        hpDamage: 80, // Reduced from 120, physical penalty is main punishment
+        xpPenalty: 20, // Somewhat Strict: 20 XP
+        statPenalties: {'endurance': 2, 'strength': 1},
+        hpDamage: 40, // Somewhat Strict: 40 HP
         debuffName: 'Weakened State',
         createdAt: DateTime.now(),
       ),

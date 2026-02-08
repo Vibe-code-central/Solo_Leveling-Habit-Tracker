@@ -15,6 +15,7 @@ import 'package:solo_leveling/presentation/widgets/system/system_background.dart
 import '../inventory/inventory_screen.dart';
 import '../../widgets/activity_heatmap.dart';
 import 'package:solo_leveling/data/models/habit.dart';
+import 'package:solo_leveling/data/models/exp_transaction.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -122,6 +123,10 @@ class ProfileScreen extends StatelessWidget {
 
                     // Achievements Summary
                     _buildAchievementsSummary(context, userProvider),
+
+                    const SizedBox(height: 24),
+                    // EXP Log
+                    _buildExpLogSection(context, user),
 
                     const SizedBox(height: 20),
 
@@ -990,6 +995,199 @@ class ProfileScreen extends StatelessWidget {
           );
         }).toList(),
       ],
+    );
+  }
+
+  Widget _buildExpLogSection(BuildContext context, UserProfile user) {
+    final logs = user.expLogs ?? [];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.systemNavy,
+        border: Border.all(color: AppTheme.amberGold),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.history_edu,
+                color: AppTheme.amberGold,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'EXP LOG',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppTheme.amberGold,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (logs.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  'No XP transactions recorded yet.',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: logs.length > 5 ? 5 : logs.length,
+              separatorBuilder: (context, index) => Divider(
+                color: AppTheme.textSecondary.withOpacity(0.1),
+                height: 1,
+              ),
+              itemBuilder: (context, index) {
+                final log = logs[index];
+                final isGain = log.xpChange > 0;
+
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: (isGain
+                              ? AppTheme.emeraldGreen
+                              : AppTheme.systemCrimson)
+                          .withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isGain ? Icons.add : Icons.remove,
+                      color: isGain
+                          ? AppTheme.emeraldGreen
+                          : AppTheme.systemCrimson,
+                      size: 16,
+                    ),
+                  ),
+                  title: Text(
+                    log.source,
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Text(
+                    _formatTimestamp(log.timestamp),
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 11,
+                    ),
+                  ),
+                  trailing: Text(
+                    '${isGain ? "+" : ""}${log.xpChange} XP',
+                    style: TextStyle(
+                      color: isGain
+                          ? AppTheme.emeraldGreen
+                          : AppTheme.systemCrimson,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                );
+              },
+            ),
+          if (logs.length > 5) ...[
+            const SizedBox(height: 8),
+            Center(
+              child: TextButton(
+                onPressed: () => _showAllExpLogs(context, logs),
+                child: Text(
+                  'VIEW ALL LOGS',
+                  style: TextStyle(
+                    color: AppTheme.amberGold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(DateTime dt) {
+    return '${dt.day}/${dt.month} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  void _showAllExpLogs(BuildContext context, List<ExpTransaction> logs) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardBg,
+        title: Text('FULL EXP HISTORY',
+            style: TextStyle(
+                color: AppTheme.amberGold,
+                fontFamily: 'Orbitron',
+                fontSize: 18)),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: ListView.separated(
+            itemCount: logs.length,
+            separatorBuilder: (context, index) => Divider(
+              color: AppTheme.textSecondary.withOpacity(0.1),
+            ),
+            itemBuilder: (context, index) {
+              final log = logs[index];
+              final isGain = log.xpChange > 0;
+              return ListTile(
+                title: Text(log.source,
+                    style:
+                        TextStyle(color: AppTheme.textPrimary, fontSize: 14)),
+                subtitle: Text(_formatTimestamp(log.timestamp),
+                    style:
+                        TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${isGain ? "+" : ""}${log.xpChange} XP',
+                      style: TextStyle(
+                        color: isGain
+                            ? AppTheme.emeraldGreen
+                            : AppTheme.systemCrimson,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      'Result: ${log.xpAfter}',
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child:
+                const Text('BACK', style: TextStyle(color: AppTheme.amberGold)),
+          ),
+        ],
+      ),
     );
   }
 }

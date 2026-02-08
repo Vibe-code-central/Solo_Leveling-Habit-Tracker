@@ -44,13 +44,16 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       dataIntegrityHash: fields[24] as String?,
       securityViolationCount: fields[25] as int?,
       xpGainTimestamps: (fields[26] as List?)?.cast<int>(),
+      expLogs: (fields[27] as List?)?.cast<ExpTransaction>(),
+      passiveXPMultiplier: fields[28] as double?,
+      passiveGoldMultiplier: fields[29] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(30)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -104,7 +107,13 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(25)
       ..write(obj.securityViolationCount)
       ..writeByte(26)
-      ..write(obj.xpGainTimestamps);
+      ..write(obj.xpGainTimestamps)
+      ..writeByte(27)
+      ..write(obj.expLogs)
+      ..writeByte(28)
+      ..write(obj.passiveXPMultiplier)
+      ..writeByte(29)
+      ..write(obj.passiveGoldMultiplier);
   }
 
   @override

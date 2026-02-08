@@ -14,6 +14,7 @@ import 'data/models/shop_item.dart'; // NEW: Shop system
 import 'data/models/user_inventory.dart'; // NEW: Inventory & Gold
 import 'data/models/gate.dart'; // NEW: Gate system
 import 'data/models/activity_data.dart'; // NEW: Activity tracker
+import 'data/models/exp_transaction.dart'; // NEW: XP transaction tracking
 import 'data/services/notification_service.dart';
 import 'presentation/providers/user_provider.dart';
 import 'presentation/providers/habit_provider.dart';
@@ -66,6 +67,8 @@ void main() async {
     Hive.registerAdapter(GateAdapter()); // typeId: 34
     Hive.registerAdapter(RedGateBattleAdapter()); // typeId: 35
     Hive.registerAdapter(ActivityDataAdapter()); // typeId: 36
+    Hive.registerAdapter(ExpTransactionTypeAdapter()); // typeId: 38
+    Hive.registerAdapter(ExpTransactionAdapter()); // typeId: 39
 
     await Hive.openBox<UserProfile>('userProfile');
     await Hive.openBox<Habit>('habits');

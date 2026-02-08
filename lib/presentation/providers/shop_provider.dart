@@ -242,6 +242,38 @@ class ShopProvider extends ChangeNotifier {
       message += 'Stats permanently increased! ';
     }
 
+    // Passive XP Boost (permanent)
+    if (effects.containsKey('passiveXpBoost')) {
+      final boost = (effects['passiveXpBoost'] as num).toDouble();
+      user.passiveXPMultiplier =
+          (user.passiveXPMultiplier ?? 1.0) + (boost / 100.0);
+      message += '+${boost.toInt()}% permanent XP boost! ';
+    }
+
+    // Passive Gold Boost (permanent)
+    if (effects.containsKey('passiveGoldBoost')) {
+      final boost = (effects['passiveGoldBoost'] as num).toDouble();
+      user.passiveGoldMultiplier =
+          (user.passiveGoldMultiplier ?? 1.0) + (boost / 100.0);
+      message += '+${boost.toInt()}% permanent Gold boost! ';
+    }
+
+    // Max HP Bonus (permanent)
+    if (effects.containsKey('maxHpBonus')) {
+      final bonus = (effects['maxHpBonus'] as num).toInt();
+      user.maxHP += bonus;
+      user.currentHP = (user.currentHP + bonus).clamp(0, user.maxHP).toInt();
+      message += '+$bonus Max HP! ';
+    }
+
+    // Max MP Bonus (permanent)
+    if (effects.containsKey('maxMpBonus')) {
+      final bonus = (effects['maxMpBonus'] as num).toInt();
+      user.maxMP += bonus;
+      user.currentMP = (user.currentMP + bonus).clamp(0, user.maxMP).toInt();
+      message += '+$bonus Max MP! ';
+    }
+
     await user.save();
 
     return {'success': true, 'message': message.trim()};
