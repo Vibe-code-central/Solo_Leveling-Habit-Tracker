@@ -324,11 +324,18 @@ class UserProvider extends ChangeNotifier {
 
   /// Earn Gold with transaction logging
   Future<void> earnGold(int amount, String source, TransactionType type) async {
-    if (_inventory == null || amount <= 0) return;
+    if (_inventory == null || amount <= 0) {
+      debugPrint(
+          '⚠️ earnGold BLOCKED: inventory=${_inventory != null}, amount=$amount');
+      return;
+    }
 
     // Apply Gold Multiplier from active buffs
     final multiplier = getGoldMultiplier();
     final effectiveGold = (amount * multiplier).round();
+
+    debugPrint(
+        '💰 earnGold: base=$amount, multiplier=$multiplier, effective=$effectiveGold, goldBefore=${_inventory!.gold}');
 
     final transaction = Transaction(
       id: '${DateTime.now().millisecondsSinceEpoch}_${type.name}',
