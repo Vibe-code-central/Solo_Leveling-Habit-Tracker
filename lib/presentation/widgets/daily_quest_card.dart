@@ -482,7 +482,24 @@ class DailyQuestCard extends StatelessWidget {
               ),
             ],
           ),
-          if (xpRemaining > 0)
+          // 🪙 Gold reward for water habit
+          if (habit.totalGoldReward > 0)
+            Row(
+              children: [
+                Icon(Icons.monetization_on,
+                    color: AppTheme.amberGold, size: 14),
+                const SizedBox(width: 3),
+                Text(
+                  '+${habit.totalGoldReward} Gold',
+                  style: const TextStyle(
+                    color: AppTheme.amberGold,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            )
+          else if (xpRemaining > 0)
             Row(
               children: [
                 const Icon(Icons.pending, color: AppTheme.amberGold, size: 14),
@@ -552,6 +569,37 @@ class DailyQuestCard extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
+            // 🪙 Gold reward display (only for good habits)
+            if (!isDemonTrap && habit.totalGoldReward > 0) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppTheme.amberGold.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: AppTheme.amberGold.withOpacity(0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.monetization_on,
+                        color: AppTheme.amberGold, size: 12),
+                    const SizedBox(width: 3),
+                    Text(
+                      '+${habit.totalGoldReward}',
+                      style: TextStyle(
+                        color: AppTheme.amberGold,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             // Show stat rewards/penalties as chips
             if ((habit.statRewards.isNotEmpty && !isDemonTrap) ||
                 (habit.statPenalties.isNotEmpty && isDemonTrap)) ...[
