@@ -218,27 +218,15 @@ class ShopProvider extends ChangeNotifier {
     }
 
     // Stat Increase (permanent)
-    final stats = effects['statBonus'] as Map<String, dynamic>?;
-    if (stats != null) {
-      for (var entry in stats.entries) {
-        switch (entry.key) {
-          case 'strength':
-            user.stats.strength += (entry.value as num).toInt();
-            break;
-          case 'awareness':
-            user.stats.awareness += (entry.value as num).toInt();
-            break;
-          case 'intelligence':
-            user.stats.intelligence += (entry.value as num).toInt();
-            break;
-          case 'willpower':
-            user.stats.willpower += (entry.value as num).toInt();
-            break;
-          case 'endurance':
-            user.stats.endurance += (entry.value as num).toInt();
-            break;
-        }
+    // 🛡️ FIX: Use userProvider.updateStats() instead of direct manipulation
+    // This ensures debuff multipliers, security logging, and clamping are enforced
+    final statBonus = effects['statBonus'] as Map<String, dynamic>?;
+    if (statBonus != null) {
+      final statChanges = <String, int>{};
+      for (var entry in statBonus.entries) {
+        statChanges[entry.key] = (entry.value as num).toInt();
       }
+      await userProvider.updateStats(statChanges);
       message += 'Stats permanently increased! ';
     }
 

@@ -699,14 +699,14 @@ class UserProvider extends ChangeNotifier {
     return multiplier;
   }
 
-  /// Get combined Gold multiplier from all active buffs
+  /// Get combined Gold multiplier from all active buffs and passive upgrades
   double getGoldMultiplier() {
     if (_userProfile == null) return 1.0;
 
-    double multiplier = 1.0;
+    // 🛡️ FIX: Include passive Gold multiplier from permanent shop upgrades
+    double multiplier = _userProfile!.passiveGoldMultiplier ?? 1.0;
 
     // Check Buffs (Bonus)
-    // Note: Debuffs generally don't reduce gold, but we could add it if needed
     _userProfile!.activeBuffs.removeWhere((b) => b.isExpired);
     for (final buff in _userProfile!.activeBuffs) {
       final goldMult = buff.statModifiers['goldMultiplier'];

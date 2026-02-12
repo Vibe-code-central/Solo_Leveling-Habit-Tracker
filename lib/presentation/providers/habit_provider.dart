@@ -510,6 +510,12 @@ class HabitProvider extends ChangeNotifier {
     // 🛡️ SECURITY: Decrement daily XP counter to prevent cap bypass
     userProvider.decrementDailyXP(totalXP);
 
+    // 🛡️ FIX: Deduct Gold on undo (was missing - free gold exploit)
+    final goldReward = habit.totalGoldReward;
+    if (goldReward > 0) {
+      await userProvider.spendGold(goldReward, 'Undo: ${habit.name}');
+    }
+
     if (habit.statRewards.isNotEmpty) {
       final negativeRewards = <String, int>{};
       habit.statRewards.forEach((stat, reward) {
@@ -580,7 +586,9 @@ class HabitProvider extends ChangeNotifier {
   }
 
   /// Decrement water counter for counter-based habits
-  Future<void> decrementWaterCounter(String habitId) async {
+  /// 🛡️ FIX: Now deducts XP to prevent increment/decrement XP farming
+  Future<void> decrementWaterCounter(
+      String habitId, UserProvider userProvider) async {
     final habitIndex = _habits.indexWhere((h) => h.id == habitId);
     if (habitIndex == -1) return;
 
@@ -594,8 +602,25 @@ class HabitProvider extends ChangeNotifier {
 
     habit.currentCount--;
 
-    // Note: We don't remove XP on decrement to prevent exploitation
-    // but allow correction of mistakes
+    // 🛡️ FIX: Deduct XP on decrement to prevent XP farming exploit
+    if (habit.xpPerCount > 0) {
+      await userProvider.loseXP(habit.xpPerCount,
+          source: 'Water: Glass removed');
+      userProvider.decrementDailyXP(habit.xpPerCount);
+    }
+
+    // If was completed and now below max, unmark completion
+    if (habit.isCompletedToday && habit.currentCount < habit.maxCount) {
+      habit.unmarkCompleted();
+      // Reverse stat rewards that were given at completion
+      if (habit.statRewards.isNotEmpty) {
+        final negativeRewards = <String, int>{};
+        habit.statRewards.forEach((stat, reward) {
+          negativeRewards[stat] = -reward;
+        });
+        await userProvider.updateStats(negativeRewards);
+      }
+    }
 
     await _saveHabits();
     notifyListeners();
@@ -922,6 +947,13 @@ class HabitProvider extends ChangeNotifier {
       final xpToRemove = habit.getTotalXPReward();
       await userProvider.loseXP(xpToRemove,
           source: 'Anti-Cheat: Deleting completed habit');
+
+      // 🛡️ FIX: Deduct Gold on delete (was missing - free gold exploit)
+      final goldReward = habit.totalGoldReward;
+      if (goldReward > 0) {
+        await userProvider.spendGold(
+            goldReward, 'Anti-Cheat: Deleting completed habit');
+      }
 
       if (habit.statRewards.isNotEmpty) {
         final negativeRewards = <String, int>{};

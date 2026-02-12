@@ -471,8 +471,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 }
                               : null,
                           onDecrement: habit.isCounterBased
-                              ? () =>
-                                  habitProvider.decrementWaterCounter(habit.id)
+                              ? () => habitProvider.decrementWaterCounter(
+                                  habit.id, userProvider)
                               : null,
                           isDeadlinePassed: isDeadlinePassed,
                         ),

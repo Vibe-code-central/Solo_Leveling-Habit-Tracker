@@ -69,6 +69,31 @@ extension UserDebuffMethods on UserProvider {
     // 2. Reset Achievements
     await _initializeDefaultAchievements();
 
+    // 🛡️ FIX: Also clear inventory, gold, shop, and gate data
+    // Previously, gold/items survived resets allowing exploitation
+    try {
+      await _inventoryBox.clear();
+      _inventory = null;
+
+      // Clear debuffs
+      await _debuffBox.clear();
+      _activeDebuffs = [];
+
+      // Clear gate data
+      if (Hive.isBoxOpen('gates')) {
+        final gateBox = Hive.box('gates');
+        await gateBox.clear();
+      }
+
+      // Clear shop data (stock, cooldowns)
+      if (Hive.isBoxOpen('shop')) {
+        final shopBox = Hive.box('shop');
+        await shopBox.clear();
+      }
+    } catch (e) {
+      debugPrint('Error clearing additional data during reset: $e');
+    }
+
     notify();
   }
 }
